@@ -1,0 +1,26 @@
+@import "../../assets/colors";
+.container {
+  box-sizing: border-box;
+  padding: 16px 8px;
+  width: 40%;
+  color: $description;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  &:hover {
+    cursor: pointer;
+  }
+  img {
+    width: 45px;
+    height: 45px;
+    object-fit: contain;
+  }
+  &active {
+    color: white;
+  }
+  button {
+    border: none;
+    background: none;
+    text-decoration: none;
+  }
+}

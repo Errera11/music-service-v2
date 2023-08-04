@@ -1,0 +1,20 @@
+@import '../../assets/colors';
+.container {
+  width: 100vw;
+  height: 100vh;
+  background: black;
+  position: fixed;
+  .upperBar, .lowerBar {
+    margin: 10px;
+    width: 40vw;
+    background: $barColor;
+    border-radius: 15px;
+    box-sizing: border-box;
+  }
+  .upperBar {
+    height: 30vh;
+  }
+  .lowerBar {
+    height: 65vh;
+  }
+}
