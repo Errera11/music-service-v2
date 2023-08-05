@@ -1,0 +1,14 @@
+.container {
+  position: fixed;
+  width: 100vw;
+  top: 0;
+  padding: 10px;
+  display: flex;
+  justify-content: flex-end;
+  * {
+    cursor: pointer;
+    font-size: 0.9rem;
+    right: 0;
+    margin: 0 5px;
+  }
+}

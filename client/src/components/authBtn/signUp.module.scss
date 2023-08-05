@@ -1,0 +1,13 @@
+@import '../../assets/colors';
+.container {
+  background: white;
+  color: black;
+  border-radius: 15px;
+  text-align: center;
+  padding: 10px 15px;
+  &:hover {
+    color: $description;
+    background: none;
+    transition-duration: 400ms;
+  }
+}

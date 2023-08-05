@@ -5,16 +5,29 @@
   background: black;
   position: fixed;
   .upperBar, .lowerBar {
-    margin: 10px;
-    width: 40vw;
+    margin: 15px;
+    width: 20vw;
     background: $barColor;
     border-radius: 15px;
     box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    * {
+      color: $description;
+      margin-left: 7px;
+    }
   }
   .upperBar {
     height: 30vh;
+    justify-content: space-around;
   }
   .lowerBar {
     height: 65vh;
+    .title {
+      font-size: 0.8rem;
+      text-align: center;
+      color: white;
+      margin-top: 15px;
+    }
   }
 }
