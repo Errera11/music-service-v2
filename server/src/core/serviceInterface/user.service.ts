@@ -53,8 +53,9 @@ export class UserService implements UserRepository {
                 email_auth: true
             }
         })
-        const isValidPassword = bcrypt.compare(dto.password, user.password);
-        if(!isValidPassword || !user) throw new Error(`Invalid email or password`);
+        if(!user) throw new Error(`User with email ${dto.email} doesn't exists`);
+        const isValidPassword = bcrypt.compare(dto.password, user?.password);
+        if(!isValidPassword) throw new Error(`Invalid email or password`);
         return {
             email: user.email,
             name: user.name,

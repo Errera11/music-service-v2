@@ -1,6 +1,5 @@
 import {Body, Controller, HttpException, HttpStatus, Post} from "@nestjs/common";
 import {UserService} from "../../core/serviceInterface/user.service";
-import { Prisma } from '@prisma/client';
 import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
 
 @Controller('')
