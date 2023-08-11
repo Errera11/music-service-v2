@@ -1,17 +1,16 @@
 import {Injectable} from "@nestjs/common";
-import {UserRepository} from "../domainInterface/UserRepository/UserRepository";
-import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
-import {PrismaService} from "../../infrastructure/prisma.service";
+import {UserRepository} from "../../domainInterface/UserRepository/UserRepository";
+import {LoginUserDto} from "../../../common/dtos/LoginUser.dto";
+import {PrismaService} from "../../../infrastructure/prisma.service";
 import * as uuid from 'uuid';
 import * as bcrypt from 'bcrypt';
-import {AuthUserDto} from "../../common/dtos/AuthUser.dto";
-import {UserRoles} from "../../common/UserRoles";
-import {SignUpUserDto} from "../../common/dtos/SignUpUser.dto";
+import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
+import {UserRoles} from "../../../common/UserRoles";
+import {SignUpUserDto} from "../../../common/dtos/SignUpUser.dto";
 
 @Injectable()
 export class UserService implements UserRepository {
-    constructor(private prisma: PrismaService) {
-    }
+    constructor(private prisma: PrismaService) {}
 
     async create(dto: SignUpUserDto): Promise<AuthUserDto> {
         const user = await this.prisma.user.findUnique({
@@ -63,5 +62,9 @@ export class UserService implements UserRepository {
             role: user.role,
             is_email_auth: user.email_auth.is_auth
         }
+    }
+
+    async logout() {
+        // Todo make refresh/access token invalid
     }
 }

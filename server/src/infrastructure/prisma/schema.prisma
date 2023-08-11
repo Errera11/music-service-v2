@@ -23,8 +23,8 @@ model User {
 model Song {
     id Int @id @default(autoincrement())
     name String @unique
+    image String
     description String?
-    audio String @unique
     artist String
     favorite Favorite[]
     playlist_songs PlaylistSongs[]

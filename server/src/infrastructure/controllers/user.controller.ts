@@ -1,5 +1,5 @@
 import {Body, Controller, HttpException, HttpStatus, Post} from "@nestjs/common";
-import {UserService} from "../../core/serviceInterface/user.service";
+import {UserService} from "../../core/serviceInterface/user/user.service";
 import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
 import {SignUpUserDto} from "../../common/dtos/SignUpUser.dto";
 
