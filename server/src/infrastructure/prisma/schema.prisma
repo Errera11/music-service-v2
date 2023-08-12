@@ -21,7 +21,7 @@ model User {
 }
 
 model Song {
-    id Int @id @default(autoincrement())
+    id String @id
     name String @unique
     image String
     description String?
@@ -45,7 +45,7 @@ model Favorite {
     user User @relation(fields: [user_id], references: [id])
     song Song @relation(fields: [song_id], references: [id])
     user_id String
-    song_id Int
+    song_id String
 }
 
 model Playlist {
@@ -62,7 +62,7 @@ model AlbumSongs {
     album Album @relation(fields: [album_id], references: [id])
     album_id Int
     song Song @relation(fields: [song_id], references: [id])
-    song_id Int
+    song_id String
 }
 
 model PlaylistSongs {
@@ -70,7 +70,7 @@ model PlaylistSongs {
     playlist Playlist @relation(fields: [playlist_id], references: [id])
     playlist_id Int
     song Song @relation(fields: [song_id], references: [id])
-    song_id Int
+    song_id String
 }
 
 model EmailAuth {

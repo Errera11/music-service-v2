@@ -1,5 +1,7 @@
 import {Injectable} from "@nestjs/common";
 import * as fs from 'fs'
+import {DropboxResponse} from "dropbox";
+import {DropboxDownloadResponse} from "../../common/types/dropbox";
 const path = require('path');
 
 const Dropbox = require('dropbox').Dropbox;
@@ -19,6 +21,11 @@ export class DropboxService {
             .catch((uploadErr) => {
                 return uploadErr;
             });
-
     }
+    downloadFileById(id: string): Promise<DropboxResponse<DropboxDownloadResponse>> {
+        return this.dbx.filesDownload({
+            path: id
+        })
+    }
+
 }

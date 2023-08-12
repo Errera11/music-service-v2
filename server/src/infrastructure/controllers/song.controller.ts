@@ -7,12 +7,11 @@ import {
     HttpStatus,
     Param,
     Post,
-    UploadedFile, UploadedFiles,
+    UploadedFiles,
     UseInterceptors
 } from "@nestjs/common";
 import {SongService} from "../../core/serviceInterface/song/song.service";
-import {FileFieldsInterceptor, FileInterceptor} from "@nestjs/platform-express";
-import {IsNotEmpty} from "class-validator";
+import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
 
 @Controller('songs')
@@ -31,7 +30,7 @@ export class SongController {
     }
 
     @Delete('delete')
-    async delete(@Param('id') id: number) {
+    async delete(@Param('id') id: string) {
         try {
             return await this.songService.delete(id)
         } catch (e) {
@@ -53,7 +52,11 @@ export class SongController {
             if(!files.image[0] || !files.audio[0]) {
                 throw new HttpException('Image and auido must be provided', HttpStatus.BAD_REQUEST);
             }
-            return await this.songService.create(dto, files.image[0], files.audio[0])
+            return await this.songService.createSong({
+                ...dto,
+                audio: files.audio[0],
+                image: files.image[0]
+            })
         } catch (e) {
             console.log(e);
             throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
