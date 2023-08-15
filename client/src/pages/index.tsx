@@ -11,7 +11,7 @@ export default function Home() {
         <link rel="icon" href="../assets/favicon.ico" />
       </Head>
       <main >
-        <Layout />
+          <Layout><div style={{color: 'white'}}>Home</div></Layout>
       </main>
     </>
   )

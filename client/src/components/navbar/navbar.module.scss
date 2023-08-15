@@ -1,11 +1,9 @@
-@import '../../assets/colors';
+@import '../../assets/colors.module';
 .container {
-  width: 100vw;
   height: 100vh;
   background: black;
   position: fixed;
   .upperBar, .lowerBar {
-    margin: 15px;
     width: 20vw;
     background: $barColor;
     border-radius: 15px;
@@ -13,16 +11,16 @@
     display: flex;
     flex-direction: column;
     * {
-      color: $description;
       margin-left: 7px;
     }
   }
   .upperBar {
-    height: 30vh;
+    height: 20vh;
     justify-content: space-around;
+    margin-bottom: 5px;
   }
   .lowerBar {
-    height: 65vh;
+    height: 77vh;
     .title {
       font-size: 0.8rem;
       text-align: center;

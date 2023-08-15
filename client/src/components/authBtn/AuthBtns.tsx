@@ -4,6 +4,7 @@ import SignUpBtn from "@/components/authBtn/SignUpBtn";
 import styles from './authBtns.module.scss';
 
 const AuthBtns = () => {
+    console.log("AuthBtns");
     return (
         <div className={styles.container}>
             <SignUpBtn />

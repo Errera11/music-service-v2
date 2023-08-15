@@ -1,0 +1,8 @@
+$description: rgb(142, 142, 142);
+$barColor: #222223;
+$songsPageBg: linear-gradient(to top, black 70%, rgb(52, 20, 20) 90%, rgb(69, 24, 24) 100%);
+$songsListBg: rgb(15, 15, 15);
+
+:export {
+  description: $description;
+}

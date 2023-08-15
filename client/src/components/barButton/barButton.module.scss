@@ -1,26 +1,26 @@
-@import "../../assets/colors";
+@import "../../assets/colors.module";
+
 .container {
-  box-sizing: border-box;
   padding: 16px 8px;
   width: 50%;
-  color: $description;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  &:hover {
-    cursor: pointer;
+  justify-content: space-around;
+  cursor: pointer;
+
+  .icon {
+    width: 30px;
+    height: 30px;
   }
-  img {
-    width: 45px;
-    height: 45px;
-    object-fit: contain;
-  }
-  &active {
-    color: white;
-  }
-  button {
+
+  input {
     border: none;
     background: none;
     text-decoration: none;
+    color: $description;
+    cursor: pointer;
+    &.active {
+      color: white;
+    }
   }
 }
