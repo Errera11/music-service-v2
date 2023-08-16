@@ -1,0 +1,11 @@
+@import '../../assets/colors.module';
+.container {
+
+  input {
+    color: $description;
+    padding: 10px;
+    border-radius: 10px;
+    border: none;
+
+  }
+}

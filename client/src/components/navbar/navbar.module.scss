@@ -1,0 +1,31 @@
+@import '../../assets/colors.module';
+.container {
+  height: 100vh;
+  background: black;
+  position: fixed;
+  .upperBar, .lowerBar {
+    width: 20vw;
+    background: $barColor;
+    border-radius: 15px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    * {
+      margin-left: 7px;
+    }
+  }
+  .upperBar {
+    height: 20vh;
+    justify-content: space-around;
+    margin-bottom: 5px;
+  }
+  .lowerBar {
+    height: 77vh;
+    .title {
+      font-size: 0.8rem;
+      text-align: center;
+      color: white;
+      margin-top: 15px;
+    }
+  }
+}

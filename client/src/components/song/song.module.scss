@@ -1,0 +1,49 @@
+@import '../../assets/colors.module';
+
+.container {
+  height: 40px;
+  width: 100%;
+
+  .song {
+    display: grid;
+    grid-template-columns: 1fr 13fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    padding: 20px;
+    * {
+      font-size: 0.8rem;
+    }
+
+    .songNote {
+      grid-row-start: 1;
+      grid-row-end: 3;
+      align-self: center;
+    }
+
+    .title {
+      grid-row-start: 1;
+      grid-row-end: 2;
+      grid-column-start: 2;
+      grid-column-end: 3;
+      align-self: end;
+      color: white;
+      font-weight: lighter;
+    }
+
+    .artist {
+      grid-row-start: 2;
+      grid-row-end: 3;
+      grid-column-start: 2;
+      grid-column-end: 3;
+      color: $description;
+    }
+
+    .duration {
+      grid-row-start: 1;
+      grid-row-end: 3;
+      grid-column-start: 3;
+      grid-column-end: 4;
+      align-self: center;
+      color: white;
+    }
+  }
+}
