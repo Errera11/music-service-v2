@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import WavePic from '../../assets/wave.png';
 import {useState} from "react";
+import {AppRoutes} from "@/assets/appRoutes";
 
 export default () => {
     const [email, setEmail] = useState<string>('')
@@ -22,7 +23,7 @@ export default () => {
                 <button>Sign In</button>
                 <div className={styles.createAccount}>
                     Don't have an account?&nbsp;
-                    <Link href={'../signup/SignUp'}>Sign Up!</Link>
+                    <Link href={AppRoutes.SIGNUP_PAGE}>Sign Up!</Link>
                 </div>
             </div>
         </div>

@@ -10,11 +10,11 @@ import {useRouter} from "next/router";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {AppStore} from "@/store/store";
 import {setAppPage} from "@/store/appPage";
+import {AppRoutes} from "@/assets/appRoutes";
 
 const Navbar = () => {
 
     const router = useRouter();
-    //const currentPage = NavbarPages.HOME;
 
     const sel: TypedUseSelectorHook<ReturnType<AppStore["getState"]>> = useSelector;
     const { currentPage } = sel(state => state.AppPage)
@@ -23,17 +23,19 @@ const Navbar = () => {
     const onClickHandler = (page: NavbarPages) => {
         switch (page) {
             case(NavbarPages.HOME):
-                router.push('/')
+                router.push(AppRoutes.HOME_PAGE)
                 dispatch(setAppPage(NavbarPages.HOME))
                 break;
             case(NavbarPages.SONGS):
-                router.push('/songs/Songs')
+                router.push(AppRoutes.SONGS_PAGE)
                 dispatch(setAppPage(NavbarPages.SONGS))
                 break;
             case(NavbarPages.SEARCH):
+                router.push(AppRoutes.SEARCH_PAGE)
                 dispatch(setAppPage(NavbarPages.SEARCH))
                 break;
             case(NavbarPages.PLAYLIST):
+                router.push(AppRoutes.PLAYLIST_PAGE)
                 dispatch(setAppPage(NavbarPages.PLAYLIST))
                 break;
         }

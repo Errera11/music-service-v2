@@ -4,8 +4,9 @@ import Image from "next/image";
 import WavePic from "@/assets/wave.png";
 import Link from "next/link";
 import Head from "next/head";
+import {AppRoutes} from "@/assets/appRoutes";
 
-const SignUp = () => {
+const Index = () => {
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [name, setName] = useState<string>('')
@@ -31,7 +32,7 @@ const SignUp = () => {
                     <button>Sign Up</button>
                     <div className={styles.createAccount}>
                         Already have an account?&nbsp;
-                        <Link href={'../login/Login'}>Log In!</Link>
+                        <Link href={AppRoutes.LOGIN_PAGE}>Log In!</Link>
                     </div>
                 </div>
             </div>
@@ -39,4 +40,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default Index;

@@ -14,7 +14,7 @@ const mock: Song = {
     image: 'downloadlink'
 }
 
-const Songs = () => {
+const Index = () => {
     return (
         <Layout>
             <>
@@ -24,7 +24,8 @@ const Songs = () => {
                 <div className={styles.container}>
                     <div className={styles.songsInfo}>
                         <img src={wave.src}/>
-                        <span className={styles.title}>{mock.name}</span>
+                        <span className={styles.title}>My Songs</span>
+                        <span className={styles.songName}>{mock.name}</span>
                         <span className={styles.songCount}>123</span>
                     </div>
                     <div className={styles.songList}>
@@ -36,4 +37,4 @@ const Songs = () => {
     );
 };
 
-export default Songs;
+export default Index;
