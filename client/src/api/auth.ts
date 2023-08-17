@@ -1,10 +1,17 @@
-import axios from "axios";
-import {User} from "@/assets/types/User";
+import axios, {AxiosResponse} from "axios";
+import {AuthResponse, LoginRequest, SignUpRequest} from "@/assets/types/HttpAuth";
 
 const auth = axios.create({
-    baseURL: process.env.NEXT_APP_API_URL,
+    baseURL: process.env.NEXT_PUBLIC_API_URL,
 })
 
-const login = auth.post<User, any, User>('/login', {
+export const login = ({email, password}: LoginRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, LoginRequest>('/login', {
+    email,
+    password
+});
+
+export const signup = ({name, email, password}: SignUpRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, SignUpRequest>('/signup', {
+    email,
+    password,
     name
 });

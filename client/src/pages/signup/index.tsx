@@ -5,11 +5,31 @@ import WavePic from "@/assets/wave.png";
 import Link from "next/link";
 import Head from "next/head";
 import {AppRoutes} from "@/assets/appRoutes";
+import {useAppDispatch} from "@/hooks/useAppDispatch";
+import {useRouter} from "next/router";
+import {signupThunk} from "@/store/auth";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
+import AuthError from "@/components/authError/AuthError";
 
-const Index = () => {
+const SignUp = () => {
+
     const [email, setEmail] = useState<string>('')
     const [password, setPassword] = useState<string>('')
     const [name, setName] = useState<string>('')
+
+    const dispatch = useAppDispatch()
+
+    const router = useRouter()
+
+    const err = useTypedSelector(state => state.auth.error)
+
+    function signUp() {
+        dispatch(signupThunk({email, password, name}))
+            .unwrap()
+            .then(() => router.push(AppRoutes.HOME_PAGE))
+            .catch(err => console.log(err))
+    }
+
     return (
         <>
             <Head>
@@ -29,7 +49,8 @@ const Index = () => {
                     <input
                         onChange={(e) => setName(e.target.value)}
                         placeholder={'How should we call you?'}/>
-                    <button>Sign Up</button>
+                    <button onClick={e => signUp()}>Sign Up</button>
+                    {err && <AuthError error={err[0].constraints} />}
                     <div className={styles.createAccount}>
                         Already have an account?&nbsp;
                         <Link href={AppRoutes.LOGIN_PAGE}>Log In!</Link>
@@ -40,4 +61,4 @@ const Index = () => {
     );
 };
 
-export default Index;
+export default SignUp;
