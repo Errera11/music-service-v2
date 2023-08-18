@@ -1,7 +1,8 @@
 
-export enum NavbarPages {
+export enum Pages {
     SEARCH = 'SEARCH',
     HOME = 'HOME',
     SONGS = 'SONGS',
-    PLAYLIST = 'PLAYLIST'
+    PLAYLIST = 'PLAYLIST',
+    USER = 'USER'
 }

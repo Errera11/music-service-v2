@@ -1,13 +1,13 @@
 import {createSlice} from "@reduxjs/toolkit";
-import {NavbarPages} from "@/assets/types/Navbar";
+import {Pages} from "@/assets/types/Pages";
 import {HYDRATE} from "next-redux-wrapper";
 
 export interface AppPageState {
-    currentPage: NavbarPages
+    currentPage: Pages
 }
 
 const currentPageInitialState: AppPageState = {
-    currentPage: NavbarPages.HOME
+    currentPage: Pages.HOME
 }
 
 const appPageSlice = createSlice({

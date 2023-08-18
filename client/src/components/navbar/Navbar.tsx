@@ -5,7 +5,7 @@ import SongsPageSvg from "@/assets/svg/SongsPageSvg";
 import HomePageSvg from "@/assets/svg/HomePageSvg";
 import SearchPageSvg from "@/assets/svg/SearchPageSvg";
 import PlaylistPageSvg from "@/assets/svg/PlaylistPageSvg";
-import {NavbarPages} from "@/assets/types/Navbar";
+import {Pages} from "@/assets/types/Pages";
 import {useRouter} from "next/router";
 import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
 import {AppStore} from "@/store/store";
@@ -20,23 +20,23 @@ const Navbar = () => {
     const { currentPage } = sel(state => state.AppPage)
     const dispatch = useDispatch();
 
-    const onClickHandler = (page: NavbarPages) => {
+    const onClickHandler = (page: Pages) => {
         switch (page) {
-            case(NavbarPages.HOME):
+            case(Pages.HOME):
                 router.push(AppRoutes.HOME_PAGE)
-                dispatch(setAppPage(NavbarPages.HOME))
+                dispatch(setAppPage(Pages.HOME))
                 break;
-            case(NavbarPages.SONGS):
+            case(Pages.SONGS):
                 router.push(AppRoutes.SONGS_PAGE)
-                dispatch(setAppPage(NavbarPages.SONGS))
+                dispatch(setAppPage(Pages.SONGS))
                 break;
-            case(NavbarPages.SEARCH):
+            case(Pages.SEARCH):
                 router.push(AppRoutes.SEARCH_PAGE)
-                dispatch(setAppPage(NavbarPages.SEARCH))
+                dispatch(setAppPage(Pages.SEARCH))
                 break;
-            case(NavbarPages.PLAYLIST):
+            case(Pages.PLAYLIST):
                 router.push(AppRoutes.PLAYLIST_PAGE)
-                dispatch(setAppPage(NavbarPages.PLAYLIST))
+                dispatch(setAppPage(Pages.PLAYLIST))
                 break;
         }
     }
@@ -46,15 +46,15 @@ const Navbar = () => {
             <div className={styles.upperBar}>
                 <BarButton
                     title={'Search'}
-                    onClick={() => onClickHandler(NavbarPages.SEARCH)}
-                    isActive={currentPage === NavbarPages.SEARCH}
-                    svg={<SearchPageSvg height={'30px'} width={'30px'} isActive={currentPage === NavbarPages.SEARCH} /> }
+                    onClick={() => onClickHandler(Pages.SEARCH)}
+                    isActive={currentPage === Pages.SEARCH}
+                    svg={<SearchPageSvg height={'30px'} width={'30px'} isActive={currentPage === Pages.SEARCH} /> }
                 />
                 <BarButton
                     title={'Home'}
-                    onClick={() => onClickHandler(NavbarPages.HOME)}
-                    isActive={currentPage === NavbarPages.HOME}
-                    svg={<HomePageSvg width={'30px'} height={'30px'} isActive={currentPage === NavbarPages.HOME}/>}
+                    onClick={() => onClickHandler(Pages.HOME)}
+                    isActive={currentPage === Pages.HOME}
+                    svg={<HomePageSvg width={'30px'} height={'30px'} isActive={currentPage === Pages.HOME}/>}
                 />
             </div>
             <div className={styles.lowerBar}>
@@ -63,15 +63,15 @@ const Navbar = () => {
                 </div>
                 <BarButton
                     title={'Songs'}
-                    onClick={() => onClickHandler(NavbarPages.SONGS)}
-                    isActive={currentPage === NavbarPages.SONGS}
-                    svg={<SongsPageSvg width={'30px'} height={'30px'} isActive={currentPage === NavbarPages.SONGS}/>}
+                    onClick={() => onClickHandler(Pages.SONGS)}
+                    isActive={currentPage === Pages.SONGS}
+                    svg={<SongsPageSvg width={'30px'} height={'30px'} isActive={currentPage === Pages.SONGS}/>}
                 />
                 <BarButton
                     title={'Playlist'}
-                    onClick={() => onClickHandler(NavbarPages.PLAYLIST)}
-                    isActive={currentPage === NavbarPages.PLAYLIST}
-                    svg={<PlaylistPageSvg width={'30px'} height={'30px'} isActive={currentPage === NavbarPages.PLAYLIST}/>}
+                    onClick={() => onClickHandler(Pages.PLAYLIST)}
+                    isActive={currentPage === Pages.PLAYLIST}
+                    svg={<PlaylistPageSvg width={'30px'} height={'30px'} isActive={currentPage === Pages.PLAYLIST}/>}
                 />
             </div>
         </div>

@@ -33,14 +33,15 @@ export class UserService implements UserRepository {
                     create: {
                         is_auth: false
                     }
-                }
+                },
             }
         })
         return {
             email: newUser.email,
             name: newUser.name,
             role: newUser.role,
-            is_email_auth: false
+            is_email_auth: false,
+            avatar: undefined
         }
     }
 
@@ -60,7 +61,8 @@ export class UserService implements UserRepository {
             email: user.email,
             name: user.name,
             role: user.role,
-            is_email_auth: user.email_auth.is_auth
+            is_email_auth: user.email_auth.is_auth,
+            avatar: user.avatar
         }
     }
 
