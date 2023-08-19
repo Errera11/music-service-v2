@@ -19,6 +19,15 @@ model User {
     playlist Playlist[]
     email_auth EmailAuth?
     avatar String?
+    token Token[]
+}
+
+model Token {
+    id Int @id @default(autoincrement())
+    refreshToken String @unique
+    authToken String @unique
+    user_id String
+    user User @relation(fields: [user_id], references: [id])
 }
 
 model Song {

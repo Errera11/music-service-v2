@@ -1,9 +1,13 @@
-import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
+import {SignTokenDTO} from "../../../common/types/token";
 
 export interface TokenRepository {
-    signTokens(dto: AuthUserDto): {
+    signTokens(dto: SignTokenDTO): {
         refreshToken: string,
-        accessToken: string
+        authToken: string
     }
-    verifyToken(token: string, type: 'refreshToken' | 'accessToken'): AuthUserDto
+    verifyAuthToken(token: string): string
+    verifyRefreshToken(token: string): {
+        refreshToken: string,
+        authToken: string
+    }
 }

@@ -7,10 +7,16 @@ import * as bcrypt from 'bcrypt';
 import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
 import {UserRoles} from "../../../common/UserRoles";
 import {SignUpUserDto} from "../../../common/dtos/SignUpUser.dto";
+import {TokenService} from "../../../infrastructure/token/token.service";
+
 
 @Injectable()
 export class UserService implements UserRepository {
-    constructor(private prisma: PrismaService) {}
+    constructor(
+        private prisma: PrismaService,
+        private tokenService: TokenService
+    ) {
+    }
 
     async create(dto: SignUpUserDto): Promise<AuthUserDto> {
         const user = await this.prisma.user.findUnique({
@@ -36,14 +42,29 @@ export class UserService implements UserRepository {
                 },
             }
         })
+        const {authToken, refreshToken} = this.tokenService.signTokens({
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        })
+        await this.prisma.token.create({
+            data: {
+                user_id: user.id,
+                authToken,
+                refreshToken
+            }
+        });
         return {
             email: newUser.email,
             name: newUser.name,
             role: newUser.role,
             is_email_auth: false,
-            avatar: undefined
+            avatar: undefined,
+            accessToken: authToken,
+            refreshToken: refreshToken
         }
     }
+
 
     async login(dto: LoginUserDto): Promise<AuthUserDto> {
         const user = await this.prisma.user.findUnique({
@@ -54,19 +75,38 @@ export class UserService implements UserRepository {
                 email_auth: true
             }
         })
-        if(!user) throw new Error(`User with email ${dto.email} doesn't exists`);
+        if (!user)
+            throw new Error(`User with email ${dto.email} doesn't exists`);
         const isValidPassword = bcrypt.compare(dto.password, user?.password);
-        if(!isValidPassword) throw new Error(`Invalid email or password`);
+        if (!isValidPassword) throw new Error(`Invalid email or password`);
+        const {authToken, refreshToken} = this.tokenService.signTokens({
+            email: user.email,
+            name: user.name,
+            role: user.role,
+        })
+        await this.prisma.token.create({
+            data: {
+                user_id: user.id,
+                authToken,
+                refreshToken
+            }
+        });
         return {
             email: user.email,
             name: user.name,
             role: user.role,
             is_email_auth: user.email_auth.is_auth,
-            avatar: user.avatar
+            avatar: user.avatar,
+            accessToken: authToken,
+            refreshToken: refreshToken
         }
     }
 
-    async logout() {
-        // Todo make refresh/access token invalid
+    async logout(accessToken: string) {
+        return this.prisma.token.delete({
+            where: {
+                authToken: accessToken
+            }
+        })
     }
 }
