@@ -1,7 +1,12 @@
 import {User} from "@/assets/types/User";
-import {createAsyncThunk, createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {login, signup} from "@/api/auth";
-import {AuthConstraintsError, AuthSuccessResponse, LoginRequest, SignUpRequest} from "@/assets/types/HttpAuth";
+import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
+import {login, logout, signup} from "@/api/auth";
+import {
+    AuthConstraintsError,
+    AuthSuccessResponse,
+    LoginRequest,
+    SignUpRequest
+} from "@/assets/types/HttpAuth";
 import axios from "axios";
 
 interface AuthState {
@@ -19,10 +24,11 @@ export const loginThunk = createAsyncThunk(
     async ({email, password}: LoginRequest) => {
         try {
             const response = await login({email, password});
+            localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
-                throw JSON.stringify(e.response?.data.message)
+                throw e.response?.data.message
             }
             throw 'Unexpected error';
         }
@@ -33,10 +39,28 @@ export const signupThunk = createAsyncThunk(
     async ({email, password, name}: SignUpRequest) => {
         try {
             const response = await signup({email, password, name});
+            localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
+            return response.data;
+        } catch (e) {
+            console.log(e);
+            if (axios.isAxiosError(e)) {
+                throw e.response?.data.message
+            }
+            throw 'Unexpected error';
+        }
+
+    }
+);
+
+export const logoutThunk = createAsyncThunk(
+    'auth/logout',
+    async () => {
+        try {
+            const response = await logout();
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
-                throw JSON.stringify(e.response?.data.message)
+                throw e.response?.data
             }
             throw 'Unexpected error';
         }
@@ -55,6 +79,19 @@ const authSlice = createSlice({
         })
         builder.addCase(signupThunk.rejected, (state, action) => {
             state.error = JSON.parse(action.error.message as string);
+        })
+
+        builder.addCase(loginThunk.fulfilled, (state, action) => {
+            if (state.error) state.error = undefined;
+            state.user = action.payload as AuthSuccessResponse;
+        })
+        builder.addCase(loginThunk.rejected, (state, action) => {
+            state.error = JSON.parse(action.error.message as string);
+        })
+
+        builder.addCase(logoutThunk.fulfilled, (state, action) => {
+            state.user = undefined;
+            state.error = undefined;
         })
     }
 })

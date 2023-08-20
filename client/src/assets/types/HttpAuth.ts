@@ -3,17 +3,19 @@ export type AuthConstraintsError = [{
     constraints: string
 }]
 
-export interface AuthError {
-    error: string,
-    message: string | [],
-    status: number
+export type AuthError = {
+    message: AuthConstraintsError,
+    statusCode: number
 }
 
 export interface AuthSuccessResponse {
-    email: string
-    name: string
-    role: string[]
-    is_email_auth: boolean
+    email: string,
+    name: string,
+    role: string[],
+    avatar: string,
+    is_email_auth: boolean,
+    authToken: string,
+    refreshToken: string
 }
 
 export type AuthResponse = AuthSuccessResponse | AuthError;

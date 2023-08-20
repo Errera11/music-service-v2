@@ -10,6 +10,7 @@ import {loginThunk} from "@/store/auth";
 import AuthError from "@/components/authError/AuthError";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import Head from "next/head";
+import {AuthSuccessResponse} from "@/assets/types/HttpAuth";
 
 const Login = () => {
 
@@ -25,7 +26,8 @@ const Login = () => {
     function loginHandler() {
         dispatch(loginThunk({email, password}))
             .unwrap()
-            .then((res) => {
+            .then((data) => {
+                localStorage.setItem('authToken', (data as AuthSuccessResponse).authToken);
                 router.push(AppRoutes.HOME_PAGE)
             })
             .catch(err => console.log(err))
@@ -48,8 +50,8 @@ const Login = () => {
                         type={'password'}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder={'Password'}/>
-                    <button onClick={e => loginHandler()}>Sign In</button>
                     {err && <AuthError error={err[0].constraints}/>}
+                    <button onClick={e => loginHandler()}>Sign In</button>
                     <div className={styles.createAccount}>
                         Don't have an account?&nbsp;
                         <Link href={AppRoutes.SIGNUP_PAGE}>Sign Up!</Link>

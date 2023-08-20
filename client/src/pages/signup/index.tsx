@@ -10,6 +10,7 @@ import {useRouter} from "next/router";
 import {signupThunk} from "@/store/auth";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import AuthError from "@/components/authError/AuthError";
+import {AuthSuccessResponse} from "@/assets/types/HttpAuth";
 
 const SignUp = () => {
 
@@ -26,7 +27,10 @@ const SignUp = () => {
     function signUp() {
         dispatch(signupThunk({email, password, name}))
             .unwrap()
-            .then(() => router.push(AppRoutes.HOME_PAGE))
+            .then((data ) => {
+                localStorage.setItem('authToken', (data as AuthSuccessResponse).authToken);
+                router.push(AppRoutes.HOME_PAGE)
+            })
             .catch(err => console.log(err))
     }
 

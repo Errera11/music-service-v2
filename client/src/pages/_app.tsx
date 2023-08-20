@@ -4,6 +4,7 @@ import { Allerta } from 'next/font/google'
 import {wrapper} from "@/store/store";
 import {Provider} from "react-redux";
 import React from "react";
+import {loginThunk} from "@/store/auth";
 const allerta = Allerta({
   weight: "400",
   subsets: ["latin"]
