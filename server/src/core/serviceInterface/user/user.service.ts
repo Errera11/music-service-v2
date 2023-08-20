@@ -9,7 +9,6 @@ import {UserRoles} from "../../../common/UserRoles";
 import {SignUpUserDto} from "../../../common/dtos/SignUpUser.dto";
 import {TokenService} from "../../../infrastructure/token/token.service";
 
-
 @Injectable()
 export class UserService implements UserRepository {
     constructor(
@@ -43,14 +42,13 @@ export class UserService implements UserRepository {
             }
         })
         const {authToken, refreshToken} = this.tokenService.signTokens({
-            email: user.email,
-            name: user.name,
-            role: user.role,
+            email: newUser.email,
+            name: newUser.name,
+            role: newUser.role,
         })
-        await this.prisma.token.create({
+        await this.prisma.tokenSession.create({
             data: {
-                user_id: user.id,
-                authToken,
+                user_id: newUser.id,
                 refreshToken
             }
         });
@@ -60,7 +58,7 @@ export class UserService implements UserRepository {
             role: newUser.role,
             is_email_auth: false,
             avatar: undefined,
-            accessToken: authToken,
+            authToken: authToken,
             refreshToken: refreshToken
         }
     }
@@ -84,10 +82,23 @@ export class UserService implements UserRepository {
             name: user.name,
             role: user.role,
         })
-        await this.prisma.token.create({
+        // Check out count of user sessions and if there are more than 5, drop all
+        // sessions except currently created in case of security
+        const userSessionsCount = await this.prisma.tokenSession.count({
+            where: {
+                user_id: user.id
+            }
+        });
+        if(userSessionsCount >= 5) {
+            this.prisma.tokenSession.deleteMany({
+                where: {
+                    user_id: user.id
+                }
+            })
+        }
+        await this.prisma.tokenSession.create({
             data: {
                 user_id: user.id,
-                authToken,
                 refreshToken
             }
         });
@@ -97,16 +108,34 @@ export class UserService implements UserRepository {
             role: user.role,
             is_email_auth: user.email_auth.is_auth,
             avatar: user.avatar,
-            accessToken: authToken,
+            authToken: authToken,
             refreshToken: refreshToken
         }
     }
 
-    async logout(accessToken: string) {
-        return this.prisma.token.delete({
+    async logout(refreshToken: string) {
+        return this.prisma.tokenSession.delete({
             where: {
-                authToken: accessToken
+                refreshToken: refreshToken
             }
         })
+    }
+
+    async refreshSession(refreshToken: string) {
+        const user = this.tokenService.verifyRefreshToken(refreshToken);
+        try {
+            // Check out if there are such of session
+            const session = await this.prisma.tokenSession.delete({
+                where: {
+                    refreshToken
+                }
+            })
+            return this.tokenService.signTokens(user);
+        } catch (e) {
+            console.log(e);
+            throw new Error('Session logged out');
+        }
+
+
     }
 }

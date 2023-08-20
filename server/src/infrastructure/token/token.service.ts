@@ -1,15 +1,12 @@
 import {Injectable} from "@nestjs/common";
 import {SignTokenDTO} from "../../common/types/token";
-import {PrismaService} from "../prisma.service";
 import {TokenRepository} from "../../core/domainInterface/TokenRepository/TokenRepository";
 
-const jwt_decode = require('jwt_decode');
+const jwt_decode = require('jwt-decode');
 const jwt = require('jsonwebtoken');
 
 @Injectable()
 export class TokenService implements TokenRepository{
-
-    constructor(private prisma: PrismaService) {}
 
     signTokens(dto: SignTokenDTO) {
         return {
@@ -27,15 +24,16 @@ export class TokenService implements TokenRepository{
     }
 
     verifyAuthToken(token: string) {
-        return jwt.verify(token, process.env.SECRET_ACCESS);
+        const tokenCode = token.split(' ').pop();
+        return jwt.verify(tokenCode, process.env.SECRET_ACCESS);
     }
 
-    verifyRefreshToken(token: string) {
-        if (!jwt.verify(token, process.env.REFRESH_REFRESH)) {
-
+    verifyRefreshToken(token: string): SignTokenDTO {
+        const tokenCode = token.split(' ').pop();
+        if (!jwt.verify(tokenCode, process.env.REFRESH_REFRESH)) {
+            throw new Error('Invalid refresh token');
         }
-        const decodedToken: SignTokenDTO = jwt_decode(token);
-        return this.signTokens(decodedToken);
+        return jwt_decode(tokenCode);
     }
 }
 

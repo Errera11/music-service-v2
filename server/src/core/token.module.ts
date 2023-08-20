@@ -1,9 +1,11 @@
 import {Module} from "@nestjs/common";
-import {TokenService} from "./serviceInterface/token/token.service";
+import {TokenService} from "./../infrastructure/token/token.service";
+import {PrismaService} from "../infrastructure/prisma.service";
 
 @Module(
     {
-        providers: [TokenService]
+        providers: [TokenService, PrismaService],
+        exports: [TokenService]
     }
 )
 export class TokenModule {}
