@@ -15,7 +15,6 @@ export interface AuthSuccessResponse {
     avatar: string,
     is_email_auth: boolean,
     authToken: string,
-    refreshToken: string
 }
 
 export type AuthResponse = AuthSuccessResponse | AuthError;

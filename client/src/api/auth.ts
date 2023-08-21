@@ -22,3 +22,9 @@ export const logout = () => auth.delete('logout', {
 
 export const refreshSession = () =>
     auth.post('refreshSession', {}, {withCredentials: true})
+
+export const loginByAuthToken = ({authToken}: {authToken: string}) => auth.get<Omit<AuthResponse, 'refreshToken' | 'authToken'>>('loginByAuthToken', {
+        headers: {
+            authorization: authToken
+        }
+    })

@@ -1,6 +1,6 @@
 import {User} from "@/assets/types/User";
-import {createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import {login, logout, signup} from "@/api/auth";
+import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
+import {login, loginByAuthToken, logout, signup} from "@/api/auth";
 import {
     AuthConstraintsError,
     AuthSuccessResponse,
@@ -68,6 +68,21 @@ export const logoutThunk = createAsyncThunk(
     }
 );
 
+export const loginByTokenThunk = createAsyncThunk(
+    'auth/token',
+    async ({authToken}: { authToken: string }) => {
+        try {
+            const response = await loginByAuthToken({authToken});
+            return response.data;
+        } catch (e) {
+            if (axios.isAxiosError(e)) {
+                throw e.response?.data
+            }
+            throw 'Unexpected error';
+        }
+    }
+)
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: authInitialState,
@@ -81,10 +96,6 @@ const authSlice = createSlice({
             state.error = JSON.parse(action.error.message as string);
         })
 
-        builder.addCase(loginThunk.fulfilled, (state, action) => {
-            if (state.error) state.error = undefined;
-            state.user = action.payload as AuthSuccessResponse;
-        })
         builder.addCase(loginThunk.rejected, (state, action) => {
             state.error = JSON.parse(action.error.message as string);
         })
@@ -92,6 +103,11 @@ const authSlice = createSlice({
         builder.addCase(logoutThunk.fulfilled, (state, action) => {
             state.user = undefined;
             state.error = undefined;
+        })
+
+        builder.addMatcher(isAnyOf(loginThunk.fulfilled, loginByTokenThunk.fulfilled), (state, action) => {
+            if (state.error) state.error = undefined;
+            state.user = action.payload as AuthSuccessResponse;
         })
     }
 })
