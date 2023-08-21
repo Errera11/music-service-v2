@@ -5,18 +5,51 @@
   right: 0;
   display: flex;
   align-items: center;
+
+
+  .dropdown {
+    position: absolute;
+    background: black;
+    border: solid 2px $description;
+    border-radius: 5px;
+    padding: 5px;
+    color: $description;
+    top: 40px;
+    width: 100px;
+    transform: translateX(-65%);
+
+    ul {
+      list-style-type: none;
+
+      li {
+        padding: 0.3rem;
+      }
+
+      li:hover {
+        background: $description;
+        color: black;
+        transition-duration: 300ms;
+        border-radius: 5px;
+      }
+    }
+
+  }
+
   .avatar {
     margin-right: 10px;
   }
+
   * {
     cursor: pointer;
     font-size: 0.9rem;
     right: 0;
     align-items: center;
   }
+
   .email {
     color: $description;
     display: flex;
+
     &.active {
       color: white;
     }

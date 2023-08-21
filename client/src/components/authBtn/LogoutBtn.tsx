@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './loginBtn.module.scss'
+import styles from './login/loginBtn.module.scss'
 import {useRouter} from "next/router";
 import {logoutThunk} from "@/store/auth";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
