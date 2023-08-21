@@ -20,7 +20,7 @@ const AuthBtns = () => {
         const dropdownRef = useRef<HTMLDivElement>(null);
 
         useEffect(() => {
-            document.addEventListener('mousedown', (e) => {
+            document.addEventListener('onclick', (e) => {
                 if(e.target instanceof HTMLElement && !dropdownRef?.current?.contains(e.target)) {
                     setIsMenu(false)
                 }
@@ -49,7 +49,7 @@ const AuthBtns = () => {
 
         return (
             <div className={styles.container}>
-                {true ?
+                {user ?
                     <>
                         <div className={styles.avatar}>
                             {user?.avatar ?
@@ -57,9 +57,9 @@ const AuthBtns = () => {
                                 :
                                 <UserIconSvg isActive={currentPage === Pages.USER} width={'25px'} height={'25px'}/>}
                         </div>
-                        <div ref={dropdownRef} onClick={(e) => setIsMenu(!isMenu)}
+                        <div ref={dropdownRef} onClick={(e) => setIsMenu(prev => prev!)}
                              className={styles.email + '' + (currentPage === Pages.USER ? styles.active : '')}>
-                            {'name'}
+                            {user.name}
                             <ChevronDownSvg isActive={currentPage === Pages.USER} width={'15px'} height={'15px'}/>
                             <>
                                 {transitions((style, item) => (
