@@ -5,12 +5,19 @@ const auth = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
 })
 
-export const login = ({email, password}: LoginRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, LoginRequest>('/login', {
+export const login = ({
+                          email,
+                          password
+                      }: LoginRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, LoginRequest>('/login', {
     email,
     password
 }, {withCredentials: true});
 
-export const signup = ({name, email, password}: SignUpRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, SignUpRequest>('/signup', {
+export const signup = ({
+                           name,
+                           email,
+                           password
+                       }: SignUpRequest) => auth.post<AuthResponse, AxiosResponse<AuthResponse>, SignUpRequest>('/signup', {
     email,
     password,
     name
@@ -23,8 +30,22 @@ export const logout = () => auth.delete('logout', {
 export const refreshSession = () =>
     auth.post('refreshSession', {}, {withCredentials: true})
 
-export const loginByAuthToken = ({authToken}: {authToken: string}) => auth.get<Omit<AuthResponse, 'refreshToken' | 'authToken'>>('loginByAuthToken', {
-        headers: {
-            authorization: authToken
+export const loginByAuthToken = ({authToken}: {
+    authToken: string
+}) => auth.get<Omit<AuthResponse, 'refreshToken' | 'authToken'>>('loginByAuthToken', {
+    headers: {
+        authorization: authToken
+    }
+})
+
+auth.interceptors.response.use((response) => response,
+    async function (error: AxiosResponse) {
+        if (error.status === 401) {
+            try {
+                const response: AxiosResponse<{authToken: string}> = await refreshSession();
+                localStorage.setItem('authToken', response.data.authToken);
+            } catch (e) {
+                console.log(e);
+            }
         }
-    })
+})

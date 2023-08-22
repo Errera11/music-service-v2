@@ -1,22 +1,7 @@
 import Head from 'next/head'
 import Layout from "@/components/Layout";
-import {useAppDispatch} from "@/hooks/useAppDispatch";
-import {useEffect} from "react";
-import {loginByTokenThunk} from "@/store/auth";
 
 export default function Home() {
-
-    const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        const authToken = localStorage.getItem('authToken');
-        if (authToken) {
-            dispatch(loginByTokenThunk({authToken}))
-                .unwrap()
-                .catch(e => {});
-        }
-    }, [])
-
     return (
         <>
             <Head>

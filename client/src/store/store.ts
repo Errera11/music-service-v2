@@ -1,11 +1,9 @@
 import {configureStore} from "@reduxjs/toolkit";
-import currentPage from "@/store/appPage";
 import auth from '@/store/auth';
 import {createWrapper} from "next-redux-wrapper";
 
 export const makeStore = () => configureStore({
     reducer: {
-        [currentPage.name]: currentPage.reducer,
         [auth.name]: auth.reducer
     }
 });

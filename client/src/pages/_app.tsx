@@ -4,8 +4,6 @@ import {Allerta} from 'next/font/google'
 import {wrapper} from "@/store/store";
 import {Provider} from "react-redux";
 import React, {useEffect} from "react";
-import {useAppDispatch} from "@/hooks/useAppDispatch";
-import {loginByTokenThunk, loginThunk} from "@/store/auth";
 
 const allerta = Allerta({
     weight: "400",
