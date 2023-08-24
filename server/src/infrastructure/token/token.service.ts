@@ -23,17 +23,29 @@ export class TokenService implements TokenRepository{
         };
     }
 
-    verifyAuthToken(token: string) {
-        const tokenCode = token.split(' ').pop();
-        return jwt.verify(tokenCode, process.env.SECRET_ACCESS);
+    verifyAuthToken(token: string): SignTokenDTO {
+        try {
+            console.log(token);
+            const tokenCode = token.split(' ').pop();
+            console.log(tokenCode);
+            jwt.verify(tokenCode, process.env.SECRET_ACCESS)
+            return jwt_decode(tokenCode);
+        } catch (e) {
+            throw new Error('Invalid authorization token');
+        }
     }
 
     verifyRefreshToken(token: string): SignTokenDTO {
-        const tokenCode = token.split(' ').pop();
-        if (!jwt.verify(tokenCode, process.env.REFRESH_REFRESH)) {
+        try {
+            const tokenCode = token.split(' ').pop();
+            jwt.verify(tokenCode, process.env.SECRET_REFRESH)
+            console.log(process.env.SECRET_REFRESH);
+            return jwt_decode(tokenCode);
+        } catch (e) {
             throw new Error('Invalid refresh token');
         }
-        return jwt_decode(tokenCode);
     }
 }
+
+
 

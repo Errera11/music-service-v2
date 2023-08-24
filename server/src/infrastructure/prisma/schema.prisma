@@ -86,5 +86,5 @@ model EmailAuth {
     id Int @id @default(autoincrement())
     user User @relation(fields: [user_id], references: [id])
     user_id String @unique
-    is_auth Boolean
+    is_email_auth Boolean @default(false)
 }

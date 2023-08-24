@@ -5,6 +5,6 @@ export interface TokenRepository {
         refreshToken: string,
         authToken: string
     }
-    verifyAuthToken(token: string): string
+    verifyAuthToken(token: string): SignTokenDTO
     verifyRefreshToken(token: string): SignTokenDTO
 }

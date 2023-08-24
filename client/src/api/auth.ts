@@ -1,5 +1,5 @@
-import axios, {AxiosResponse} from "axios";
-import {AuthResponse, LoginRequest, SignUpRequest} from "@/assets/types/HttpAuth";
+import axios, {AxiosError, AxiosResponse} from "axios";
+import {AuthResponse, AuthSuccessResponse, LoginRequest, SignUpRequest} from "@/assets/types/HttpAuth";
 
 const auth = axios.create({
     baseURL: process.env.NEXT_PUBLIC_API_URL,
@@ -39,13 +39,16 @@ export const loginByAuthToken = ({authToken}: {
 })
 
 auth.interceptors.response.use((response) => response,
-    async function (error: AxiosResponse) {
-        if (error.status === 401) {
+    async function (error: AxiosError) {
+        if (error.response?.status === 401) {
             try {
-                const response: AxiosResponse<{authToken: string}> = await refreshSession();
+                const originalRequest = error.config;
+                const response: AxiosResponse<AuthSuccessResponse> = await refreshSession();
                 localStorage.setItem('authToken', response.data.authToken);
+                return await axios.request(originalRequest!);
             } catch (e) {
                 console.log(e);
             }
         }
+        return Promise.reject(error);
 })

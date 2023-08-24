@@ -57,6 +57,7 @@ export const logoutThunk = createAsyncThunk(
     async () => {
         try {
             const response = await logout();
+            localStorage.setItem('authToken', '');
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {

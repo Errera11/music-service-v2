@@ -10,4 +10,5 @@ export interface UserRepository {
         refreshToken: string,
         authToken: string
     }>
+    loginByToken(authToken: string): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>>
 }

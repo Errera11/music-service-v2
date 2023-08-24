@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {UserRepository} from "../../domainInterface/UserRepository/UserRepository";
 import {LoginUserDto} from "../../../common/dtos/LoginUser.dto";
 import {PrismaService} from "../../../infrastructure/prisma.service";
@@ -36,7 +36,7 @@ export class UserService implements UserRepository {
                 password: hashedPassword,
                 email_auth: {
                     create: {
-                        is_auth: false
+                        is_email_auth: false
                     }
                 },
             }
@@ -63,7 +63,6 @@ export class UserService implements UserRepository {
         }
     }
 
-
     async login(dto: LoginUserDto): Promise<AuthUserDto> {
         const user = await this.prisma.user.findUnique({
             where: {
@@ -89,7 +88,7 @@ export class UserService implements UserRepository {
                 user_id: user.id
             }
         });
-        if(userSessionsCount >= 5) {
+        if (userSessionsCount >= 5) {
             this.prisma.tokenSession.deleteMany({
                 where: {
                     user_id: user.id
@@ -106,7 +105,7 @@ export class UserService implements UserRepository {
             email: user.email,
             name: user.name,
             role: user.role,
-            is_email_auth: user.email_auth.is_auth,
+            is_email_auth: user.email_auth.is_email_auth,
             avatar: user.avatar,
             authToken: authToken,
             refreshToken: refreshToken
@@ -121,21 +120,67 @@ export class UserService implements UserRepository {
         })
     }
 
-    async refreshSession(refreshToken: string) {
-        const user = this.tokenService.verifyRefreshToken(refreshToken);
+    async refreshSession(oldRefreshToken: string): Promise<AuthUserDto> {
         try {
+            const decodedUser = this.tokenService.verifyRefreshToken(oldRefreshToken);
             // Check out if there are such of session
             const session = await this.prisma.tokenSession.delete({
                 where: {
+                    refreshToken: oldRefreshToken
+                }
+            })
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    email: decodedUser.email
+                },
+                include: {
+                    email_auth: true
+                }
+            })
+            const {authToken, refreshToken} = this.tokenService.signTokens(user);
+            await this.prisma.tokenSession.create({
+                data: {
+                    user_id: user.id,
                     refreshToken
                 }
             })
-            return this.tokenService.signTokens(user);
+            return {
+                email: user.email,
+                name: user.name,
+                role: user.role,
+                is_email_auth: user.email_auth.is_email_auth,
+                avatar: user.avatar,
+                authToken: authToken,
+                refreshToken: refreshToken
+            }
         } catch (e) {
             console.log(e);
             throw new Error('Session logged out');
         }
+    }
 
+    async loginByToken(authToken: string): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>> {
+        try {
+            const userDecoded = this.tokenService.verifyAuthToken(authToken);
+            const user = await this.prisma.user.findUnique({
+                where: {
+                    email: userDecoded.email
+                },
+                include: {
+                    email_auth: {
+                        select: {
+                            is_email_auth: true
+                        }
+                    }
+                }
+            })
+            return {
+                ...user,
+                is_email_auth: user.email_auth.is_email_auth
+            }
+        } catch (e) {
+            throw new UnauthorizedException();
+        }
 
     }
 }
