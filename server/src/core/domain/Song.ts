@@ -5,3 +5,7 @@ export class Song {
     description: string
     artist: string
 }
+
+export class SongWithAudio extends Song {
+    audio: string
+}

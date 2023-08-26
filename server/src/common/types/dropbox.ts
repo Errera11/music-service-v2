@@ -11,3 +11,7 @@ export interface DropboxDownloadResponse {
     content_hash: string,
     fileBinary: ArrayBuffer
 }
+
+export interface DropboxTempLinkResponse {
+    link: string
+}

@@ -30,9 +30,10 @@ model TokenSession {
 }
 
 model Song {
-    id String @id
+    id Int @id @default(autoincrement())
     name String @unique
     image String
+    audio String
     description String?
     artist String
     favorite Favorite[]
@@ -54,7 +55,7 @@ model Favorite {
     user User @relation(fields: [user_id], references: [id])
     song Song @relation(fields: [song_id], references: [id])
     user_id String
-    song_id String
+    song_id Int
 }
 
 model Playlist {
@@ -71,7 +72,7 @@ model AlbumSongs {
     album Album @relation(fields: [album_id], references: [id])
     album_id Int
     song Song @relation(fields: [song_id], references: [id])
-    song_id String
+    song_id Int
 }
 
 model PlaylistSongs {
@@ -79,7 +80,7 @@ model PlaylistSongs {
     playlist Playlist @relation(fields: [playlist_id], references: [id])
     playlist_id Int
     song Song @relation(fields: [song_id], references: [id])
-    song_id String
+    song_id Int
 }
 
 model EmailAuth {

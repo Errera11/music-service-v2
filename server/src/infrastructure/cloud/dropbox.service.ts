@@ -1,10 +1,10 @@
 import {Injectable} from "@nestjs/common";
-import * as fs from 'fs'
 import {DropboxResponse} from "dropbox";
-import {DropboxDownloadResponse} from "../../common/types/dropbox";
-const path = require('path');
+import {DropboxTempLinkResponse} from "../../common/types/dropbox";
 
 const Dropbox = require('dropbox').Dropbox;
+
+// TODO DI containerize
 
 @Injectable()
 export class DropboxService {
@@ -14,6 +14,7 @@ export class DropboxService {
     }
 
     uploadFile(buffer, type: 'music' | 'image', fileName: string) {
+        this.dbx.getT
         return this.dbx.filesUpload({path: type === 'music' ? `/music/${fileName}` : `/image/${fileName}`, contents: buffer})
             .then((response) => {
                 return response;
@@ -22,8 +23,8 @@ export class DropboxService {
                 return uploadErr;
             });
     }
-    downloadFileById(id: string): Promise<DropboxResponse<DropboxDownloadResponse>> {
-        return this.dbx.filesDownload({
+    getFileStreamableUrl(id: string): Promise<DropboxResponse<DropboxTempLinkResponse>> {
+        return this.dbx.filesGetTemporaryLink({
             path: id
         })
     }
