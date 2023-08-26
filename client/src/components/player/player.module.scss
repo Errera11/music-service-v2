@@ -1,0 +1,134 @@
+@import '../../assets/colors.module';
+
+.container {
+  width: 100vw;
+  height: 11vh;
+  background: $playerBg;
+  position: fixed;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 5fr 1fr;
+  align-items: center;
+
+  .info {
+    grid-column-start: 1;
+    grid-column-end: 2;
+    display: flex;
+    align-items: center;
+
+    * {
+      margin: 0 5px;
+    }
+
+    .like {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      stroke: $description;
+      fill: transparent;
+      stroke-dasharray: 0;
+      @keyframes draw {
+        from {
+          stroke-dasharray: 10;
+        }
+        to {
+          stroke: #bd0015;
+          stroke-dasharray: 50;
+        }
+      }
+
+      &.active {
+        animation: draw 3s forwards;
+      }
+    }
+
+    img {
+      width: 60px;
+      height: 60px;
+    }
+
+    .music_info {
+      span {
+        font-size: 0.8rem;
+      }
+
+      .title {
+        color: white;
+      }
+
+      .artist {
+        color: $description;
+      }
+
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+  }
+
+  .playback {
+    grid-column-start: 2;
+    grid-column-end: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    .controllers {
+      margin-bottom: 10px;
+      svg {
+        width: 40px;
+        height: 40px;
+        cursor: pointer;
+      }
+      display: flex;
+      path {
+        fill: $description;
+      }
+
+      .back {
+        transform: scaleX(-1);
+      }
+    }
+
+    .progressBar {
+      width: 60%;
+      height: 5px;
+      background: rgb(75, 75, 75);
+      border-radius: 15px;
+      .currentValue {
+        height: 100%;
+        border-radius: 15px;
+        background: #bd0015;
+      }
+    }
+  }
+
+  .sound {
+    grid-column-start: 3;
+    grid-column-end: 4;
+    display: flex;
+    align-items: center;
+
+    svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    path {
+      fill: $description;
+    }
+
+    .volumeProgressBar {
+      width: 60%;
+      height: 5px;
+      background: rgb(75, 75, 75);
+      border-radius: 15px;
+      .volumeCurrentValue {
+        height: 100%;
+        border-radius: 15px;
+        background: #bd0015;
+      }
+    }
+  }
+}

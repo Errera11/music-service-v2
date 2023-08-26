@@ -4,11 +4,11 @@ import SignUpBtn from "@/components/authBtn/signup/SignUpBtn";
 import styles from './authBtns.module.scss';
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import UserIconSvg from "@/assets/svg/UserIconSvg";
-import {AppRoutes} from "@/assets/appRoutes";
 import LogoutBtn from "@/components/authBtn/LogoutBtn";
 import ChevronDownSvg from "@/assets/svg/ChevronDownSvg";
 import {animated, useTransition} from '@react-spring/web'
 import {useRouter} from "next/router";
+import { AppRoutes } from '../../assets/appRoutes';
 
 const AuthBtns = () => {
 
@@ -29,7 +29,7 @@ const AuthBtns = () => {
 
         const transitions = useTransition(isMenu ? [<>
             <ul>
-                <li>Profile</li>
+                <li onClick={() => router.push(AppRoutes.USER_PAGE)}>Profile</li>
             </ul>
         </>] : [], {
             from: {
@@ -53,7 +53,7 @@ const AuthBtns = () => {
                                 <UserIconSvg isActive={router.route === AppRoutes.USER_PAGE} width={'25px'} height={'25px'}/>}
                         </div>
                         <div ref={dropdownRef} onClick={(e) => setIsMenu(prev => !prev)}
-                             className={styles.email + '' + (router.route === AppRoutes.USER_PAGE ? styles.active : '')}>
+                             className={styles.email + ' ' + (router.route === AppRoutes.USER_PAGE ? styles.active : '')}>
                             {user.name}
                             <ChevronDownSvg isActive={router.route === AppRoutes.USER_PAGE} width={'15px'} height={'15px'}/>
                             <>

@@ -1,9 +1,7 @@
-
-
 import React from 'react';
 import colors from '../colors.module.scss';
 
-const HomePageSvg = ({isActive, width, height}: { isActive: boolean, width: string, height: string }) => {
+const ChevronDownSvg = ({isActive, width, height}: { isActive: boolean, width: string, height: string }) => {
     return (
         <div style={{width, height}}>
             <svg xmlns="http://www.w3.org/2000/svg" fill={isActive ? 'white' : colors.description} className="bi bi-chevron-down"
@@ -15,4 +13,4 @@ const HomePageSvg = ({isActive, width, height}: { isActive: boolean, width: stri
     );
 };
 
-export default HomePageSvg;
+export default ChevronDownSvg;
