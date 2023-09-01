@@ -27,8 +27,10 @@ export class SongService implements SongRepository{
 
         return {...song, image: (await this.cloud.getFileStreamableUrl(song.image)).result.link, audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link}
     }
-    async getUserSongs(userId: string): Promise<Song[]> {
+    async getUserSongs(userId: string, skip: number, take: number): Promise<Song[]> {
         const songs =  await this.prisma.favorite.findMany({
+            skip,
+            take,
             where: {
                 user_id: userId
             },
@@ -43,8 +45,11 @@ export class SongService implements SongRepository{
         })));
     }
 
-    async getAll(): Promise<Song[]> {
-        const songs = await this.prisma.song.findMany();
+    async getAll(skip: number, take: number): Promise<Song[]> {
+        const songs = await this.prisma.song.findMany({
+            skip,
+            take
+        });
         return Promise.all(songs.map(async (item) => ({
             ...item,
             image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,

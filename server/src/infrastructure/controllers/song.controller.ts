@@ -5,9 +5,9 @@ import {
     Delete,
     Get,
     HttpException,
-    HttpStatus,
+    HttpStatus, InternalServerErrorException,
     Param,
-    Post,
+    Post, Query,
     UploadedFiles,
     UseInterceptors
 } from "@nestjs/common";
@@ -19,16 +19,7 @@ import {convertToArray} from "class-validator/types/utils";
 @Controller('songs')
 export class SongController {
 
-    constructor(private songService: SongService) {}
-
-    @Get()
-    async getAll() {
-        try {
-            return this.songService.getAll();
-        } catch (e) {
-            console.log(e);
-            throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
-        }
+    constructor(private songService: SongService) {
     }
 
     @Delete('delete')
@@ -51,7 +42,7 @@ export class SongController {
         image: Express.Multer.File[],
     }) {
         try {
-            if(!files.image[0] || !files.audio[0]) {
+            if (!files.image[0] || !files.audio[0]) {
                 throw new HttpException('Image and audio must be provided', HttpStatus.BAD_REQUEST);
             }
             return await this.songService.createSong({
@@ -66,12 +57,42 @@ export class SongController {
     }
 
     @Post('favorite')
-    addToFavorite(@Body() dto: {userId: string, songId: number}) {
+    addToFavorite(@Body() dto: { userId: string, songId: number }) {
         try {
             return this.songService.addToFavorite(dto.userId, dto.songId);
         } catch (e) {
             console.log(e);
             throw new BadRequestException();
+        }
+    }
+
+    @Get('mySongs')
+    getAll(@Query() queryParams: { take: number, skip: number }) {
+        try {
+            return this.songService.getAll(queryParams.skip, queryParams.take)
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('song/:id')
+    getTrackById(@Param('id') id: number) {
+        try {
+            return this.songService.getTrackById(id);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('songs/:id')
+    getUserSongs(@Query() queryParams: {skip: number, take: number, id: string}) {
+        try {
+            return this.songService.getUserSongs(queryParams.id, queryParams.skip, queryParams.take);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
         }
     }
 
