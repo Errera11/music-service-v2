@@ -10,11 +10,14 @@ const Dropbox = require('dropbox').Dropbox;
 export class DropboxService {
     private dbx
     constructor() {
-        this.dbx = new Dropbox({accessToken: process.env.DROPBOX_ACCESS});
+        this.dbx = new Dropbox({
+            clientId: process.env.DROPBOX_APP_KEY,
+            clientSecret: process.env.DROPBOX_APP_SECRET,
+            refreshToken: process.env.DROPBOX_REFRESH,
+        });
     }
 
     uploadFile(buffer, type: 'music' | 'image', fileName: string) {
-        this.dbx.getT
         return this.dbx.filesUpload({path: type === 'music' ? `/music/${fileName}` : `/image/${fileName}`, contents: buffer})
             .then((response) => {
                 return response;

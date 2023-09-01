@@ -1,11 +1,8 @@
 export class Song {
-    id: string
+    id: number
     name: string
     image: string
+    audio: string
     description: string
     artist: string
-}
-
-export class SongWithAudio extends Song {
-    audio: string
 }

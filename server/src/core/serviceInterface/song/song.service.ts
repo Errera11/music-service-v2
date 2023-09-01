@@ -1,6 +1,6 @@
 import {SongRepository} from "../../domainInterface/SongRepository/SongRepository";
 import {PrismaService} from "../../../infrastructure/prisma.service";
-import {Song, SongWithAudio} from "../../domain/Song";
+import {Song} from "../../domain/Song";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 import {Injectable} from "@nestjs/common";
 import * as uuid from "uuid";
@@ -9,13 +9,23 @@ import * as uuid from "uuid";
 export class SongService implements SongRepository{
     constructor(private prisma: PrismaService, private cloud: DropboxService) {}
 
-    getTrackById(id: string): Promise<SongWithAudio> {
-        const song = this.prisma.song.findUnique({
+    addToFavorite(userId: string, songId: number): Promise<any> {
+        return this.prisma.favorite.create({
+            data: {
+                user_id: userId,
+                song_id: songId
+            }
+        })
+    }
+
+    async getTrackById(id: number): Promise<Song> {
+        const song = await this.prisma.song.findUnique({
             where: {
                 id
             }
         })
-        return Promise.all(songs.map(async (item) => ({...item.song, image: (await this.cloud.getFileStreamableUrl(item.song.image)).result.link, audio: (await this.cloud.getFileStreamableUrl(item.song.audio)).result.link})));
+
+        return {...song, image: (await this.cloud.getFileStreamableUrl(song.image)).result.link, audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link}
     }
     async getUserSongs(userId: string): Promise<Song[]> {
         const songs =  await this.prisma.favorite.findMany({
@@ -26,11 +36,20 @@ export class SongService implements SongRepository{
                 song: true
             }
         })
-        return Promise.all(songs.map(async (item) => ({...item.song, image: (await this.cloud.getFileStreamableUrl(item.song.id)).result.link})));
+        return Promise.all(songs.map(async (item) => ({
+            ...item.song,
+            image: (await this.cloud.getFileStreamableUrl(item.song.image)).result.link,
+            audio: (await this.cloud.getFileStreamableUrl(item.song.audio)).result.link,
+        })));
     }
 
-    getAll(): Promise<Song[]> {
-        return this.prisma.song.findMany();
+    async getAll(): Promise<Song[]> {
+        const songs = await this.prisma.song.findMany();
+        return Promise.all(songs.map(async (item) => ({
+            ...item,
+            image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
+            audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
+        })));
     }
 
     async createSong(data): Promise<Song> {
@@ -52,7 +71,7 @@ export class SongService implements SongRepository{
     }
 
     // TODO cloud delete
-    delete(id: string): Promise<Song> {
+    delete(id: number): Promise<Song> {
         return this.prisma.song.delete({
             where: {
                 id
