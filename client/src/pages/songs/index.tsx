@@ -7,11 +7,13 @@ import Head from "next/head";
 import SongsList from "@/components/songsList/SongsList";
 
 const mock: Song = {
-    id: '123',
-    name: 'Bueno dias',
+    id: 123,
+    title: 'Bueno dias',
     description: 'descr',
     artist: 'Poco loko',
-    image: 'downloadlink'
+    image: 'downloadlink',
+    audio: '123',
+
 }
 
 const Index = () => {
@@ -25,7 +27,7 @@ const Index = () => {
                     <div className={styles.songsInfo}>
                         <img src={wave.src}/>
                         <span className={styles.title}>My Songs</span>
-                        <span className={styles.songName}>{mock.name}</span>
+                        <span className={styles.songName}>{mock.title}</span>
                         <span className={styles.songCount}>123</span>
                     </div>
                     <div className={styles.songList}>

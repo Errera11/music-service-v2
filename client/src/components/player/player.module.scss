@@ -21,8 +21,8 @@
     }
 
     .like {
-      width: 20px;
-      height: 20px;
+      width: 40px;
+      height: 40px;
       cursor: pointer;
       stroke: $description;
       fill: transparent;
@@ -76,12 +76,15 @@
 
     .controllers {
       margin-bottom: 10px;
+
       svg {
         width: 40px;
         height: 40px;
         cursor: pointer;
       }
+
       display: flex;
+
       path {
         fill: $description;
       }
@@ -91,17 +94,28 @@
       }
     }
 
-    .progressBar {
+    .timeline {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       width: 60%;
-      height: 5px;
-      background: rgb(75, 75, 75);
-      border-radius: 15px;
-      .currentValue {
-        height: 100%;
+
+      .progressBar {
+        width: 85%;
+        height: 5px;
+        background: rgb(75, 75, 75);
         border-radius: 15px;
-        background: #bd0015;
+        display: flex;
+        align-items: center;
+
+        .currentValue {
+          height: 100%;
+          border-radius: 15px;
+          background: #bd0015;
+        }
       }
     }
+
   }
 
   .sound {
@@ -124,6 +138,7 @@
       height: 5px;
       background: rgb(75, 75, 75);
       border-radius: 15px;
+
       .volumeCurrentValue {
         height: 100%;
         border-radius: 15px;

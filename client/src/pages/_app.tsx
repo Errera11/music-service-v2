@@ -10,14 +10,14 @@ const allerta = Allerta({
     subsets: ["latin"]
 })
 
-export default function App({Component, ...rest}: AppProps) {
+export default function App({Component, pageProps, ...rest}: AppProps) {
 
     const {store, props} = wrapper.useWrappedStore(rest);
 
     return (
         <Provider store={store}>
             <main className={allerta.className}>
-                <Component {...rest} />
+                <Component {...pageProps} />
             </main>
         </Provider>
     )

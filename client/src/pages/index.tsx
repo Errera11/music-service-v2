@@ -1,7 +1,11 @@
 import Head from 'next/head'
 import Layout from "@/components/Layout";
+import {songsApi} from "@/api/songs";
+import {InferGetStaticPropsType} from "next";
+import SongsList from "@/components/songsList/SongsList";
 
-export default function Home() {
+export default function Home({songs}: InferGetStaticPropsType<typeof getStaticProps>) {
+
     return (
         <>
             <Head>
@@ -12,9 +16,25 @@ export default function Home() {
             </Head>
             <main>
                 <Layout>
-                    <div style={{color: 'white'}}>Home</div>
+                    <>
+                        <div style={{color: 'white'}}>Home</div>
+                        <SongsList songs={songs} />
+                    </>
                 </Layout>
             </main>
         </>
     )
+}
+
+export const getStaticProps = async () => {
+    try {
+        const response = await songsApi.getAllSongs();
+        return {
+            props: {
+                songs: response.data
+            }
+        }
+    } catch(e) {
+        console.log(e);
+    }
 }

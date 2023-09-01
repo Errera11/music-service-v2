@@ -3,9 +3,13 @@ import Navbar from "@/components/navbar/Navbar";
 import AuthBtns from "@/components/authBtn/AuthBtns";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {loginByTokenThunk} from "@/store/auth";
-import Player from "@/components/player/Player";
+import dynamic from "next/dynamic";
 
-export default function Layout({ children }: {children?: ReactElement}) {
+const ClientPlayer = React.memo(dynamic(() => import('../components/player/Player'), {
+    ssr: false,
+}));
+
+export default function Layout({children}: { children?: ReactElement }) {
     console.log('Layot render');
 
     const dispatch = useAppDispatch();
@@ -15,16 +19,17 @@ export default function Layout({ children }: {children?: ReactElement}) {
         if (authToken) {
             dispatch(loginByTokenThunk({authToken}))
                 .unwrap()
-                .catch(e => {});
+                .catch(e => {
+                });
         }
     }, [])
 
     return (
         <div style={{margin: '10px'}}>
-            <Navbar />
-            <AuthBtns />
+            <Navbar/>
+            <AuthBtns/>
             <main style={{marginLeft: '20vw'}}>{children}</main>
-            <Player />
+            <ClientPlayer/>
         </div>
     )
 }

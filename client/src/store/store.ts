@@ -1,10 +1,12 @@
 import {configureStore} from "@reduxjs/toolkit";
 import auth from '@/store/auth';
 import {createWrapper} from "next-redux-wrapper";
+import player from "@/store/player";
 
 export const makeStore = () => configureStore({
     reducer: {
-        [auth.name]: auth.reducer
+        [auth.name]: auth.reducer,
+        [player.name]: player.reducer
     }
 });
 
