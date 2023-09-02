@@ -31,11 +31,13 @@ model TokenSession {
 
 model Song {
     id Int @id @default(autoincrement())
-    name String @unique
+    name String @unique // name in db i.e. uuid.mp3
+    title String // song name i.e. "Eye of the tiger"
     image String
     audio String
     description String?
     artist String
+    duration Int
     favorite Favorite[]
     playlist_songs PlaylistSongs[]
     album_songs AlbumSongs[]

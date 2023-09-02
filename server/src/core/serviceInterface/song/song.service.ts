@@ -29,8 +29,8 @@ export class SongService implements SongRepository{
     }
     async getUserSongs(userId: string, skip: number, take: number): Promise<Song[]> {
         const songs =  await this.prisma.favorite.findMany({
-            skip,
-            take,
+            skip: skip || 0,
+            take: take || 15,
             where: {
                 user_id: userId
             },
@@ -47,8 +47,8 @@ export class SongService implements SongRepository{
 
     async getAll(skip: number, take: number): Promise<Song[]> {
         const songs = await this.prisma.song.findMany({
-            skip,
-            take
+            skip: skip || 0,
+            take: take || 15
         });
         return Promise.all(songs.map(async (item) => ({
             ...item,
@@ -67,10 +67,12 @@ export class SongService implements SongRepository{
         return this.prisma.song.create({
             data: {
                 name: musicName,
+                title: data.title,
                 description: data.description,
                 artist: data.artist,
                 image: imageResponse.result.id,
                 audio: musicResponse.result.id,
+                duration: 0
             }
         })
     }
@@ -82,6 +84,23 @@ export class SongService implements SongRepository{
                 id
             }
         });
+    }
+
+    searchSong(query: string, skip: number, take: number): Promise<Song[]> {
+        return this.prisma.song.findMany({
+            skip,
+            take,
+            where: {
+                OR: [
+                    {
+                        artist: {contains: query}
+                    },
+                    {
+                        title: {contains: query}
+                    }
+                ]
+            }
+        })
     }
 
 }

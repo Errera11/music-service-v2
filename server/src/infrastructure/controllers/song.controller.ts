@@ -66,7 +66,7 @@ export class SongController {
         }
     }
 
-    @Get('mySongs')
+    @Get('')
     getAll(@Query() queryParams: { take: number, skip: number }) {
         try {
             return this.songService.getAll(queryParams.skip, queryParams.take)
@@ -86,10 +86,20 @@ export class SongController {
         }
     }
 
-    @Get('songs/:id')
+    @Get('mySongs/:id')
     getUserSongs(@Query() queryParams: {skip: number, take: number, id: string}) {
         try {
             return this.songService.getUserSongs(queryParams.id, queryParams.skip, queryParams.take);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('search')
+    searchSong(@Query() queryParams: {skip: number, take: number, query: string}) {
+        try {
+            return this.songService.searchSong(queryParams.query, queryParams.skip, queryParams.take);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

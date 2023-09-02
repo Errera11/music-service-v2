@@ -2,7 +2,7 @@ import {IsNotEmpty} from "class-validator";
 
 export class CreateSongDto {
     @IsNotEmpty()
-    readonly name: string
+    readonly title: string
     @IsNotEmpty()
     readonly description: string
     @IsNotEmpty()
