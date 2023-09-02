@@ -12,7 +12,7 @@ const SongsList = ({songs}: { songs: Song[] }) => {
 
     return (
         <div className={styles.container}>
-            {songs.map(song => <div onClick={() => dispatch(setSong(song))} className={styles.song}>
+            {songs.map(song => <div key={song.id} onClick={() => dispatch(setSong(song))} className={styles.song}>
                 <SongItem song={song}/>
             </div>)}
         </div>

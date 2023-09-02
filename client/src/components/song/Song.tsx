@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Song} from "@/assets/types/Song";
 import styles from "@/components/song/song.module.scss";
 import MusicNoteSvg from "@/assets/svg/MusicNoteSvg";
@@ -17,14 +17,14 @@ const Song: React.FC<IProps> = ({song}) => {
                 </div>
                 <div className={styles.songInfo}>
                     <span className={styles.title}>
-                        {song.name}
+                        {song.title}
                     </span>
                     <span className={styles.artist}>
                         {song.artist}
                     </span>
                 </div>
                 <div className={styles.duration}>
-                    1:23
+                    {song.duration}
                 </div>
             </div>
         </div>

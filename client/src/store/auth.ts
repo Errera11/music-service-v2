@@ -1,6 +1,6 @@
 import {User} from "@/assets/types/User";
 import {createAsyncThunk, createSlice, isAnyOf} from "@reduxjs/toolkit";
-import {login, loginByAuthToken, logout, signup} from "@/api/auth";
+import {authApi} from "@/api/auth";
 import {
     AuthConstraintsError,
     AuthSuccessResponse,
@@ -23,7 +23,7 @@ export const loginThunk = createAsyncThunk(
     'auth/login',
     async ({email, password}: LoginRequest) => {
         try {
-            const response = await login({email, password});
+            const response = await authApi.login({email, password});
             localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
@@ -38,7 +38,7 @@ export const signupThunk = createAsyncThunk(
     'auth/signup',
     async ({email, password, name}: SignUpRequest) => {
         try {
-            const response = await signup({email, password, name});
+            const response = await authApi.signup({email, password, name});
             localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
@@ -56,7 +56,7 @@ export const logoutThunk = createAsyncThunk(
     'auth/logout',
     async () => {
         try {
-            const response = await logout();
+            const response = await authApi.logout();
             localStorage.setItem('authToken', '');
             return response.data;
         } catch (e) {
@@ -73,7 +73,7 @@ export const loginByTokenThunk = createAsyncThunk(
     'auth/token',
     async ({authToken}: { authToken: string }) => {
         try {
-            const response = await loginByAuthToken({authToken});
+            const response = await authApi.loginByAuthToken({authToken});
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {

@@ -1,12 +1,11 @@
-import axios, {AxiosResponse} from "axios";
+import {AxiosResponse} from "axios";
 import {Song} from "@/assets/types/Song";
-
-
-const songs = axios.create({
-    baseURL: process.env.NEXT_PUBLIC_API_URL + '/songs'
-})
-
-const getAllSongs = () => songs.get<Song[], AxiosResponse<Song[]>>('');
+import api from "./root";
+const getAllSongs = (skip?: number, take?: number) => api.get<Song[], AxiosResponse<Song[]>>('songs', {
+    params: {
+        take, skip
+    }
+});
 
 export const songsApi = {
     getAllSongs
