@@ -24,6 +24,7 @@
 
     .songNote {
       align-self: center;
+      fill: $description;
     }
 
     .songInfo {
@@ -56,5 +57,25 @@
       grid-column-end: 4;
       color: white;
     }
+
+    &.active {
+      .songInfo {
+        .title {
+          color: $playerProgressBar;
+        }
+      }
+
+      .duration {
+        color: $playerProgressBar;
+      }
+
+      .songNote {
+        svg {
+          fill: $playerProgressBar;
+        }
+      }
+    }
+
   }
+
 }

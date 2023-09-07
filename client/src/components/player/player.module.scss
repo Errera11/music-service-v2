@@ -32,7 +32,7 @@
           stroke-dasharray: 10;
         }
         to {
-          stroke: #bd0015;
+          stroke: $playerProgressBar;
           stroke-dasharray: 50;
         }
       }
@@ -98,20 +98,27 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      width: 60%;
+      width: 450px;
 
-      .progressBar {
-        width: 85%;
+      span {
+        width: 10%;
+      }
+
+      .timelineSlider {
+        appearance: none;
+        width: 80%;
         height: 5px;
-        background: rgb(75, 75, 75);
+        background: $description;
         border-radius: 15px;
-        display: flex;
-        align-items: center;
+        cursor: pointer;
+        overflow: hidden;
+        margin: 0 5px;
 
-        .currentValue {
-          height: 100%;
-          border-radius: 15px;
-          background: #bd0015;
+        &::-webkit-slider-thumb {
+          appearance: none;
+          box-shadow: -400px 0 0 400px $playerProgressBar;
+          height: 20px;
+          width: 0;
         }
       }
     }
@@ -123,26 +130,30 @@
     grid-column-end: 4;
     display: flex;
     align-items: center;
+    width: 80%;
 
     svg {
-      width: 30px;
-      height: 30px;
+      width: 40px;
+      height: 40px;
     }
 
     path {
       fill: $description;
     }
 
-    .volumeProgressBar {
-      width: 60%;
+    .timelineSlider {
+      appearance: none;
+      width: 100%;
       height: 5px;
-      background: rgb(75, 75, 75);
+      background: $description;
       border-radius: 15px;
+      cursor: pointer;
+      overflow: hidden;
 
-      .volumeCurrentValue {
-        height: 100%;
-        border-radius: 15px;
-        background: #bd0015;
+      &::-webkit-slider-thumb {
+        appearance: none;
+        box-shadow: -400px 0 0 400px $playerProgressBar;
+        width: 0.1px;
       }
     }
   }

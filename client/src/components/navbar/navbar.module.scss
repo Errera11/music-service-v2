@@ -1,6 +1,5 @@
 @import '../../assets/colors.module';
 .container {
-  height: 100vh;
   background: black;
   position: fixed;
   .upperBar, .lowerBar {
@@ -15,12 +14,12 @@
     }
   }
   .upperBar {
-    height: 20vh;
+    height: 20%;
     justify-content: space-around;
     margin-bottom: 5px;
   }
   .lowerBar {
-    height: 77vh;
+    height: 80%;
     .title {
       font-size: 0.8rem;
       text-align: center;

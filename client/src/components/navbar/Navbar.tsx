@@ -6,18 +6,17 @@ import HomePageSvg from "@/assets/svg/HomePageSvg";
 import SearchPageSvg from "@/assets/svg/SearchPageSvg";
 import PlaylistPageSvg from "@/assets/svg/PlaylistPageSvg";
 import {useRouter} from "next/router";
-import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
-import {AppStore} from "@/store/store";
 import {AppRoutes} from "@/assets/appRoutes";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
 
 const Navbar = () => {
 
     const router = useRouter();
 
-    const sel: TypedUseSelectorHook<ReturnType<AppStore["getState"]>> = useSelector;
+    const {audio} = useTypedSelector(state => state.player)
 
     return (
-        <div className={styles.container}>
+        <div className={styles.container} style={audio ? {height: '86vh'} : {height: '97vh'}}>
             <div className={styles.upperBar}>
                 <BarButton
                     title={'Search'}

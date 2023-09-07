@@ -4,6 +4,7 @@ import AuthBtns from "@/components/authBtn/AuthBtns";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {loginByTokenThunk} from "@/store/auth";
 import dynamic from "next/dynamic";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
 
 const ClientPlayer = React.memo(dynamic(() => import('../components/player/Player'), {
     ssr: false,
@@ -13,6 +14,7 @@ export default function Layout({children}: { children?: ReactElement }) {
     console.log('Layot render');
 
     const dispatch = useAppDispatch();
+    const {audio} = useTypedSelector(state => state.player)
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');
@@ -28,7 +30,7 @@ export default function Layout({children}: { children?: ReactElement }) {
         <div style={{margin: '10px'}}>
             <Navbar/>
             <AuthBtns/>
-            <main style={{marginLeft: '20vw'}}>{children}</main>
+            <main style={{marginLeft: '20vw', height: (audio ? '86vh' : '96vh')}}>{children}</main>
             <ClientPlayer/>
         </div>
     )

@@ -1,7 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Song} from "@/assets/types/Song";
 import styles from "@/components/song/song.module.scss";
 import MusicNoteSvg from "@/assets/svg/MusicNoteSvg";
+import {useSong} from "@/hooks/useSong";
 
 interface IProps {
     song: Song
@@ -9,9 +10,11 @@ interface IProps {
 
 const Song: React.FC<IProps> = ({song}) => {
 
+    const [playerSong, setSong] = useSong();
+
     return (
-        <div className={styles.container}>
-            <div className={styles.song}>
+        <div className={styles.container} onClick={() => setSong(song)}>
+            <div className={styles.song + ' ' + (playerSong.id === song.id ? styles.active : '')}>
                 <div className={styles.songNote}>
                     <MusicNoteSvg width={'25px'} height={'25px'} isActive={false}/>
                 </div>
@@ -31,4 +34,4 @@ const Song: React.FC<IProps> = ({song}) => {
     );
 };
 
-export default Song;
+export default React.memo(Song);

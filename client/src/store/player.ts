@@ -1,20 +1,18 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Song} from "@/assets/types/Song";
 
-interface PlayerState {
+interface PlayerState extends Song{
     currentTime: number
     isPlaying: boolean
     volume: number
-    audio: string
-    name: string
-    artist: string
-    image: string
-    duration: number
 }
 
 const playerInitialState: PlayerState = {
+    id: 0,
+    description: "",
     artist: "",
     audio: "",
+    title: "",
     currentTime: 0,
     volume: 0.5,
     image: "",
@@ -28,7 +26,7 @@ const playerSlice = createSlice({
     initialState: playerInitialState,
     reducers: {
         setSong(state, action: PayloadAction<Song>) {
-            return {...action.payload, currentTime: 0, volume: 0.5, isPlaying: true, duration: 0};
+            return { ...action.payload, currentTime: 0, isPlaying: true, duration: 0, volume: state.volume};
         },
         setVolume(state, action: PayloadAction<number>) {
             state.volume = action.payload;

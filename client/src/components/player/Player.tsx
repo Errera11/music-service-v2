@@ -1,20 +1,22 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import styles from './player.module.scss';
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import {playerActions} from "@/store/player";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
+import {normalizeTime} from "@/assets/normalizeTime";
 
-const playingSong = document.createElement('audio');
+const playingSong: HTMLAudioElement = document.createElement('audio');
 
 const Player = () => {
 
     const {
+        id: songId,
         audio,
         duration,
         volume,
         artist,
         image,
-        name,
+        title,
         currentTime,
         isPlaying
     } = useTypedSelector(state => state.player);
@@ -24,34 +26,57 @@ const Player = () => {
 
     useEffect(() => {
         playingSong.src = audio;
-        playingSong.onloadeddata = () => {
-            dispatch(setDuration(playingSong.duration));
-            playingSong.volume = volume;
+        playingSong.volume = volume;
+        playingSong.currentTime = currentTime;
+        playingSong.onloadedmetadata = () => {
             playingSong.autoplay = true;
-            playingSong.currentTime = currentTime;
-            playingSong.ontimeupdate = () => {
-                dispatch(setCurrentTime(playingSong.currentTime));
-            }
-            playingSong.onvolumechange = () => {
-                dispatch(setVolume(playingSong.volume));
-            }
+            dispatch(setDuration(playingSong.duration));
+            dispatch(setIsPlaying(true));
         }
-    }, [playingSong.src])
 
-    useEffect(() => {
+        playingSong.onended = () => {
+            dispatch(setIsPlaying(false));
+        }
+
+        playingSong.ontimeupdate = () => {
+            dispatch(setCurrentTime(playingSong.currentTime));
+        }
+
+        playingSong.onvolumechange = () => {
+            dispatch(setVolume(playingSong.volume));
+        }
+
+    }, [songId])
+
+    const timeLineHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (duration) {
-            !isPlaying ? playingSong.pause() : playingSong.play();
+            console.log(e.target.value);
+            dispatch(setCurrentTime(Number(e.target.value)));
+            playingSong.currentTime = Number(e.target.value);
         }
-    }, [isPlaying])
+    }
 
-    if (!audio) return <></>;
+    const soundHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+        console.log(playingSong.id);
+        dispatch(setVolume(Number(e.target.value)))
+        playingSong.volume = volume;
+    }
+
+    const playHandler = () => {
+        if (duration) {
+            dispatch(setIsPlaying(!isPlaying));
+            isPlaying ? playingSong.pause() : playingSong.play();
+        }
+    }
+
+    if (!title) return <></>
 
     return (
         <div className={styles.container}>
             <div className={styles.info}>
                 <img src={image}/>
                 <div className={styles.music_info}>
-                    <span className={styles.title}>{name}</span>
+                    <span className={styles.title}>{title}</span>
                     <span className={styles.artist}>{artist}</span>
                 </div>
                 {/*Like*/}
@@ -69,7 +94,8 @@ const Player = () => {
                         <path
                             d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.713 3.31 4 3.655 4 4.308v7.384c0 .653.713.998 1.233.696L11.5 8.752V12a.5.5 0 0 0 1 0V4zM5 4.633 10.804 8 5 11.367V4.633z"/>
                     </svg>
-                    <svg onClick={() => dispatch(setIsPlaying(!isPlaying))} xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+                    <svg onClick={playHandler} xmlns="http://www.w3.org/2000/svg"
+                         fill="currentColor" viewBox="0 0 16 16">
                         {isPlaying ? <>
                                 {/*Player stop*/}
                                 <path
@@ -91,12 +117,11 @@ const Player = () => {
                     </svg>
                 </div>
                 <div className={styles.timeline}>
-                    <span>{playingSong.src ? Math.floor(currentTime) : '0:00'}</span>
-                    <div className={styles.progressBar}>
-                        <div style={{width: `${(currentTime / duration * 100)}%`}}
-                             className={styles.currentValue}></div>
-                    </div>
-                    <span>{playingSong.src ? Math.floor(duration) : '0:00'}</span>
+                    <span>{normalizeTime(currentTime)}</span>
+                    <input className={styles.timelineSlider} type={'range'} min={0} max={duration} value={currentTime} step={0.001}
+                           onChange={timeLineHandler}
+                    />
+                    <span>{normalizeTime(duration)}</span>
                 </div>
             </div>
             <div className={styles.sound}>
@@ -106,13 +131,11 @@ const Player = () => {
                     <path
                         d="M9 4a.5.5 0 0 0-.812-.39L5.825 5.5H3.5A.5.5 0 0 0 3 6v4a.5.5 0 0 0 .5.5h2.325l2.363 1.89A.5.5 0 0 0 9 12V4zM6.312 6.39 8 5.04v5.92L6.312 9.61A.5.5 0 0 0 6 9.5H4v-3h2a.5.5 0 0 0 .312-.11zM12.025 8a4.486 4.486 0 0 1-1.318 3.182L10 10.475A3.489 3.489 0 0 0 11.025 8 3.49 3.49 0 0 0 10 5.525l.707-.707A4.486 4.486 0 0 1 12.025 8z"/>
                 </svg>
-                <div className={styles.volumeProgressBar}>
-                    <div style={{width: `${Math.floor(volume)}%`}} className={styles.volumeCurrentValue}></div>
-                </div>
+                <input className={styles.timelineSlider} type={'range'} min={0} max={1} value={volume} step={0.01}
+                       onChange={soundHandler}/>
             </div>
         </div>
-    )
-        ;
+    );
 };
 
 
