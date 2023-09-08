@@ -18,6 +18,7 @@ export class DropboxService {
     }
 
     uploadFile(buffer, type: 'music' | 'image', fileName: string) {
+
         return this.dbx.filesUpload({path: type === 'music' ? `/music/${fileName}` : `/image/${fileName}`, contents: buffer})
             .then((response) => {
                 return response;

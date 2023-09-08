@@ -4,10 +4,12 @@ import {Song} from "../../domain/Song";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 import {Injectable} from "@nestjs/common";
 import * as uuid from "uuid";
+const ffmpeg = require('fluent-ffmpeg');
 
 @Injectable()
-export class SongService implements SongRepository{
-    constructor(private prisma: PrismaService, private cloud: DropboxService) {}
+export class SongService implements SongRepository {
+    constructor(private prisma: PrismaService, private cloud: DropboxService) {
+    }
 
     addToFavorite(userId: string, songId: number): Promise<any> {
         return this.prisma.favorite.create({
@@ -18,17 +20,22 @@ export class SongService implements SongRepository{
         })
     }
 
-    async getTrackById(id: number): Promise<Song> {
+    async getTrackById(id: number, userId?: string): Promise<Song> {
         const song = await this.prisma.song.findUnique({
             where: {
                 id
             }
         })
 
-        return {...song, image: (await this.cloud.getFileStreamableUrl(song.image)).result.link, audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link}
+        return {
+            ...song,
+            image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
+            audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link,
+        }
     }
-    async getUserSongs(userId: string, skip: number, take: number): Promise<Song[]> {
-        const songs =  await this.prisma.favorite.findMany({
+
+    async getUserSongs(userId: string, skip: number, take: number): Promise<(Song & { isLiked: boolean })[]> {
+        const songs = await this.prisma.favorite.findMany({
             skip: skip || 0,
             take: take || 15,
             where: {
@@ -36,16 +43,17 @@ export class SongService implements SongRepository{
             },
             include: {
                 song: true
-            }
+            },
         })
         return Promise.all(songs.map(async (item) => ({
             ...item.song,
             image: (await this.cloud.getFileStreamableUrl(item.song.image)).result.link,
             audio: (await this.cloud.getFileStreamableUrl(item.song.audio)).result.link,
+            isLiked: true
         })));
     }
 
-    async getAll(skip: number, take: number): Promise<Song[]> {
+    async getAll(skip: number, take: number, userId?: string): Promise<(Song & { isLiked: boolean })[]> {
         const songs = await this.prisma.song.findMany({
             skip: skip || 0,
             take: take || 15
@@ -54,6 +62,12 @@ export class SongService implements SongRepository{
             ...item,
             image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
             audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
+            isLiked: Boolean(await this.prisma.favorite.findFirst({
+                where: {
+                    user_id: userId,
+                    song_id: item.id
+                }
+            }))
         })));
     }
 
@@ -64,6 +78,8 @@ export class SongService implements SongRepository{
         const musicExt = data.audio.originalname.split('.').pop();
         const musicName = uuid.v4() + `.${musicExt}`;
         const musicResponse = await this.cloud.uploadFile(data.audio.buffer, 'music', musicName);
+
+
         return this.prisma.song.create({
             data: {
                 name: musicName,
@@ -86,10 +102,10 @@ export class SongService implements SongRepository{
         });
     }
 
-    searchSong(query: string, skip: number, take: number): Promise<Song[]> {
-        return this.prisma.song.findMany({
-            skip,
-            take,
+    async searchSong(query: string, skip: number, take: number, userId?: string): Promise<(Song & { isLiked: boolean })[]> {
+        const songs = await this.prisma.song.findMany({
+            skip: skip || 0,
+            take: take || 15,
             where: {
                 OR: [
                     {
@@ -100,7 +116,26 @@ export class SongService implements SongRepository{
                     }
                 ]
             }
-        })
+        });
+        return Promise.all(songs.map(async (item) => ({
+            ...item,
+            image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
+            audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
+            isLiked: userId ? Boolean(await this.prisma.favorite.findFirst({
+                where: {
+                    user_id: userId,
+                    song_id: item.id,
+                }
+            })) : false
+        })));
     }
 
+    removeFromFavorite(userId, songId) {
+        return this.prisma.favorite.deleteMany({
+            where: {
+                user_id: userId,
+                song_id: songId
+            }
+        })
+    }
 }

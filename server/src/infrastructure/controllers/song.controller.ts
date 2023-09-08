@@ -87,7 +87,7 @@ export class SongController {
     }
 
     @Get('mySongs/:id')
-    getUserSongs(@Query() queryParams: {skip: number, take: number, id: string}) {
+    getUserSongs(@Query() queryParams: { skip: number, take: number, id: string, userId?: string }) {
         try {
             return this.songService.getUserSongs(queryParams.id, queryParams.skip, queryParams.take);
         } catch (e) {
@@ -97,9 +97,19 @@ export class SongController {
     }
 
     @Get('search')
-    searchSong(@Query() queryParams: {skip: number, take: number, query: string}) {
+    searchSong(@Query() queryParams: { skip: number, take: number, query: string, userId?: string }) {
         try {
-            return this.songService.searchSong(queryParams.query, queryParams.skip, queryParams.take);
+            return this.songService.searchSong(queryParams.query, queryParams.skip, queryParams.take, queryParams?.userId);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Delete('removeFavorite')
+    removeFromFavorite(@Query() queryParams: { userId: string, songId: number }) {
+        try {
+            return this.songService.removeFromFavorite(queryParams.userId, queryParams.songId)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
