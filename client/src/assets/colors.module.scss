@@ -3,8 +3,9 @@ $barColor: #222223;
 $songsPageBg: linear-gradient(to top, black 70%, rgb(52, 20, 20) 90%, rgb(69, 24, 24) 100%);
 $songsListBg: rgb(15, 15, 15);
 $userPageBg: linear-gradient(to top, rgb(34, 34,34 ) 0%, rgb(133, 131, 131) 80%, rgb(173, 173, 173) 100%);
-$playerBg: rgb(60, 60, 60);
+$playerBg: #262626;
 $playerProgressBar: #bd0015;
+$playerCurrentTime: #303030;
 
 :export {
   description: $description;
@@ -12,4 +13,5 @@ $playerProgressBar: #bd0015;
   playerBg: $playerBg;
   barColor: $barColor;
   playerProgressBar: $playerProgressBar;
+  playerCurrentTime: $playerCurrentTime;
 }
