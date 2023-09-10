@@ -4,7 +4,7 @@ import {songsApi} from "@/api/songs";
 import {InferGetStaticPropsType} from "next";
 import SongsList from "@/components/songsList/SongsList";
 
-export default function Home({songs}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof getStaticProps>) {
 
     return (
         <>
@@ -29,10 +29,11 @@ export default function Home({songs}: InferGetStaticPropsType<typeof getStaticPr
 
 export const getStaticProps = async () => {
     try {
-        const response = await songsApi.getAllSongs();
+        const {songs, totalCount} = (await songsApi.getAllSongs()).data;
         return {
             props: {
-                songs: response.data
+                songs,
+                totalCount
             }
         }
     } catch (e) {

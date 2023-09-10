@@ -8,9 +8,8 @@ import {songsApi} from "@/api/songs";
 import {InferGetStaticPropsType} from "next";
 import {getStaticProps} from "@/pages";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
-import MusicNoteSvg from "@/assets/svg/MusicNoteSvg";
 
-const Index = ({songs}: InferGetStaticPropsType<typeof getStaticProps>) => {
+const Index = ({songs, totalCount}: InferGetStaticPropsType<typeof getStaticProps>) => {
 
     const {title, image} = useTypedSelector(state => state.player)
 
@@ -42,10 +41,11 @@ export default Index;
 
 export const getServerSideProps = async () => {
     try {
-        const response = await songsApi.getAllSongs()
+        const {songs, totalCount} = (await songsApi.getAllSongs()).data
         return {
             props: {
-                songs: response.data
+                songs,
+                totalCount
             }
         }
     } catch (e) {
