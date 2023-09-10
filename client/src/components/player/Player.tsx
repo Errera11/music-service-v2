@@ -30,9 +30,13 @@ const Player = () => {
         playingSong.src = audio;
         playingSong.volume = volume;
         playingSong.onloadedmetadata = () => {
-            playingSong.autoplay = true;
+            if(isPlaying) {
+                dispatch(setIsPlaying(true));
+                playingSong.autoplay = true;
+            } else {
+                playingSong.autoplay = false;
+            }
             dispatch(setDuration(playingSong.duration));
-            dispatch(setIsPlaying(true));
             playingSong.currentTime = currentTime;
         }
 
