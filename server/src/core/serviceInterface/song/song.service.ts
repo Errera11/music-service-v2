@@ -34,7 +34,7 @@ export class SongService implements SongRepository {
         }
     }
 
-    async getUserSongs(userId: string, skip: number, take: number): Promise<(Song & { isLiked: boolean })[]> {
+    async getUserSongs(userId: string, skip: number, take: number): Promise<{songs: Promise<(Song & {isLiked: boolean})[]>,  totalCount: number}> {
         const songs = await this.prisma.favorite.findMany({
             skip: skip || 0,
             take: take || 15,
@@ -45,30 +45,42 @@ export class SongService implements SongRepository {
                 song: true
             },
         })
-        return Promise.all(songs.map(async (item) => ({
-            ...item.song,
-            image: (await this.cloud.getFileStreamableUrl(item.song.image)).result.link,
-            audio: (await this.cloud.getFileStreamableUrl(item.song.audio)).result.link,
-            isLiked: true
-        })));
+        const songsCount = await this.prisma.favorite.count({
+            where: {
+                user_id: userId
+            },
+        })
+        return {
+            songs: Promise.all(songs.map(async (item) => ({
+                ...item.song,
+                image: (await this.cloud.getFileStreamableUrl(item.song.image)).result.link,
+                audio: (await this.cloud.getFileStreamableUrl(item.song.audio)).result.link,
+                isLiked: true
+            }))),
+            totalCount: songsCount
+        };
     }
 
-    async getAll(skip: number, take: number, userId?: string): Promise<(Song & { isLiked: boolean })[]> {
+    async getAll(skip: number, take: number, userId?: string): Promise<{songs: Promise<(Song & {isLiked: boolean})[]>,  totalCount: number}> {
         const songs = await this.prisma.song.findMany({
             skip: skip || 0,
             take: take || 15
         });
-        return Promise.all(songs.map(async (item) => ({
-            ...item,
-            image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
-            audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
-            isLiked: Boolean(await this.prisma.favorite.findFirst({
-                where: {
-                    user_id: userId,
-                    song_id: item.id
-                }
-            }))
-        })));
+        const songsCount = await this.prisma.song.count()
+        return {
+            songs: Promise.all(songs.map(async (item) => ({
+                ...item,
+                image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
+                audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
+                isLiked: Boolean(await this.prisma.favorite.findFirst({
+                    where: {
+                        user_id: userId,
+                        song_id: item.id
+                    }
+                }))
+            }))),
+            totalCount: songsCount
+        };
     }
 
     async createSong(data): Promise<Song> {
@@ -102,7 +114,31 @@ export class SongService implements SongRepository {
         });
     }
 
-    async searchSong(query: string, skip: number, take: number, userId?: string): Promise<(Song & { isLiked: boolean })[]> {
+    async searchSong(query: string, skip?: number, take?: number, userId?: string): Promise<{songs: Promise<(Song & {isLiked: boolean})[]>,  totalCount: number}> {
+        // if(userId) {
+        //     const favSongs = await this.prisma.favorite.findMany({
+        //         skip: skip || 0,
+        //         take: take || 15,
+        //         where: {
+        //             user_id: userId
+        //         },
+        //         include: {
+        //             song: true,
+        //         },
+        //     })
+        //     const songsCount = await this.prisma.favorite.count({
+        //         where: {
+        //             user_id: userId
+        //         }
+        //     })
+        //     return {
+        //         songs: Promise.resolve(favSongs.map(item => {
+        //             const {song} = item;
+        //             return {...song, isLiked: true};
+        //         })),
+        //         totalCount: songsCount
+        //     }
+        // }
         const songs = await this.prisma.song.findMany({
             skip: skip || 0,
             take: take || 15,
@@ -114,20 +150,24 @@ export class SongService implements SongRepository {
                     {
                         title: {contains: query}
                     }
-                ]
+                ],
             }
         });
-        return Promise.all(songs.map(async (item) => ({
-            ...item,
-            image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
-            audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
-            isLiked: userId ? Boolean(await this.prisma.favorite.findFirst({
-                where: {
-                    user_id: userId,
-                    song_id: item.id,
-                }
-            })) : false
-        })));
+        const songsCount = await this.prisma.song.count();
+        return {
+            songs: Promise.all(songs.map(async (item) => ({
+                ...item,
+                image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
+                audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
+                isLiked: userId ? Boolean(await this.prisma.favorite.findFirst({
+                    where: {
+                        user_id: userId,
+                        song_id: item.id,
+                    }
+                })) : false
+            }))),
+            totalCount: songsCount
+        };
     }
 
     removeFromFavorite(userId, songId) {

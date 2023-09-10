@@ -86,7 +86,7 @@ export class SongController {
         }
     }
 
-    @Get('mySongs/:id')
+    @Get('mySongs')
     getUserSongs(@Query() queryParams: { skip: number, take: number, id: string, userId?: string }) {
         try {
             return this.songService.getUserSongs(queryParams.id, queryParams.skip, queryParams.take);
@@ -97,7 +97,7 @@ export class SongController {
     }
 
     @Get('search')
-    searchSong(@Query() queryParams: { skip: number, take: number, query: string, userId?: string }) {
+    searchSong(@Query() queryParams: { skip?: number, take?: number, query: string, userId?: string }) {
         try {
             return this.songService.searchSong(queryParams.query, queryParams.skip, queryParams.take, queryParams?.userId);
         } catch (e) {
