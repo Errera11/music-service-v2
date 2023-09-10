@@ -17,8 +17,9 @@ export default function Home({songs}: InferGetStaticPropsType<typeof getStaticPr
             <main>
                 <Layout>
                     <>
-                        <div style={{color: 'white'}}>Home</div>
-                        <SongsList songs={songs} />
+                        <h1 style={{color: 'white', fontSize: '1.5rem', margin: '15px'}}>Welcome back</h1>
+                        <h2 style={{color: 'white', margin: '15px'}}>Newest songs</h2>
+                        <SongsList songs={songs} type={'plate'}/>
                     </>
                 </Layout>
             </main>
@@ -34,7 +35,7 @@ export const getStaticProps = async () => {
                 songs: response.data
             }
         }
-    } catch(e) {
+    } catch (e) {
         console.log(e);
     }
 }

@@ -7,6 +7,16 @@ const getAllSongs = (skip?: number, take?: number) => api.get<Song[], AxiosRespo
     }
 });
 
+const removeFromFavorite = (authToken: string, songId: number) => api.delete('songs/removeFromFavorite', {
+    params: {
+        authToken,
+        songId
+    }
+})
+
+
+
 export const songsApi = {
-    getAllSongs
+    getAllSongs,
+    removeFromFavorite
 }

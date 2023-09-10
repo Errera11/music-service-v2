@@ -7,4 +7,5 @@ export interface Song {
     audio: string
     duration: number
     name: string // some uuid generated name using to store file in cloud
+    isLiked: boolean
 }

@@ -5,9 +5,8 @@
   width: 100%;
 
   .song {
-    cursor: pointer;
     display: grid;
-    grid-template-columns: 1fr 13fr 1fr;
+    grid-template-columns: 1fr 13fr 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     padding: 20px;
     align-items: center;
@@ -53,25 +52,25 @@
     .duration {
       grid-row-start: 1;
       grid-row-end: 3;
-      grid-column-start: 3;
-      grid-column-end: 4;
+      grid-column-start: 4;
+      grid-column-end: 5;
       color: white;
     }
 
     &.active {
       .songInfo {
         .title {
-          color: $playerProgressBar;
+          color: $playerCurrentTime;
         }
       }
 
       .duration {
-        color: $playerProgressBar;
+        color: $playerCurrentTime;
       }
 
       .songNote {
         svg {
-          fill: $playerProgressBar;
+          fill: $playerCurrentTime;
         }
       }
     }

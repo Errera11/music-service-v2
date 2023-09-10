@@ -30,7 +30,7 @@ const Index = ({songs}: InferGetStaticPropsType<typeof getStaticProps>) => {
                         <span className={styles.songCount}>123</span>
                     </div>
                     <div className={styles.songList}>
-                        <SongsList songs={songs} />
+                        <SongsList songs={songs} type={'list'}/>
                     </div>
                 </div>
             </>

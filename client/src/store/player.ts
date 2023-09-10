@@ -19,6 +19,7 @@ const playerInitialState: PlayerState = {
     isPlaying: true,
     name: "",
     duration: 0,
+    isLiked: false
 }
 
 const playerSlice = createSlice({

@@ -8,6 +8,15 @@
   justify-content: space-around;
   cursor: pointer;
 
+  &:hover {
+
+    * {
+      color: white;
+      fill: white;
+      transition-duration: 200ms;
+    }
+  }
+
   .icon {
     width: 30px;
     height: 30px;
@@ -19,6 +28,7 @@
     text-decoration: none;
     color: $description;
     cursor: pointer;
+
     &.active {
       color: white;
     }

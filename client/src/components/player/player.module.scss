@@ -21,11 +21,7 @@
     }
 
     .like {
-      width: 40px;
-      height: 40px;
       cursor: pointer;
-      stroke: $description;
-      fill: transparent;
       stroke-dasharray: 0;
       @keyframes draw {
         from {
@@ -48,8 +44,9 @@
     }
 
     .music_info {
+
       span {
-        font-size: 0.8rem;
+        font-size: 0.7rem;
       }
 
       .title {
@@ -116,7 +113,7 @@
         appearance: none;
         width: 80%;
         height: 5px;
-        background: $playerCurrentTime;
+        background: $playerProgressBar;
         border-radius: 15px;
         cursor: pointer;
         overflow: hidden;
@@ -124,7 +121,7 @@
 
         &::-webkit-slider-thumb {
           appearance: none;
-          box-shadow: -400px 0 0 400px $playerProgressBar;
+          box-shadow: -400px 0 0 400px $playerCurrentTime;
           height: 20px;
           width: 0;
         }
@@ -153,14 +150,14 @@
       appearance: none;
       width: 100%;
       height: 5px;
-      background: $playerCurrentTime;
+      background: $playerProgressBar;
       border-radius: 15px;
       cursor: pointer;
       overflow: hidden;
 
       &::-webkit-slider-thumb {
         appearance: none;
-        box-shadow: -400px 0 0 400px $playerProgressBar;
+        box-shadow: -400px 0 0 400px $playerCurrentTime;
         width: 0.1px;
       }
     }

@@ -1,0 +1,19 @@
+@import '../../assets/colors.module';
+
+.container {
+  background: $description;
+  padding: 15px;
+  position: absolute;
+  left: 50vw;
+  top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 15px;
+  box-shadow: 5px 5px 2px;
+
+  * {
+    margin: 0 5px;
+  }
+
+}
