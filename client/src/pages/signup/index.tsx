@@ -11,6 +11,7 @@ import {signupThunk} from "@/store/auth";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import AuthError from "@/components/authError/AuthError";
 import {AuthSuccessResponse} from "@/assets/types/HttpAuth";
+import Loader from "@/components/loader/Loader";
 
 const SignUp = () => {
 
