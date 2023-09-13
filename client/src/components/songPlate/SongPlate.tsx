@@ -3,7 +3,7 @@ import {Song} from "@/assets/types/Song";
 import {useSong} from "@/hooks/useSong";
 import styles from './songPlate.module.scss'
 import play from '../../assets/svg/play-circle.svg';
-import {LazyImage} from "@/assets/LazyImage";
+import {LazyImage} from "@/components/LazyImage";
 
 const SongPlate: React.FC<{ song: Song }> = ({song}) => {
     const {image, title, artist} = song;

@@ -5,6 +5,7 @@ import {playerActions} from "@/store/player";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {normalizeTime} from "@/assets/normalizeTime";
 import HeartSvg from "@/assets/svg/HeartSvg";
+import {LazyImage} from "@/components/LazyImage";
 
 const playingSong: HTMLAudioElement = document.createElement('audio');
 
@@ -78,7 +79,9 @@ const Player = () => {
     return (
         <div className={styles.container}>
             <div className={styles.info}>
-                <img src={image}/>
+                <div className={styles.imageWrapper}>
+                    <LazyImage src={image} className={styles.image}/>
+                </div>
                 <div className={styles.music_info}>
                     <span className={styles.title}>{title}</span>
                     <span className={styles.artist}>{artist}</span>

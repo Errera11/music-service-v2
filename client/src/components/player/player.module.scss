@@ -7,12 +7,12 @@
   position: fixed;
   bottom: 0;
   display: grid;
-  grid-template-columns: 1fr 5fr 1fr;
+  grid-template-columns: repeat(20, 1fr);
   align-items: center;
 
   .info {
     grid-column-start: 1;
-    grid-column-end: 2;
+    grid-column-end: 5;
     display: flex;
     align-items: center;
 
@@ -38,15 +38,22 @@
       }
     }
 
-    img {
-      width: 60px;
-      height: 60px;
+    .imageWrapper {
+      width: 80px;
+      height: 80px;
+      padding: 5px;
+      .image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
     }
+
 
     .music_info {
 
       span {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
       }
 
       .title {
@@ -64,13 +71,13 @@
   }
 
   .playback {
-    grid-column-start: 2;
-    grid-column-end: 3;
+    grid-column-start: 6;
+    grid-column-end: 16;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-
+    width: 100%;
     .controllers {
       margin-bottom: 10px;
       align-items: center;
@@ -131,12 +138,11 @@
   }
 
   .sound {
-    grid-column-start: 3;
-    grid-column-end: 4;
+    grid-column-start: 18;
+    grid-column-end: 20;
     display: flex;
     align-items: center;
-    width: 80%;
-
+    justify-self: flex-end;
     svg {
       width: 40px;
       height: 40px;

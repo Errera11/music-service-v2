@@ -18,7 +18,7 @@ const Search = () => {
     const [fetch, data, isLoading, isError] = useFetch<ISongApiResponse>(() => songsApi.searchSongs(query, searchSkip, searchTake));;
 
     useEffect(() => {
-        fetch()
+        if(query) fetch();
     }, [query])
 
     return (
@@ -31,7 +31,8 @@ const Search = () => {
                     <div className={styles.searchBar}>
                         <SearchBar onSearch={(query: string) => setQuery(query)}/>
                     </div>
-                    {data?.songs?.length && <SongsList type={'list'} songs={data.songs}/>}
+                    {data?.songs?.length ? <SongsList type={'list'} songs={data.songs}/>
+                        : <div className={styles.searchFailureMessage}>No songs found</div>}
                     {isLoading && <div className={styles.loader}>
                         <Loader/>
                     </div>}

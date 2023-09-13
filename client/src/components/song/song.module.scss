@@ -29,6 +29,7 @@
     .songInfo {
       display: flex;
       flex-direction: column;
+      cursor: pointer;
 
       .title {
         grid-row-start: 1;
