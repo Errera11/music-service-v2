@@ -1,18 +1,25 @@
-import React, {useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import styles from './searchBar.module.scss';
 
 let timeoutId: ReturnType<typeof setTimeout>;
 
-const SearchBar = ({onSearch}: {onSearch: (query: string) => void}) => {
+const SearchBar = ({onSearch}: { onSearch: (query: string) => void }) => {
+
     const [query, setQuery] = useState<string>('');
 
     function onChangeHandler(e: React.ChangeEvent<HTMLInputElement>) {
         setQuery(e.target.value)
-        clearTimeout(timeoutId);
-        if(query) {
-            timeoutId = setTimeout(() => onSearch(query), 700);
-        }
     }
+
+    useMemo(() => {
+        clearTimeout(timeoutId);
+
+        timeoutId = setTimeout(() => {
+            onSearch(query)
+            clearTimeout(timeoutId);
+        }, 700);
+
+    }, [query])
 
     return (
         <div className={styles.container}>
