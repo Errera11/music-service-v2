@@ -45,10 +45,7 @@ export class SongService implements SongRepository {
                 song: true
             },
         })
-        const songsCount = await this.prisma.favorite.count({
-            where: {
-                user_id: userId
-            },
+        const songsCount = songs.length;
         })
         return {
             songs: await Promise.all(songs.map(async ({song: item}) => ({
@@ -65,7 +62,7 @@ export class SongService implements SongRepository {
             skip: skip || 0,
             take: take || 15
         });
-        const songsCount = await this.prisma.song.count()
+        const songsCount = songs.length;
         return {
             songs: await Promise.all(songs.map(async (item) => ({
                 ...item,
@@ -116,33 +113,9 @@ export class SongService implements SongRepository {
 
     // @ts-ignore
     async searchSong(query: string, skip?: number, take?: number, userId?: string): Promise<{songs: (Song & {isLiked: boolean})[],  totalCount: number}> {
-        // if(userId) {
-        //     const favSongs = await this.prisma.favorite.findMany({
-        //         skip: skip || 0,
-        //         take: take || 15,
-        //         where: {
-        //             user_id: userId
-        //         },
-        //         include: {
-        //             song: true,
-        //         },
-        //     })
-        //     const songsCount = await this.prisma.favorite.count({
-        //         where: {
-        //             user_id: userId
-        //         }
-        //     })
-        //     return {
-        //         songs: Promise.resolve(favSongs.map(item => {
-        //             const {song} = item;
-        //             return {...song, isLiked: true};
-        //         })),
-        //         totalCount: songsCount
-        //     }
-        // }
         const songs = await this.prisma.song.findMany({
-            skip: skip || 0,
-            take: take || 15,
+            skip: Number(skip) || 0,
+            take: Number(take) || 15,
             where: {
                 OR: [
                     {
@@ -154,7 +127,7 @@ export class SongService implements SongRepository {
                 ],
             }
         });
-        const songsCount = await this.prisma.song.count();
+        const songsCount = songs.length;
         return {
             songs: await Promise.all(songs.map(async (item) => ({
                 ...item,
