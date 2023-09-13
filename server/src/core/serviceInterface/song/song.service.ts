@@ -46,7 +46,6 @@ export class SongService implements SongRepository {
             },
         })
         const songsCount = songs.length;
-        })
         return {
             songs: await Promise.all(songs.map(async ({song: item}) => ({
                 ...item,
