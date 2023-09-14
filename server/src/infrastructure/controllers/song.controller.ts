@@ -6,7 +6,7 @@ import {
     Get,
     HttpException,
     HttpStatus, InternalServerErrorException,
-    Param,
+    Param, ParseIntPipe,
     Post, Query,
     UploadedFiles,
     UseInterceptors
@@ -14,7 +14,6 @@ import {
 import {SongService} from "../../core/serviceInterface/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
-import {convertToArray} from "class-validator/types/utils";
 
 @Controller('songs')
 export class SongController {
@@ -67,9 +66,10 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query() queryParams: { take: number, skip: number }) {
+    getAll(@Query('skip', ParseIntPipe) skip: number,
+           @Query('take', ParseIntPipe) take: number,) {
         try {
-            return this.songService.getAll(queryParams.skip, queryParams.take)
+            return this.songService.getAll(skip, take)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -87,9 +87,11 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserSongs(@Query() queryParams: { skip: number, take: number, id: string, userId?: string }) {
+    getUserSongs(@Query('skip', ParseIntPipe) skip: number,
+                 @Query('take', ParseIntPipe) take: number,
+                 @Query() queryParams: { id: string, userId?: string }) {
         try {
-            return this.songService.getUserSongs(queryParams.id, queryParams.skip, queryParams.take);
+            return this.songService.getUserSongs(queryParams.id, skip, take);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -97,9 +99,11 @@ export class SongController {
     }
 
     @Get('search')
-    searchSong(@Query() queryParams: { skip?: number, take?: number, query: string, userId?: string }) {
+    searchSong(@Query('skip', ParseIntPipe) skip: number,
+               @Query('take', ParseIntPipe) take: number,
+               @Query() query: { query: string, userId?: string }) {
         try {
-            return this.songService.searchSong(queryParams.query, queryParams.skip, queryParams.take, queryParams?.userId);
+            return this.songService.searchSong(query.query, skip, take, query?.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
