@@ -15,6 +15,6 @@ export const LazyImage = ({src, className}: { src: string, className?: string })
 
     return <>
         {isLoading && <Loader/>}
-        <img className={className} ref={ref} onLoad={() => onLoad()} src={src}/>
+        <img className={className} ref={ref} onLoad={() => onLoad()} src={src} loading={'lazy'}/>
     </>
 }

@@ -126,7 +126,18 @@ export class SongService implements SongRepository {
                 ],
             }
         });
-        const songsCount = await this.prisma.song.count();
+        const songsCount = await this.prisma.song.count({
+            where: {
+                OR: [
+                    {
+                        artist: {contains: query, mode: "insensitive"}
+                    },
+                    {
+                        title: {contains: query, mode: "insensitive"}
+                    }
+                ],
+            }
+        });
         return {
             songs: await Promise.all(songs.map(async (item) => ({
                 ...item,

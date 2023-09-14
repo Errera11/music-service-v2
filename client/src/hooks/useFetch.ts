@@ -1,11 +1,9 @@
-import {useEffect, useState} from "react";
-import {AxiosResponse} from "axios";
+import {useState} from "react";
 
-type Callback<T> = (...args: any[]) => Promise<AxiosResponse<T>>
+type Callback<T> = (...args: any[]) => Promise<T>
 
 type ReturnType<T> = [
-    fetch: Function,
-    data: T | undefined,
+    fetch: (...args: any[]) => Promise<T | void>,
     isLoading: boolean,
     isError: boolean,
 ]
@@ -14,17 +12,17 @@ const useFetch = <T>(fetchCallback: Callback<T>): ReturnType<T> => {
 
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const [isError, setIsError] = useState<boolean>(false);
-    const [data, setData] = useState<T | undefined>(undefined)
-    const fetch = () => fetchCallback()
+
+    const fetch = (...args: any[]) => fetchCallback(...args)
             .then((response) => {
                 setIsError(false)
                 setIsLoading(true)
-                setData(response.data)
+                return response
             })
             .catch(() => setIsError(true))
             .finally(() => setIsLoading(false));
 
-    return [fetch, data, isLoading, isError]
+    return [fetch, isLoading, isError]
 }
 
 export default useFetch;

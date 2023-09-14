@@ -6,7 +6,7 @@ import {
     Get,
     HttpException,
     HttpStatus, InternalServerErrorException,
-    Param, ParseIntPipe,
+    Param,
     Post, Query,
     UploadedFiles,
     UseInterceptors
@@ -14,6 +14,7 @@ import {
 import {SongService} from "../../core/serviceInterface/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
+import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
 
 @Controller('songs')
 export class SongController {
@@ -66,10 +67,9 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query('skip', ParseIntPipe) skip: number,
-           @Query('take', ParseIntPipe) take: number,) {
+    getAll(@Query() paginationLimit: PaginationLimitDto) {
         try {
-            return this.songService.getAll(skip, take)
+            return this.songService.getAll(paginationLimit.skip, paginationLimit.take)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -87,11 +87,10 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserSongs(@Query('skip', ParseIntPipe) skip: number,
-                 @Query('take', ParseIntPipe) take: number,
+    getUserSongs(@Query() paginationLimit: PaginationLimitDto,
                  @Query() queryParams: { id: string, userId?: string }) {
         try {
-            return this.songService.getUserSongs(queryParams.id, skip, take);
+            return this.songService.getUserSongs(queryParams.id, paginationLimit.skip, paginationLimit.take);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -99,11 +98,10 @@ export class SongController {
     }
 
     @Get('search')
-    searchSong(@Query('skip', ParseIntPipe) skip: number,
-               @Query('take', ParseIntPipe) take: number,
+    searchSong(@Query() paginationLimit: PaginationLimitDto,
                @Query() query: { query: string, userId?: string }) {
         try {
-            return this.songService.searchSong(query.query, skip, take, query?.userId);
+            return this.songService.searchSong(query.query, paginationLimit.skip , paginationLimit.take, query?.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
