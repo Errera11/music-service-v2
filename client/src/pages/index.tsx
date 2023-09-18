@@ -1,11 +1,10 @@
 import Head from 'next/head'
-import Layout from "@/components/Layout";
 import {songsApi} from "@/api/songs";
 import {InferGetStaticPropsType} from "next";
 import SongsList from "@/components/songsList/SongsList";
 
 export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof getStaticProps>) {
-
+    console.log('home');
     return (
         <>
             <Head>
@@ -14,15 +13,13 @@ export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof
                 <meta name="viewport" content="width=device-width, initial-scale=1"/>
                 <link rel="icon" href="../assets/favicon.ico"/>
             </Head>
-            <main>
-                <Layout>
-                    <>
-                        <h1 style={{color: 'white', fontSize: '1.5rem', margin: '15px'}}>Welcome back</h1>
-                        <h2 style={{color: 'white', margin: '15px'}}>Newest songs</h2>
-                        <SongsList songs={songs} type={'plate'}/>
-                    </>
-                </Layout>
-            </main>
+
+            <>
+                <h1 style={{color: 'white', fontSize: '1.5rem', margin: '15px'}}>Welcome back</h1>
+                <h2 style={{color: 'white', margin: '15px'}}>Newest songs</h2>
+                <SongsList songs={songs} type={'plate'}/>
+            </>
+
         </>
     )
 }

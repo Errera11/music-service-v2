@@ -28,7 +28,7 @@ export default function Layout({children}: { children?: ReactElement }) {
 
     return (
         <div style={{margin: '10px'}}>
-            <Navbar/>
+            <nav><Navbar/></nav>
             <AuthBtns/>
             <main style={{marginLeft: '20vw', height: (audio ? '86vh' : '96vh')}}>{children}</main>
             <ClientPlayer/>

@@ -1,0 +1,13 @@
+@import '../../../assets/colors.module';
+
+.container {
+  padding: 5px 10px;
+  background: $description;
+  display: inline-block;
+  border-radius: 5px;
+  span {
+    color: black;
+    text-align: center;
+  }
+
+}

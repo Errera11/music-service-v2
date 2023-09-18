@@ -1,0 +1,42 @@
+@import '../../assets/colors.module';
+
+.container {
+  position: relative;
+  width: 100%;
+
+  .itemsToSelect {
+    height: 50%;
+    overflow: scroll;
+  }
+
+  .content {
+    border: $description 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 3px 5px;
+
+    .selectedItems {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+
+      .selectedItem {
+        margin: 2px 5px;
+      }
+
+      .expandList {
+        cursor: pointer;
+      }
+
+    }
+  }
+
+
+  .itemsToSelect {
+    position: absolute;
+    width: 100%;
+    background: white;
+    height: 100px;
+  }
+}

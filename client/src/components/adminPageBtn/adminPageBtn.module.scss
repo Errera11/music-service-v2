@@ -1,0 +1,12 @@
+@import '../../assets/colors.module';
+.container {
+  background: $description;
+  cursor: pointer;
+  text-align: center;
+  button {
+    border: none;
+    padding: 10px;
+    background: $description;
+    cursor: pointer;
+  }
+}

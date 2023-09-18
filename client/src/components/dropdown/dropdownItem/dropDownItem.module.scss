@@ -1,0 +1,23 @@
+@import '../../../assets/colors.module';
+
+.container {
+  padding: 3px 5px;
+  display: flex;
+  cursor: pointer;
+
+  border-bottom: $description 2px solid;
+
+  &.selected {
+    width: 100%;
+    background: $description;
+
+    span {
+      font-weight: bold;
+    }
+  }
+
+  span {
+    color: black;
+    text-align: center;
+  }
+}

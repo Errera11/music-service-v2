@@ -4,7 +4,6 @@ import Head from "next/head";
 
 const Search = () => {
     return (
-        <Layout>
             <>
                 <Head>
                     <title>Search</title>
@@ -13,7 +12,6 @@ const Search = () => {
                     playlist
                 </div>
             </>
-        </Layout>
     );
 };
 

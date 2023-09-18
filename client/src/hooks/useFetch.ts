@@ -10,9 +10,9 @@ type ReturnType<T> = [
 
 const useFetch = <T>(fetchCallback: Callback<T>): ReturnType<T> => {
 
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
-
+    console.log(isLoading);
     const fetch = (...args: any[]) => fetchCallback(...args)
             .then((response) => {
                 setIsError(false)
