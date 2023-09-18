@@ -5,7 +5,6 @@ import {PrismaService} from "../../../infrastructure/prisma.service";
 import * as uuid from 'uuid';
 import * as bcrypt from 'bcrypt';
 import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
-import {UserRoles} from "../../../common/UserRoles";
 import {SignUpUserDto} from "../../../common/dtos/SignUpUser.dto";
 import {TokenService} from "../../../infrastructure/token/token.service";
 
@@ -32,7 +31,6 @@ export class UserService implements UserRepository {
             data: {
                 ...dto,
                 id: userId,
-                role: [UserRoles.USER],
                 password: hashedPassword,
                 email_auth: {
                     create: {

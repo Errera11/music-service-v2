@@ -7,4 +7,5 @@ export class CreateSongDto {
     readonly description: string
     @IsNotEmpty()
     readonly artist: string
+    readonly genre: number[]
 }

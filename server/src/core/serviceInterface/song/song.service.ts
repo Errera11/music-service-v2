@@ -24,7 +24,8 @@ export class SongService implements SongRepository {
         const song = await this.prisma.song.findUnique({
             where: {
                 id
-            }
+            },
+
         })
 
         return {
@@ -45,13 +46,15 @@ export class SongService implements SongRepository {
                 song: true
             },
         })
+
         const songsCount = await this.prisma.favorite.count();
         return {
             songs: await Promise.all(songs.map(async ({song: item}) => ({
                 ...item,
                 image: (await this.cloud.getFileStreamableUrl(item.image)).result.link,
                 audio: (await this.cloud.getFileStreamableUrl(item.audio)).result.link,
-                isLiked: true}))),
+                isLiked: true,
+            }))),
             totalCount: songsCount
         };
     }
@@ -78,26 +81,25 @@ export class SongService implements SongRepository {
         };
     }
 
-    async createSong(data): Promise<Song> {
-        const imageExt = data.image.originalname.split('.').pop();
+    async createSong(createData): Promise<Song> {
+        const imageExt = createData.image.originalname.split('.').pop();
         const imageName = uuid.v4() + `.${imageExt}`;
-        const imageResponse = await this.cloud.uploadFile(data.image.buffer, 'image', imageName)
-        const musicExt = data.audio.originalname.split('.').pop();
+        const imageResponse = await this.cloud.uploadFile(createData.image.buffer, 'image', imageName)
+        const musicExt = createData.audio.originalname.split('.').pop();
         const musicName = uuid.v4() + `.${musicExt}`;
-        const musicResponse = await this.cloud.uploadFile(data.audio.buffer, 'music', musicName);
-
+        const musicResponse = await this.cloud.uploadFile(createData.audio.buffer, 'music', musicName);
 
         return this.prisma.song.create({
             data: {
                 name: musicName,
-                title: data.title,
-                description: data.description,
-                artist: data.artist,
+                title: createData.title,
+                description: createData.description,
+                artist: createData.artist,
                 image: imageResponse.result.id,
                 audio: musicResponse.result.id,
-                duration: 0
-            }
-        })
+                duration: 0,
+                }
+            })
     }
 
     // TODO cloud delete
@@ -105,7 +107,7 @@ export class SongService implements SongRepository {
         return this.prisma.song.delete({
             where: {
                 id
-            }
+            },
         });
     }
 
@@ -148,7 +150,7 @@ export class SongService implements SongRepository {
                         user_id: userId,
                         song_id: item.id,
                     }
-                })) : false
+                })) : false,
             }))),
             totalCount: songsCount
         };
