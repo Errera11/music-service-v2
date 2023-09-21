@@ -1,6 +1,6 @@
 import React, {ReactElement} from 'react';
 import Head from "next/head";
-import AdminSidebar from "@/components/adminSidebar/AdminSidebar";
+import AdminSidebar from "@/components/admin/adminSidebar/AdminSidebar";
 
 const AdminLayout = ({children}: { children?: ReactElement }) => {
     return (

@@ -9,9 +9,9 @@ interface IProps {
 
 const DropDownItem: React.FC<IProps> = ({id, title, isSelected}) => {
     return (
-        <div className={styles.container + ' ' + (isSelected ? styles.selected : '')}>
+        <li className={styles.container + ' ' + (isSelected ? styles.selected : '')}>
             <span>{title}</span>
-        </div>
+        </li>
     );
 };
 

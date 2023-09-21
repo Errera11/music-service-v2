@@ -14,7 +14,7 @@ export default function Layout({children}: { children?: ReactElement }) {
     console.log('Layot render');
 
     const dispatch = useAppDispatch();
-    const {audio} = useTypedSelector(state => state.player)
+    const audio = useTypedSelector(state => state.player.audio)
 
     useEffect(() => {
         const authToken = localStorage.getItem('authToken');

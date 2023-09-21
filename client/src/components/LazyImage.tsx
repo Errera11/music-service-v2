@@ -1,4 +1,4 @@
-import {useEffect, useRef, useState} from "react";
+import {useState} from "react";
 import Loader from "@/components/loader/Loader";
 import Image from "next/image";
 
@@ -11,7 +11,7 @@ export const LazyImage = ({src, className}: { src: string, className?: string })
     //TODO check IMAGE
     return <>
         {isLoading && <Loader/>}
-
-        <Image onLoadingComplete={() => setIsLoading(false)} src={src} alt={'image'} loading={'lazy'}/>
+        <Image style={!isLoading ? {display: 'block'} : {display: 'none'} }  className={className} unoptimized width={100} height={100} onLoadingComplete={() => setIsLoading(false)}
+                src={src} alt={'image'} loading={'lazy'}/>
     </>
 }

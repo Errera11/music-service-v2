@@ -31,9 +31,35 @@ const searchSongs = (query?: string, skip?: number, take?: number) => api.get<IS
     }
 })
 
+const createSong = (formdata: FormData) => api.post<Song>('/songs/create', formdata, {
+    headers: {
+        authorization: localStorage.getItem('authToken')
+    }
+})
+
+const getAllGenres = () => api.get<{genre: string, id: number}[]>('/songs/genres', {
+    headers: {
+        authorization: localStorage.getItem('authToken')
+    }
+})
+
+const createGenre = (genre: string) => api.post<{genre: string, id: number}>('/songs/createGenre', {genre}, {
+    headers: {
+        authorization: localStorage.getItem('authToken')
+    }
+})
+
+const deleteSong = (id: number) => api.delete<any>(`/songs/delete/:${id}`);
+
+const getSongById = (id: number) => api.get<Song>(`/songs/getTrackById:${id}`);
 
 export const songsApi = {
     getAllSongs,
     removeFromFavorite,
-    searchSongs
+    searchSongs,
+    createSong,
+    getAllGenres,
+    createGenre,
+    deleteSong,
+    getSongById
 }

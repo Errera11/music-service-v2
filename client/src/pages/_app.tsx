@@ -18,11 +18,13 @@ export default function App({Component, pageProps, ...rest}: AppProps) {
     const {store, props} = wrapper.useWrappedStore(rest);
     const router = useRouter();
     useEffect(() => {
-        if(!router.route.includes('admin')) document.querySelector('body').style.background = 'white';
+        if(!router.route.includes('admin')) document!.querySelector('body')!.style.background = 'white';
     }, [])
+
+
     return (
         <Provider store={store}>
-            <main className={allerta.className}>
+            <main className={allerta.className} style={{ height: '100vh'}}>
                 <AdminLayout><Component {...pageProps} /></AdminLayout>
             </main>
         </Provider>

@@ -1,68 +1,101 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import styles from '../../../../styles/admin/song/songCreatePage.module.scss';
-import AdminPageBtn from "@/components/adminPageBtn/AdminPageBtn";
+import AdminPageBtn from "@/components/admin/adminPageBtn/AdminPageBtn";
 import Dropdown from "@/components/dropdown/Dropdown";
+import {songsApi} from "@/api/songs";
+import AdminPageInput from "@/components/admin/adminPageInput/AdminPageInput";
+import SongPageLayout from "@/components/admin/adminPageLayouts/SongPageLayout";
+
+interface IGenre {
+    id: number
+    genre: string
+}
 
 const Index = () => {
-
     const [title, setTitle] = useState('');
     const [artist, setArtist] = useState('');
     const [description, setDescription] = useState('');
     const [audio, setAudio] = useState<File>();
-    const [image, setImage] = useState<File>();
-    const [songGenres, setSongGenres] = useState([]);
+    const [image, setImage] = useState<File | null>();
+    const [selectedSongGenres, setSelectedSongGenres] = useState<{ id: number, title: string }[]>([]);
+    const [songGenres, setSongGenres] = useState<IGenre[]>()
 
-    const imageInputRef = useRef(null);
+    const [genre, setGenre] = useState('');
+    const [createGenrePopup, setCreateGenrePopup] = useState(false);
+
+    const imageInputRef = useRef<HTMLInputElement>(null);
+    const audioInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        const fetch = async () => {
+            try {
+                const {data} = await songsApi.getAllGenres();
+                setSongGenres(data);
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        fetch();
+    }, [])
+
     function songImageCreateHandler() {
-        if(imageInputRef.current) (imageInputRef.current as HTMLInputElement).click();
+        if (imageInputRef.current) (imageInputRef.current as HTMLInputElement).click();
+    }
 
+    function submitHandler(e: React.MouseEvent) {
+        e.stopPropagation();
+        e.preventDefault();
+        const formdata = new FormData();
+        formdata.append('title', title);
+        formdata.append('description', description);
+        formdata.append('audio', audio as Blob);
+        formdata.append('image', image as Blob);
+        formdata.append('artist', artist);
+        formdata.append('genre', JSON.stringify(selectedSongGenres.map(item => ({id: item.id, genre: item.title}))));
+
+
+        songsApi.createSong(formdata).then(response => {
+            console.log(response)
+            setTitle('');
+            setArtist('');
+            setDescription('');
+            setImage(null);
+            setSelectedSongGenres([]);
+            if(audioInputRef.current) audioInputRef.current.value = '';
+            if(imageInputRef.current) imageInputRef.current.value = '';
+
+        })
+    }
+
+    function createGenreHandler() {
+        songsApi.createGenre(genre).then(response => setSongGenres(prev => {
+            if (prev?.length) return [...prev, response.data];
+            return [response.data]
+
+        }));
+        setCreateGenrePopup(false)
+        setGenre('')
     }
 
     return (
-        <div className={styles.container}>
-            <header>
-                <h1>Create song</h1>
-                <div className={styles.btns}>
-                    <AdminPageBtn title={'Create'}  />
-                    <AdminPageBtn title={'Search'}  />
+        <SongPageLayout title={'Create song'}>
+            <div className={styles.container}>
+                <div style={{width: 'fit-content', marginBottom: '10px'}}>
+                    <AdminPageBtn onClick={() => setCreateGenrePopup(true)} title={'Create new song genre'}/>
                 </div>
-            </header>
 
-            <form className={styles.form}>
-                <div className={styles.imageSelectWrapper} onClick={songImageCreateHandler}>
-                    {image && <img  src={URL.createObjectURL(image)}/>}
-                    <div className={styles.imageSelectHover}>Select image</div>
-                    <input type={'file'} accept={'image/*'} ref={imageInputRef} onChange={e => setImage(e.target.files[0])} type={'file'} style={{display: "none"}} />
-                </div>
-                <div className={styles.songInfo}>
-                    <input type={'text'} placeholder={'Song title'} value={title}
-                           onChange={(e) => setTitle(e.target.value)}/>
-                    <input type={'text'} placeholder={'Song artist'} value={artist}
-                           onChange={(e) => setArtist(e.target.value)}/>
-                    <input type={'text'} placeholder={'Song description'} value={description}
-                           onChange={(e) => setDescription(e.target.value)}/>
-                    <input type={'file'} accept={'audio/'} placeholder={'Song'} onChange={(e) => setAudio(e.target.files[0])}/>
-                    <div className={styles.dropdown}>
-                        <Dropdown
-                            onAppendItem={(item) => setSongGenres(prev => {
-                                if(prev.some(selectedItem => item.id === selectedItem.id)) return prev;
-                                return [...prev, item]
-                            })}
-                            onRemoveItem={(item) => setSongGenres(prev => prev.filter(selectedItem => selectedItem.id !== item.id))}
-                            selectedItems={songGenres}
-                            title={'Genre'}
-                            items={[{id: 1, title: 'Pop'}, {id: 2, title: 'Rock'}, {id: 3, title: 'Indi'}, {id: 4, title: 'Folk'},
-                                {id: 5, title: 'Indie-Rock'},
-                                {id: 6, title: 'Metal'},
-                                {id: 7, title: 'Alt-rock'}]}/>
-                    </div>
-                    <div className={styles.createBtnWrapper}>
-                        <AdminPageBtn title={'Create'} />
-                    </div>
 
-                </div>
-            </form>
-        </div>
+                {createGenrePopup && <div className={styles.createGenrePopup}>
+                    <form className={styles.form} onClick={() => setCreateGenrePopup(false)}>
+                        <div onClick={(e) => e.stopPropagation()}>
+                            <AdminPageInput value={genre} onChange={(e) => setGenre(e.target.value)}/>
+                            <AdminPageBtn onClick={() => createGenreHandler()} title={'Create genre'}/>
+                        </div>
+                    </form>
+                </div>}
+            </div>
+
+        </SongPageLayout>
     );
 };
 

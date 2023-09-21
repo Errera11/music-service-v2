@@ -3,13 +3,13 @@ import styles from './adminPageBtn.module.scss';
 
 interface IProps {
     title: string
-    onClick?: () => void
+    onClick: (e: React.MouseEvent<HTMLButtonElement>) => void
 }
 
 const AdminPageBtn: React.FC<IProps> = ({title, onClick}) => {
     return (
-        <div className={styles.container} onClick={onClick}>
-            <button>{title}</button>
+        <div className={styles.container}>
+            <button onClick={onClick}>{title}</button>
         </div>
     );
 };

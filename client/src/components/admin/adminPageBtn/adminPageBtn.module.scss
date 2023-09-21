@@ -1,8 +1,10 @@
-@import '../../assets/colors.module';
+@import '../../../assets/colors.module';
 .container {
   background: $description;
   cursor: pointer;
   text-align: center;
+  width: 100%;
+  text-overflow:ellipsis;
   button {
     border: none;
     padding: 10px;
