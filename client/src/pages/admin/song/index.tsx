@@ -9,7 +9,7 @@ const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) =
     return (
         <SongPageLayout title={'Search songs'}>
             <div>
-                <AdminSongList songs={data.songs} />
+                {data?.songs && <AdminSongList songs={data.songs} /> }
             </div>
         </SongPageLayout>
     );
@@ -27,5 +27,10 @@ export const getServerSideProps = async () => {
         }
     } catch(e) {
         console.log(e);
+        return {
+            props: {
+                data: null
+            }
+        }
     }
 }

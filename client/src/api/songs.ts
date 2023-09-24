@@ -1,4 +1,4 @@
-import {AxiosResponse} from "axios";
+import {AxiosError, AxiosResponse} from "axios";
 import {Song} from "@/assets/types/Song";
 import api from "./root";
 
@@ -49,9 +49,11 @@ const createGenre = (genre: string) => api.post<{genre: string, id: number}>('/s
     }
 })
 
-const deleteSong = (id: number) => api.delete<any>(`/songs/delete/:${id}`);
+const deleteSong = (id: number) => api.delete<Song>(`/songs/delete/${id}`);
 
-const getSongById = (id: number) => api.get<Song>(`/songs/getTrackById:${id}`);
+const getSongById = (id: number) => api.get<Song>(`/songs/${id}`);
+
+const updateSong = (formdata: FormData) => api.put<Song>('songs/update', formdata);
 
 export const songsApi = {
     getAllSongs,
@@ -61,5 +63,6 @@ export const songsApi = {
     getAllGenres,
     createGenre,
     deleteSong,
-    getSongById
+    getSongById,
+    updateSong
 }

@@ -6,8 +6,8 @@ import {
     Get,
     HttpException,
     HttpStatus, InternalServerErrorException,
-    Param,
-    Post, Query,
+    Param, ParseIntPipe,
+    Post, Put, Query, Req,
     UploadedFiles,
     UseInterceptors
 } from "@nestjs/common";
@@ -15,15 +15,16 @@ import {SongService} from "../../core/serviceInterface/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
 import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
+import {DeleteSongDto} from "../../common/dtos/DeleteSong.dto";
+import {UpdateSongDto} from "../../common/dtos/UpdateSong.dto";
 
 @Controller('songs')
 export class SongController {
 
-    constructor(private songService: SongService) {
-    }
+    constructor(private songService: SongService) {}
 
-    @Delete('delete')
-    async delete(@Param('id') id: number) {
+    @Delete('delete/:id')
+    async delete(@Param('id', ParseIntPipe) id: number) {
         try {
             return await this.songService.delete(id)
         } catch (e) {
@@ -45,14 +46,55 @@ export class SongController {
             if (!files.image[0] || !files.audio[0]) {
                 throw new HttpException('Image and audio must be provided', HttpStatus.BAD_REQUEST);
             }
-            return await this.songService.createSong({
-                ...dto,
-                audio: files.audio[0],
-                image: files.image[0]
-            })
+            return await this.songService.createSong(
+                dto,
+                files.image[0],
+                files.audio[0],
+            )
         } catch (e) {
             console.log(e);
             throw new HttpException('Internal server error', HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @Put('update')
+    @UseInterceptors(FileFieldsInterceptor([
+        {name: 'audio', maxCount: 1},
+        {name: 'image', maxCount: 1},
+    ]))
+    async updateSong(@Req() req: Request, @Body() dto: UpdateSongDto, @UploadedFiles() files: {
+        audio: Express.Multer.File[],
+        image: Express.Multer.File[],
+    }) {
+        try {
+            console.log(1);
+            const audio = files.audio && (files.audio[0] as Express.Multer.File).buffer.length ? files?.audio[0] : undefined;
+            const image = files.image && (files.image[0] as Express.Multer.File).buffer.length ? files?.image[0] : undefined;
+            return this.songService.updateSong({...dto, audio, image});
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('genres')
+    async getAllGenres() {
+        try {
+            const resp = await this.songService.getAllGenres();
+            return resp
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Post('createGenre')
+    async createGenre(@Body() data: { genre: string }) {
+        try {
+            return this.songService.createSongGenre(data.genre)
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
         }
     }
 
@@ -76,8 +118,8 @@ export class SongController {
         }
     }
 
-    @Get('song/:id')
-    getTrackById(@Param('id') id: number) {
+    @Get('/:id')
+    getTrackById(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.songService.getTrackById(id);
         } catch (e) {
@@ -101,7 +143,7 @@ export class SongController {
     searchSong(@Query() paginationLimit: PaginationLimitDto,
                @Query() query: { query: string, userId?: string }) {
         try {
-            return this.songService.searchSong(query.query, paginationLimit.skip , paginationLimit.take, query?.userId);
+            return this.songService.searchSong(query.query, paginationLimit.skip, paginationLimit.take, query?.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

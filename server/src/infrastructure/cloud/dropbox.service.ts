@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {DropboxResponse} from "dropbox";
-import {DropboxTempLinkResponse} from "../../common/types/dropbox";
+import {DropboxDownloadResponse, DropboxTempLinkResponse} from "../../common/types/dropbox";
 
 const Dropbox = require('dropbox').Dropbox;
 
@@ -9,6 +9,7 @@ const Dropbox = require('dropbox').Dropbox;
 @Injectable()
 export class DropboxService {
     private dbx
+
     constructor() {
         this.dbx = new Dropbox({
             clientId: process.env.DROPBOX_APP_KEY,
@@ -17,9 +18,12 @@ export class DropboxService {
         });
     }
 
-    uploadFile(buffer, type: 'music' | 'image', fileName: string) {
+    uploadFile(buffer, type: 'music' | 'image', fileName: string): Promise<DropboxResponse<DropboxDownloadResponse>> {
 
-        return this.dbx.filesUpload({path: type === 'music' ? `/music/${fileName}` : `/image/${fileName}`, contents: buffer})
+        return this.dbx.filesUpload({
+            path: type === 'music' ? `/music/${fileName}` : `/image/${fileName}`,
+            contents: buffer
+        })
             .then((response) => {
                 return response;
             })
@@ -27,10 +31,17 @@ export class DropboxService {
                 return uploadErr;
             });
     }
+
     getFileStreamableUrl(id: string): Promise<DropboxResponse<DropboxTempLinkResponse>> {
         return this.dbx.filesGetTemporaryLink({
             path: id
         })
+    }
+
+    deleteFile(id: string) {
+        return this.dbx.filesDeleteV2({
+            path: id
+        });
     }
 
 }

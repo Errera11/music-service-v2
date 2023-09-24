@@ -2,11 +2,15 @@ import React from 'react';
 import SongPageLayout from "@/components/admin/adminPageLayouts/SongPageLayout";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
 import {songsApi} from "@/api/songs";
+import SongForm from "@/components/admin/songForm/SongForm";
 
-const Song = ({}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Song = ({song}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+    const onSubmit = (formdata: FormData) => songsApi.updateSong(formdata);
+
     return (
         <SongPageLayout title={'Edit song'}>
-
+            <SongForm onSubmit={(formdata) => onSubmit(formdata)} song={song} btnAction={'Update'}/>
         </SongPageLayout>
     );
 };
@@ -15,14 +19,20 @@ export default Song;
 
 export const getServerSideProps: GetServerSideProps = async ({params}) => {
     try {
-        console.log(params);
-        const {data} = await songsApi.getSongById(params)
-        return {
-            props: {
-                song: data
+        if(params?.id) {
+            const {data} = await songsApi.getSongById(Number.parseInt(String(params.id)))
+            return {
+                props: {
+                    song: data
+                }
             }
         }
-    } catch(e) {
+        return {
+            props: {
+                song: null
+            }
+        }
+    } catch (e) {
         console.log(e);
         return {
             props: {

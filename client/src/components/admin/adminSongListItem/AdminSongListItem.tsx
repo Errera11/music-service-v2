@@ -1,10 +1,11 @@
 import {Song} from '@/assets/types/Song';
-import React, {MouseEventHandler, useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import styles from './adminSongListItem.module.scss'
-import MusicNoteSvg from "@/assets/svg/MusicNoteSvg";
 import gear from '../../../assets/svg/gear.svg';
 import Image from 'next/image';
 import {songsApi} from "@/api/songs";
+import {useRouter} from "next/router";
+import {AdminRoutes} from "@/assets/AdminRoutes";
 
 interface IProps {
     song: Song
@@ -12,13 +13,17 @@ interface IProps {
 
 const AdminSongListItem: React.FC<IProps> = ({song}) => {
 
+    const router = useRouter();
+
     const [isSongSetting, setIsSongSettings] = useState(false);
 
     const popupRef = useRef<HTMLDivElement>(null);
     const settingBtnRef = useRef<HTMLImageElement>(null);
 
     const onDeleteSong = () => {
-        songsApi.deleteSong(song.id).then(response => console.log(response))
+        songsApi.deleteSong(song.id).then(response => {
+            console.log(response)
+        })
             .catch(e => console.log(e))
     }
 
@@ -55,7 +60,7 @@ const AdminSongListItem: React.FC<IProps> = ({song}) => {
             </div>
             {
                 isSongSetting && <div ref={popupRef} className={styles.songSettingsPopup}>
-                    <span>Edit</span>
+                    <span onClick={() => router.push(AdminRoutes.SONG_EDIT + song.id)}>Edit</span>
                     <span onClick={onDeleteSong}>Delete song</span>
                     <span>Add to album</span>
                 </div>
