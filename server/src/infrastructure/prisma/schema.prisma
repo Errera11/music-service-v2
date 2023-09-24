@@ -69,7 +69,6 @@ model Album {
     album_songs AlbumSongs[]
 }
 
-
 model Favorite {
     id Int @id @default(autoincrement())
     user User @relation(fields: [user_id], references: [id])
