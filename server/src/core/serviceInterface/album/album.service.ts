@@ -2,26 +2,22 @@ import {AlbumRepository} from "../../domainInterface/AlbumRepository/AlbumReposi
 import {CreateAlbumDto} from "../../../common/dtos/CreateAlbum.dto";
 import {PrismaService} from "../../../infrastructure/prisma.service";
 import {Album} from "../../domain/Album";
-import {Song} from "../../domain/Song";
+import {AlbumSongs} from "../../domain/AlbumSongs";
+import {UpdateAlbumDto} from "../../../common/dtos/UpdateAlbum.dto";
+import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 
 export class AlbumService implements AlbumRepository {
 
-    constructor(private prisma: PrismaService) {
+    constructor(private prisma: PrismaService, private cloud: DropboxService) {
     }
 
-    addSongToAlbum(songId: number, albumId: number): Promise<{song_id: number}> {
+    addSongToAlbum(songId: number, albumId: number): Promise<AlbumSongs> {
         return this.prisma.albumSongs.create({
-            data: {
-                album_id: albumId,
-                song_id: songId
-            },
-            select: {
-                song_id: true
-            }
+            data: {song_id: songId, album_id: albumId},
         })
     }
 
-    async createAlbum(dto: CreateAlbumDto): Promise<Album> {
+    async createAlbum(dto: CreateAlbumDto): Promise<Album & { album_songs: number[] }> {
         const {album_songs, ...createData} = dto;
         const album = await this.prisma.album.create({
             data: {
@@ -54,8 +50,8 @@ export class AlbumService implements AlbumRepository {
         })
     }
 
-    async deleteSongFromAlbum(songId: number, albumId: number): Promise<{song_id: number}> {
-        const data =  await this.prisma.albumSongs.deleteMany({
+    async deleteSongFromAlbum(songId: number, albumId: number): Promise<{ song_id: number }> {
+        const data = await this.prisma.albumSongs.deleteMany({
             where: {
                 album_id: albumId,
                 song_id: songId,
@@ -64,14 +60,51 @@ export class AlbumService implements AlbumRepository {
         return data[0].song_id;
     }
 
-    updateAlbum(album: Album): Promise<Album> {
+    async updateAlbum(album: UpdateAlbumDto): Promise<Album & { album_songs: number[] }> {
         const {id, album_songs, ...rest} = album;
-        return this.prisma.album.update({
+        let imageId = undefined;
+        if(album.image) {
+            const fileName = album.image.originalname.split('.').pop();
+            const response = await this.cloud.uploadFile(album.image.buffer, 'image', fileName);
+            imageId = response.result.id;
+        }
+        const updatedAlbum = await this.prisma.album.update({
             where: {
                 id
             },
             data: {
-                ...rest
+                ...rest,
+                image: imageId,
+                album_songs: {
+                    createMany: {
+                        data: album_songs.map(id => ({song_id: id}))
+                    }
+                },
+            },
+            include: {
+                album_songs: {
+                    select: {
+                        song_id: true
+                    }
+                }
+            }
+        })
+        return {
+            ...updatedAlbum,
+            album_songs: updatedAlbum.album_songs.map(song => song.song_id)
+        }
+    }
+
+    getAlbums(skip?: number, take?: number): Promise<Album[]> {
+        return this.prisma.album.findMany({
+            skip: skip || 0,
+            take: take || 10,
+            include: {
+                album_songs: {
+                    select: {
+                        song_id: true
+                    }
+                }
             }
         })
     }

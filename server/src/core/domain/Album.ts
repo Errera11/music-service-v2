@@ -4,5 +4,5 @@ export class Album {
     title: string
     description: string
     author: string
-    album_songs?: number[]
+    image: string
 }

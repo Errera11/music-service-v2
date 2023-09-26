@@ -64,9 +64,10 @@ model Genres {
 model Album {
     id Int @id @default(autoincrement())
     title String
-    description String
+    description String?
     author String
     album_songs AlbumSongs[]
+    image String
 }
 
 model Favorite {
