@@ -78,9 +78,19 @@ export class AlbumController {
     }
 
     @Delete('delete')
-    deleteAlbum(@Param('id') id: number) {
+    deleteAlbum(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.albumService.deleteAlbum(Number(id))
+            return this.albumService.deleteAlbum(id)
+        } catch(e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('getAlbumById')
+    getAlbumById(@Param('id', ParseIntPipe) id: number) {
+        try {
+            return this.albumService.getAlbumById(id);
         } catch(e) {
             console.log(e);
             throw new InternalServerErrorException();

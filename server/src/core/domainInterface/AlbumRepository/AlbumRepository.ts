@@ -10,4 +10,5 @@ export interface AlbumRepository {
     deleteAlbum(albumId: number): Promise<Album>
     addSongToAlbum(songId: number, albumId: number): Promise<AlbumSongs>
     deleteSongFromAlbum(songId: number, albumId: number): Promise<{song_id: number}>
+    getAlbumById(albumId: number): Promise<Album & {album_songs: number[]}>
 }

@@ -109,4 +109,23 @@ export class AlbumService implements AlbumRepository {
         })
     }
 
+    async getAlbumById(albumId: number): Promise<Album & {album_songs: number[]}> {
+        const album = await this.prisma.album.findUnique({
+            where: {
+                id: albumId
+            },
+            include: {
+                album_songs: {
+                    select: {
+                        song_id: true
+                    }
+                }
+            }
+        })
+        return {
+            ...album,
+            album_songs: album.album_songs.map(obj => obj.song_id)
+        }
+    }
+
 }

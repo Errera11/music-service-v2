@@ -14,7 +14,3 @@ export interface Song {
     isLiked: boolean
     genre: IGenre[]
 }
-
-export interface UpdateSong {
-
-}

@@ -18,8 +18,8 @@ const SongPageLayout: React.FC<IProps> = ({title, children}) => {
             <header className={styles.header}>
                 <h1>{title}</h1>
                 <div className={styles.btns}>
-                    <AdminPageBtn onClick={() => router.push(AdminRoutes.SONG_CREATE)} title={'Create'}/>
-                    <AdminPageBtn onClick={() => router.push(AdminRoutes.SONG_PAGE)} title={'Search'}/>
+                    <AdminPageBtn onClick={() => router.push(AdminRoutes.ALBUM_CREATE)} title={'Create album'}/>
+                    <AdminPageBtn onClick={() => router.push(AdminRoutes.ALBUM_PAGE)} title={'Search'}/>
                 </div>
             </header>
             <>
