@@ -1,0 +1,21 @@
+.container {
+
+  .pageNumber {
+    color: black;
+    padding: 6px;
+
+    &:hover {
+      border-radius: 15px;
+      border: 2px solid black;
+      transition-duration: 300ms;
+    }
+
+    &.active {
+      border: 6px solid black;
+      font-weight: bold;
+      transition-duration: 300ms;
+    }
+
+  }
+
+}
