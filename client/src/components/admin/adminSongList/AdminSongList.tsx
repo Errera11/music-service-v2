@@ -3,11 +3,6 @@ import {Song} from "@/assets/types/Song";
 import AdminSongListItem from "@/components/admin/adminSongListItem/AdminSongListItem";
 import styles from './adminSongList.module.scss';
 
-// const mock: Song = {
-//     title: 'Emine',
-//     artist: 'E,iner',
-//     duration: '123'
-// }
 
 interface IProps {
     songs: Song[]

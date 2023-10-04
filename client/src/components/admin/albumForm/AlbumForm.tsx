@@ -20,7 +20,6 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
     const [author, setAuthor] = useState(album?.author || '');
     const [description, setDescription] = useState(album?.description || '');
     const [image, setImage] = useState<File | string | null>(album?.image || '')
-    const [albumSongs, setAlbumSong] = useState<Song[] | null>(album?.songs || null);
 
     const imageRef = useRef<HTMLInputElement>(null);
 
