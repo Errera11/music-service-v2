@@ -10,24 +10,21 @@ type ReturnType<T, A> = [
     data: T | undefined
 ]
 
-const useFetch = <T>(fetchCallback: Callback<T>): ReturnType<T, Parameters<typeof fetchCallback>[0]> => {
+const useFetch = <T, A = void>(fetchCallback: Callback<T>): ReturnType<T, A> => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [data, setData] = useState<T>();
 
-    return [
-        (arg) => fetchCallback(arg)
-        .then((response) => {
-            setIsError(false)
-            setIsLoading(true)
-            setData(response.data)
-        })
-        .catch(() => setIsError(true))
-        .finally(() => setIsLoading(false)),
-        isLoading,
-        isError,
-        data
-    ]
+    const fetch = (arg: A) => fetchCallback(arg)
+            .then((response) => {
+                setIsError(false)
+                setIsLoading(true)
+                setData(response.data)
+            })
+            .catch(() => setIsError(true))
+            .finally(() => setIsLoading(false));
+
+    return [fetch, isLoading, isError, data]
 }
 
 export default useFetch;

@@ -13,12 +13,12 @@ const Index = () => {
 
     const [songSearchQuery, setSongSearchQuery] = useState('');
 
-    const [fetchSongs, isLoading, isError, data] = useFetch<ISongApiResponse>(songsApi.searchSongs);
+    const [fetchSongs, isLoading, isError, data] = useFetch<ISongApiResponse, Parameters<typeof songsApi.searchSongs>[0]>(songsApi.searchSongs);
     const {setPage, currentPage, totalPages} = usePagination(5, data?.totalCount || 0)
 
     const handleSearchSong = (e: React.FormEvent) => {
         e.preventDefault();
-        fetchSongs()
+        fetchSongs({})
     }
 
     return (
