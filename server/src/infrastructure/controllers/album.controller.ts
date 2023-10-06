@@ -80,7 +80,7 @@ export class AlbumController {
         }
     }
 
-    @Delete('delete')
+    @Delete('delete/:id')
     deleteAlbum(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.albumService.deleteAlbum(id)
@@ -90,7 +90,7 @@ export class AlbumController {
         }
     }
 
-    @Get('getAlbumById')
+    @Get('getAlbumById/:id')
     getAlbumById(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.albumService.getAlbumById(id);

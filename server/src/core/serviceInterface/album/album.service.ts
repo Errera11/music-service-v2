@@ -100,8 +100,8 @@ export class AlbumService implements AlbumRepository {
         }
     }
 
-    getAlbums(skip?: number, take?: number): Promise<Album[]> {
-        return this.prisma.album.findMany({
+    async getAlbums(skip?: number, take?: number): Promise<Album[]> {
+        const albums = await this.prisma.album.findMany({
             skip: skip || 0,
             take: take || 10,
             include: {
@@ -112,6 +112,11 @@ export class AlbumService implements AlbumRepository {
                 }
             }
         })
+        return Promise.all(albums.map(async (album) => ({
+            ...album,
+            image: (await this.cloud.getFileStreamableUrl(album.image)).result.link,
+            album_songs: album.album_songs.map(obj => obj.song_id)
+        })))
     }
 
     async getAlbumById(albumId: number): Promise<Album & { songs: Song[] }> {
