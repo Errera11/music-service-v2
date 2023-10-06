@@ -3,7 +3,7 @@ import styles from './adminPageBtn.module.scss';
 
 interface IProps {
     title: string
-    onClick: (e: React.MouseEvent) => void
+    onClick?: (e: React.MouseEvent) => void
     disabled?: boolean
 }
 

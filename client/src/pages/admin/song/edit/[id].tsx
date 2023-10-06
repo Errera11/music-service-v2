@@ -20,7 +20,7 @@ export default Song;
 export const getServerSideProps: GetServerSideProps = async ({params}) => {
     try {
         if(params?.id) {
-            const {data} = await songsApi.getSongById(Number.parseInt(String(params.id)))
+            const {data} = await songsApi.getSongById(Number.parseInt(params.id as string))
             return {
                 props: {
                     song: data

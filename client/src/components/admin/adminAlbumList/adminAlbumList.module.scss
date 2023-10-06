@@ -1,0 +1,10 @@
+
+.container {
+  padding: 10px;
+  display: flex;
+  flex-wrap: wrap;
+
+  .albumItem {
+    margin: 0 5px;
+  }
+}

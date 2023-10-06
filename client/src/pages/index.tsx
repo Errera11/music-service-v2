@@ -4,7 +4,6 @@ import {InferGetStaticPropsType} from "next";
 import SongsList from "@/components/songsList/SongsList";
 
 export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof getStaticProps>) {
-    console.log('home');
     return (
         <>
             <Head>

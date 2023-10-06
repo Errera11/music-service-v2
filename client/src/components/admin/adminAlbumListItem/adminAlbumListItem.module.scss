@@ -1,0 +1,51 @@
+@import '../../../assets/colors.module';
+
+.wrapper {
+  padding: 5px 3px;
+  width: 200px;
+  height: 250px;
+  border: 1px solid $description;
+  border-radius: 8px;
+  position: relative;
+
+  .settingsPopup {
+    position: absolute;
+    right: 0;
+    top: 95%;
+  }
+
+  .settings {
+    width: 25px;
+    position: absolute;
+    right: 3px;
+    bottom: 20px;
+    cursor: pointer;
+  }
+
+  img {
+    width: 180px;
+    object-fit: contain;
+    margin: 0 auto;
+    display: block;
+  }
+
+  .albumInfo {
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+
+
+    .author {
+      color: $barColor;
+    }
+
+    .title {
+      color: $description;
+    }
+
+    .description {
+
+    }
+  }
+
+}

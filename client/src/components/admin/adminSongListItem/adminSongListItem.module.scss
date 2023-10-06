@@ -1,7 +1,7 @@
 @import '../../../assets/colors.module';
 
 .container {
-
+  position: relative;
   .song {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -42,24 +42,11 @@
     }
   }
 
-  .songSettingsPopup {
+  .settingsPopup {
     position: absolute;
-    height: auto;
-    padding: 15px;
-    background: white;
-    border-radius: 15px;
-    border: 1px solid black;
-    display: flex;
-    flex-direction: column;
-    right: 7%;
-    span {
-      cursor: pointer;
-      padding: 10px;
-      &:hover {
-        background: gray;
-        border-radius: 15px;
-      }
-    }
+    right: 10%;
+    top: 85%;
+    z-index: 10;
   }
 
 }

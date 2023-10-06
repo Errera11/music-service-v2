@@ -3,14 +3,14 @@ import api from './root';
 import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
 import {Album, AlbumById, AlbumSongs} from "@/assets/types/Album";
 
-const addSongToAlbum = (songId: number, albumId: number) => api.post<AlbumSongs>('addSong', {}, {
+const addSongToAlbum = ({songId, albumId}: {songId: number, albumId: number}) => api.post<AlbumSongs>('album/addSong', {}, {
     params: {
         songId,
         albumId
     }
 })
 
-const getAll = (skip?: number, take?: number) => api.get<Album[]>('', {
+const getAll = ({skip, take}: {skip?: number, take?: number}) => api.get<Album[]>('album', {
     params: {
         skip,
         take
@@ -24,7 +24,7 @@ const createAlbum = (dto: CreateAlbumDto) => {
     formdata.append('description', dto.description);
     formdata.append('image', dto.image);
     formdata.append('album_songs', JSON.stringify(dto.album_songs));
-    return api.post<Album>('create', formdata);
+    return api.post<Album>('album/create', formdata);
 }
 
 const updateAlbum = (dto: CreateAlbumDto) => {
@@ -34,19 +34,19 @@ const updateAlbum = (dto: CreateAlbumDto) => {
     formdata.append('description', dto.description || '');
     formdata.append('image', dto.image || '');
     formdata.append('album_songs', JSON.stringify(dto.album_songs || ''));
-    return api.post<Album>('update', formdata);
+    return api.post<Album>('album/update', formdata);
 }
 
-const removeSong = (songId: number, albumId: number) => api.delete<{song_id: number}>('removeSong', {
+const removeSong = ({songId, albumId}: { songId: number, albumId: number }) => api.delete<{song_id: number}>('album/removeSong', {
     params: {
         songId,
         albumId
     }
 })
 
-const deleteAlbum = (albumId: number) => api.delete<Album>(`delete/${albumId}`)
+const deleteAlbum = (albumId: number) => api.delete<Album>(`album/delete/${albumId}`)
 
-const getAlbumById = (albumId: number) => api.get<AlbumById>(`getAlbumById/${albumId}`)
+const getAlbumById = (albumId: number) => api.get<AlbumById>(`album/getAlbumById/${albumId}`)
 
 export const albumApi = {
     addSongToAlbum,

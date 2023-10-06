@@ -1,16 +1,14 @@
 import React, {useRef, useState} from 'react';
-import {AxiosResponse} from "axios";
 import {Album, AlbumById} from "@/assets/types/Album";
 import styles from './albumForm.module.scss';
 import AdminPageInput from "@/components/admin/adminPageInput/AdminPageInput";
 import AdminPageBtn from "@/components/admin/adminPageBtn/AdminPageBtn";
 import AdminSongList from "@/components/admin/adminSongList/AdminSongList";
-import {Song} from "@/assets/types/Song";
 import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
 
 export interface IProps {
-    onSubmit: (dto: CreateAlbumDto) => Promise<AxiosResponse<Album>>,
-    btnAction: 'Create' | 'Update',
+    onSubmit: (dto: CreateAlbumDto) => void,
+    btnAction: 'Create' | 'Edit',
     album?: AlbumById
 }
 
@@ -22,6 +20,13 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
     const [image, setImage] = useState<File | string | null>(album?.image || '')
 
     const imageRef = useRef<HTMLInputElement>(null);
+
+    const onFormSubmit = (e: React.MouseEvent) => {
+        e.preventDefault()
+        if(title && author && (image instanceof File)) {
+            onSubmit({title, image, description, author, album_songs: []})
+        }
+    }
 
     return (
         <div className={styles.container}>
@@ -37,20 +42,23 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
                 </div>
                 <div>
                     <AdminPageInput
+                        placeholder={'Album title'}
                         value={title}
                         onChange={e => setTitle(e.target.value)}/>
                     <AdminPageInput
+                        placeholder={'Album author'}
                         value={author}
                         onChange={e => setAuthor(e.target.value)}/>
                     <AdminPageInput
+                        placeholder={'Album description'}
                         value={description}
                         onChange={e => setDescription(e.target.value)}/>
                     <div className={styles.submitBtn}>
-                        <AdminPageBtn title={btnAction} onClick={() => onSubmit}/>
+                        <AdminPageBtn onClick={e => onFormSubmit(e)} title={btnAction}/>
                     </div>
                 </div>
             </form>
-            {album?.songs.length && <AdminSongList songs={album?.songs} />}
+            {album?.songs && <AdminSongList songs={album?.songs} />}
         </div>
     );
 };
