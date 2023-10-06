@@ -67,7 +67,6 @@ export class SongController {
         image: Express.Multer.File[],
     }) {
         try {
-            console.log(1);
             const audio = files.audio && (files.audio[0] as Express.Multer.File).buffer.length ? files?.audio[0] : undefined;
             const image = files.image && (files.image[0] as Express.Multer.File).buffer.length ? files?.image[0] : undefined;
             return this.songService.updateSong({...dto, audio, image});
@@ -140,10 +139,9 @@ export class SongController {
     }
 
     @Get('search')
-    searchSong(@Query() paginationLimit: PaginationLimitDto,
-               @Query() query: { query: string, userId?: string }) {
+    searchSong(@Query() dto: PaginationLimitDto & { query: string, userId?: string }) {
         try {
-            return this.songService.searchSong(query.query, paginationLimit.skip, paginationLimit.take, query?.userId);
+            return this.songService.searchSong(dto.query, dto.skip, dto.take, dto?.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

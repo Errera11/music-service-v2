@@ -5,10 +5,10 @@ export class PaginationLimitDto {
     @IsOptional()
     @Transform(({value}) => value === 'true')
     @Transform(({value}) => Number.parseInt(value))
-    skip: number;
+    skip?: number;
 
     @IsOptional()
     @Transform(({value}) => value === 'true')
     @Transform(({value}) => Number.parseInt(value))
-    take: number;
+    take?: number;
 }

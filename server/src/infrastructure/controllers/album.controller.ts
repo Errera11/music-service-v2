@@ -44,7 +44,10 @@ export class AlbumController {
     ]))
     createAlbum(@Body() dto: CreateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[],}) {
         try {
-            return this.albumService.createAlbum(dto);
+            return this.albumService.createAlbum({
+                ...dto,
+                image: files.image[0]
+            });
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException()

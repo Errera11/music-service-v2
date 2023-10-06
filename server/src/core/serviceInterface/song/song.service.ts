@@ -2,12 +2,11 @@ import {SongRepository} from "../../domainInterface/SongRepository/SongRepositor
 import {PrismaService} from "../../../infrastructure/prisma.service";
 import {Song} from "../../domain/Song";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
-import {Injectable, InternalServerErrorException} from "@nestjs/common";
+import {Injectable} from "@nestjs/common";
 import * as uuid from "uuid";
 import {CreateSongDto} from "../../../common/dtos/CreateSong.dto";
 import {UpdateSongDto} from "src/common/dtos/UpdateSong.dto";
 import {IGenre} from "../../../common/types/Genre";
-import {skip} from "rxjs";
 
 const fs = require('fs');
 const ffmpeg = require('fluent-ffmpeg');
@@ -186,7 +185,6 @@ export class SongService implements SongRepository {
         })
     }
 
-    // TODO cloud delete
     async delete(id: number): Promise<Song> {
         const song = await this.prisma.song.findUnique({where: {id}})
         const deletedSong = await this.prisma.song.delete({

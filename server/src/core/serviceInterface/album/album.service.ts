@@ -5,11 +5,13 @@ import {Album} from "../../domain/Album";
 import {AlbumSongs} from "../../domain/AlbumSongs";
 import {UpdateAlbumDto} from "../../../common/dtos/UpdateAlbum.dto";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
+import {Song} from "../../domain/Song";
+import * as uuid from 'uuid';
+import {Inject} from "@nestjs/common";
 
 export class AlbumService implements AlbumRepository {
 
-    constructor(private prisma: PrismaService, private cloud: DropboxService) {
-    }
+    constructor(@Inject(DropboxService) private cloud: DropboxService, private prisma: PrismaService) {}
 
     addSongToAlbum(songId: number, albumId: number): Promise<AlbumSongs> {
         return this.prisma.albumSongs.create({
@@ -18,13 +20,16 @@ export class AlbumService implements AlbumRepository {
     }
 
     async createAlbum(dto: CreateAlbumDto): Promise<Album & { album_songs: number[] }> {
-        const {album_songs, ...createData} = dto;
+        const {album_songs, image,  ...createData} = dto;
+        const albumUuid = uuid.v4() + image.originalname.split('.').pop();
+        const response = await this.cloud.uploadFile(dto.image, 'image', albumUuid);
         const album = await this.prisma.album.create({
             data: {
                 ...createData,
+                image: response.result.id,
                 album_songs: {
                     createMany: {
-                        data: album_songs.map(item => ({song_id: item}))
+                        data: album_songs?.map(item => ({song_id: item})) || []
                     }
                 },
             },
@@ -109,7 +114,7 @@ export class AlbumService implements AlbumRepository {
         })
     }
 
-    async getAlbumById(albumId: number): Promise<Album & {album_songs: number[]}> {
+    async getAlbumById(albumId: number): Promise<Album & { songs: Song[] }> {
         const album = await this.prisma.album.findUnique({
             where: {
                 id: albumId
@@ -122,10 +127,20 @@ export class AlbumService implements AlbumRepository {
                 }
             }
         })
+        const albumSongs = await this.prisma.song.findMany({
+            where: {
+                id: {
+                    in: album.album_songs.map(obj => obj.song_id)
+                }
+            }
+        })
         return {
             ...album,
-            album_songs: album.album_songs.map(obj => obj.song_id)
+            songs: await Promise.all(albumSongs.map(async (song) => ({
+                ...song,
+                image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
+                audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link,
+            })))
         }
     }
-
 }
