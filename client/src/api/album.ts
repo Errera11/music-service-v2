@@ -1,6 +1,6 @@
 
 import api from './root';
-import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {CreateAlbumDto, UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
 import {Album, AlbumById, AlbumSongs} from "@/assets/types/Album";
 
 const addSongToAlbum = ({songId, albumId}: {songId: number, albumId: number}) => api.post<AlbumSongs>('album/addSong', {}, {
@@ -27,14 +27,15 @@ const createAlbum = (dto: CreateAlbumDto) => {
     return api.post<Album>('album/create', formdata);
 }
 
-const updateAlbum = (dto: CreateAlbumDto) => {
+const updateAlbum = (dto: UpdateAlbumDto) => {
     const formdata = new FormData();
+    formdata.append('id', String(dto.id))
     formdata.append('title', dto.title || '');
     formdata.append('author', dto.author || '');
     formdata.append('description', dto.description || '');
     formdata.append('image', dto.image || '');
     formdata.append('album_songs', JSON.stringify(dto.album_songs || ''));
-    return api.post<Album>('album/update', formdata);
+    return api.put<Album>('album/update', formdata);
 }
 
 const removeSong = ({songId, albumId}: { songId: number, albumId: number }) => api.delete<{song_id: number}>('album/removeSong', {

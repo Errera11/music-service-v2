@@ -2,12 +2,19 @@ import React from 'react';
 import AlbumForm from "@/components/admin/albumForm/AlbumForm";
 import {albumApi} from "@/api/album";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+import {UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import AlbumPageLayout from "@/components/admin/adminPageLayouts/AlbumPageLayout";
 
 const Id = ({album}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+    const onUpdateAlbum = (dto: UpdateAlbumDto) => {
+        albumApi.updateAlbum(dto);
+    }
+
     return (
-        <div>
-            <AlbumForm onSubmit={() => 1} btnAction={'Edit'} album={album}/>
-        </div>
+        <AlbumPageLayout title={'Edit album'}>
+            <AlbumForm onSubmit={(dto) => onUpdateAlbum(dto as UpdateAlbumDto)} btnAction={'Edit'} album={album}/>
+        </AlbumPageLayout>
     );
 };
 

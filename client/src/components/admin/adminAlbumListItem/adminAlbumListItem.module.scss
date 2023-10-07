@@ -16,15 +16,17 @@
 
   .settings {
     width: 25px;
+    height: 25px;
     position: absolute;
     right: 3px;
-    bottom: 20px;
+    bottom: 25px;
     cursor: pointer;
   }
 
   img {
     width: 180px;
-    object-fit: contain;
+    height: 180px;
+    object-fit: fill;
     margin: 0 auto;
     display: block;
   }
@@ -44,7 +46,7 @@
     }
 
     .description {
-
+      text-overflow: ellipsis;
     }
   }
 

@@ -1,13 +1,13 @@
 import React, {useRef, useState} from 'react';
-import {Album, AlbumById} from "@/assets/types/Album";
+import {AlbumById} from "@/assets/types/Album";
 import styles from './albumForm.module.scss';
 import AdminPageInput from "@/components/admin/adminPageInput/AdminPageInput";
 import AdminPageBtn from "@/components/admin/adminPageBtn/AdminPageBtn";
 import AdminSongList from "@/components/admin/adminSongList/AdminSongList";
-import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {CreateAlbumDto, UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
 
 export interface IProps {
-    onSubmit: (dto: CreateAlbumDto) => void,
+    onSubmit: (dto: CreateAlbumDto | UpdateAlbumDto) => void,
     btnAction: 'Create' | 'Edit',
     album?: AlbumById
 }
@@ -24,7 +24,7 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
     const onFormSubmit = (e: React.MouseEvent) => {
         e.preventDefault()
         if(title && author && (image instanceof File)) {
-            onSubmit({title, image, description, author, album_songs: []})
+            onSubmit({id: album?.id, title, image, description, author, album_songs: []})
         }
     }
 
