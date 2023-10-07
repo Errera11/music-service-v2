@@ -82,7 +82,7 @@ export class AlbumService implements AlbumRepository {
                     image: true
                 }
             })
-            //await this.cloud.deleteFile(imageToDelete);
+            await this.cloud.deleteFile(imageToDelete);
         }
         const updatedAlbum = await this.prisma.album.update({
             where: {
