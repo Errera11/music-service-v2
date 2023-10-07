@@ -3,7 +3,7 @@
 .wrapper {
   padding: 5px 3px;
   width: 200px;
-  height: 250px;
+  height: 270px;
   border: 1px solid $description;
   border-radius: 8px;
   position: relative;
@@ -19,7 +19,7 @@
     height: 25px;
     position: absolute;
     right: 3px;
-    bottom: 25px;
+    bottom: 35px;
     cursor: pointer;
   }
 
@@ -29,6 +29,7 @@
     object-fit: fill;
     margin: 0 auto;
     display: block;
+    border-radius: 6px;
   }
 
   .albumInfo {
@@ -47,6 +48,9 @@
 
     .description {
       text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      width: 90%;
     }
   }
 
