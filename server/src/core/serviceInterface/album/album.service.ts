@@ -153,6 +153,7 @@ export class AlbumService implements AlbumRepository {
         })
         return {
             ...album,
+            image: (await this.cloud.getFileStreamableUrl(album.image)).result.link,
             songs: await Promise.all(albumSongs.map(async (song) => ({
                 ...song,
                 image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
