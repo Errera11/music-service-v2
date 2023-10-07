@@ -58,7 +58,7 @@ export class AlbumController {
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'image', maxCount: 1}
     ]))
-    updateAlbum(album: UpdateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[]}) {
+    updateAlbum(@Body() album: UpdateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[]}) {
         try {
             return this.albumService.updateAlbum({
                 ...album,

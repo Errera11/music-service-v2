@@ -21,7 +21,7 @@ export class AlbumService implements AlbumRepository {
 
     async createAlbum(dto: CreateAlbumDto): Promise<Album & { album_songs: number[] }> {
         const {album_songs, image,  ...createData} = dto;
-        const albumUuid = uuid.v4() + image.originalname.split('.').pop();
+        const albumUuid = uuid.v4() + '.' + image.originalname.split('.').pop();
         const response = await this.cloud.uploadFile(dto.image, 'image', albumUuid);
         const album = await this.prisma.album.create({
             data: {
@@ -43,16 +43,19 @@ export class AlbumService implements AlbumRepository {
         })
         return {
             ...album,
+            image: (await this.cloud.getFileStreamableUrl(album.image)).result.link,
             album_songs: album.album_songs.map(song => song.song_id)
         }
     }
 
-    deleteAlbum(albumId: number): Promise<Album> {
-        return this.prisma.album.delete({
+    async deleteAlbum(albumId: number): Promise<Album> {
+        const album = await this.prisma.album.delete({
             where: {
                 id: albumId
             }
         })
+        await this.cloud.deleteFile(album.image)
+        return album;
     }
 
     async deleteSongFromAlbum(songId: number, albumId: number): Promise<{ song_id: number }> {
@@ -69,9 +72,17 @@ export class AlbumService implements AlbumRepository {
         const {id, album_songs, ...rest} = album;
         let imageId = undefined;
         if(album.image) {
-            const fileName = album.image.originalname.split('.').pop();
-            const response = await this.cloud.uploadFile(album.image.buffer, 'image', fileName);
-            imageId = response.result.id;
+            const fileName = uuid.v4() + '.' + album.image.originalname.split('.').pop();
+            imageId = (await this.cloud.uploadFile(album.image.buffer, 'image', fileName)).result.id;
+            const {image: imageToDelete} = await this.prisma.album.findUnique({
+                where: {
+                    id: id
+                },
+                select: {
+                    image: true
+                }
+            })
+            //await this.cloud.deleteFile(imageToDelete);
         }
         const updatedAlbum = await this.prisma.album.update({
             where: {
@@ -82,7 +93,7 @@ export class AlbumService implements AlbumRepository {
                 image: imageId,
                 album_songs: {
                     createMany: {
-                        data: album_songs.map(id => ({song_id: id}))
+                        data: album_songs?.map(item => ({song_id: item})) || []
                     }
                 },
             },
@@ -96,6 +107,7 @@ export class AlbumService implements AlbumRepository {
         })
         return {
             ...updatedAlbum,
+            image: (await this.cloud.getFileStreamableUrl(imageId)).result.link,
             album_songs: updatedAlbum.album_songs.map(song => song.song_id)
         }
     }
