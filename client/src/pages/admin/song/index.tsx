@@ -5,10 +5,9 @@ import {InferGetServerSidePropsType} from "next";
 import AdminSongList from "@/components/admin/adminSongList/AdminSongList";
 
 const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-    console.log(data);
     return (
         <SongPageLayout title={'Search songs'}>
-            <div>
+            <div style={{width: '90%'}}>
                 {data?.songs && <AdminSongList songs={data.songs} /> }
             </div>
         </SongPageLayout>

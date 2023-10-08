@@ -8,11 +8,12 @@
     grid-template-rows: 1fr 1fr;
     align-items: center;
     height: 80px;
-    width: 90%;
     border-bottom: 2px solid black;
     margin-bottom: 5px;
-
+    position: relative;
     .image {
+      grid-column-start: 1;
+      grid-column-end: 2;
       img {
         width: 70px;
         height: 70px;
@@ -21,8 +22,10 @@
     }
 
     .songInfo {
+      margin-left: 10px;
       grid-column-start: 2;
-      grid-column-end: 4;
+      grid-column-end: 5;
+      position: absolute;
       display: flex;
       flex-direction: column;
 
@@ -42,10 +45,15 @@
     }
   }
 
+  .settingsBtn {
+    grid-column-start: 11;
+    grid-column-end: 12;
+  }
+
   .settingsPopup {
     position: absolute;
-    right: 10%;
-    top: 85%;
+    right: 0;
+    top: 65%;
     z-index: 10;
   }
 

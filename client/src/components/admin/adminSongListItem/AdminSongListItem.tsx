@@ -57,8 +57,10 @@ const AdminSongListItem: React.FC<IProps> = ({song}) => {
                     <span className={styles.author}>{song.artist}</span>
                 </div>
                 <span className={styles.duration}>{song.duration}</span>
-                <Image ref={settingBtnRef} onClick={() => setIsSongSettings(prev => !prev)}
-                       style={{cursor: 'pointer'}} width={25} height={25} src={gear} alt={'Image'}/>
+                <div className={styles.settingsBtn}>
+                    <Image ref={settingBtnRef} onClick={() => setIsSongSettings(prev => !prev)}
+                           style={{cursor: 'pointer'}} width={25} height={25} src={gear} alt={'Image'}/>
+                </div>
             </div>
             {
                 isSongSetting && <div className={styles.settingsPopup}>

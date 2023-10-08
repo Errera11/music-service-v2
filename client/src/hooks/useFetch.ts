@@ -22,7 +22,6 @@ const useFetch = <T, A = void>(fetchCallback: Callback<T>): ReturnType<T, A> => 
                 setIsError(false)
                 setIsLoading(true)
                 setData(response.data)
-                console.log(response.data);
             })
             .catch(() => setIsError(true))
             .finally(() => setIsLoading(false));

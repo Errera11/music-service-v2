@@ -33,7 +33,7 @@ const AdminAlbumListItem: React.FC<IProps> = ({album}) => {
                 <span className={styles.author}>{album.author}</span>
                 <span className={styles.description}>{album.description || ''}</span>
             </div>
-            <img ref={settingsRef} onClick={() => setIsSettingsMenu(prev => !prev)} className={styles.settings} src={gear.src}/>
+            <img ref={settingsRef} onClick={() => setIsSettingsMenu(prev => !prev)} className={styles.settingsBtn} src={gear.src}/>
             {isSettingsMenu &&
                 <div className={styles.settingsPopup}>
                     <SettingPopup properties={[{property: 'Edit', onClick: () => router.push(AdminRoutes.ALBUM_EDIT + album.id)}]} />
