@@ -15,14 +15,18 @@ const useFetch = <T, A = void>(fetchCallback: Callback<T>): ReturnType<T, A> => 
     const [isError, setIsError] = useState<boolean>(false);
     const [data, setData] = useState<T>();
 
-    const fetch = (arg: A) => fetchCallback(arg)
+    const fetch = (arg: A) => {
+        setIsLoading(true);
+        return fetchCallback(arg)
             .then((response) => {
                 setIsError(false)
                 setIsLoading(true)
                 setData(response.data)
+                console.log(response.data);
             })
             .catch(() => setIsError(true))
             .finally(() => setIsLoading(false));
+    }
 
     return [fetch, isLoading, isError, data]
 }

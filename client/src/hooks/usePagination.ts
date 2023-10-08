@@ -9,7 +9,7 @@ interface IReturnType {
 export default (volume: number = 5, totalItemsCount: number): IReturnType => {
 
     const [currentPage, setCurrentPage] = useState<number>(1);
-    const totalPages = useMemo(() => Math.floor(totalItemsCount / volume), [])
+    const totalPages = useMemo(() => Math.ceil(totalItemsCount / volume), [totalItemsCount])
 
     return {
         setPage: (page: number) => setCurrentPage(page),

@@ -23,6 +23,17 @@ export class SongController {
 
     constructor(private songService: SongService) {}
 
+    @Get('search')
+    searchSong(@Query() dto: PaginationLimitDto,
+               @Query() query: { query: string, userId?: string }) {
+        try {
+            return this.songService.searchSong(query.query, dto.skip, dto.take, query?.userId);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
     @Delete('delete/:id')
     async delete(@Param('id', ParseIntPipe) id: number) {
         try {
@@ -107,6 +118,27 @@ export class SongController {
         }
     }
 
+    @Get('mySongs')
+    getUserSongs(@Query() paginationLimit: PaginationLimitDto,
+                 @Query() queryParams: { id: string, userId?: string }) {
+        try {
+            return this.songService.getUserSongs(queryParams.id, paginationLimit.skip, paginationLimit.take);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Delete('removeFavorite')
+    removeFromFavorite(@Query() queryParams: { userId: string, songId: number }) {
+        try {
+            return this.songService.removeFromFavorite(queryParams.userId, queryParams.songId)
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
     @Get('')
     getAll(@Query() paginationLimit: PaginationLimitDto) {
         try {
@@ -121,37 +153,6 @@ export class SongController {
     getTrackById(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.songService.getTrackById(id);
-        } catch (e) {
-            console.log(e);
-            throw new InternalServerErrorException();
-        }
-    }
-
-    @Get('mySongs')
-    getUserSongs(@Query() paginationLimit: PaginationLimitDto,
-                 @Query() queryParams: { id: string, userId?: string }) {
-        try {
-            return this.songService.getUserSongs(queryParams.id, paginationLimit.skip, paginationLimit.take);
-        } catch (e) {
-            console.log(e);
-            throw new InternalServerErrorException();
-        }
-    }
-
-    @Get('search')
-    searchSong(@Query() dto: PaginationLimitDto & { query: string, userId?: string }) {
-        try {
-            return this.songService.searchSong(dto.query, dto.skip, dto.take, dto?.userId);
-        } catch (e) {
-            console.log(e);
-            throw new InternalServerErrorException();
-        }
-    }
-
-    @Delete('removeFavorite')
-    removeFromFavorite(@Query() queryParams: { userId: string, songId: number }) {
-        try {
-            return this.songService.removeFromFavorite(queryParams.userId, queryParams.songId)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
