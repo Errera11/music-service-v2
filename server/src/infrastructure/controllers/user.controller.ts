@@ -4,7 +4,7 @@ import {
     Controller, Delete, Get,
     HttpException,
     HttpStatus, InternalServerErrorException,
-    Post, Req, Res, UnauthorizedException,
+    Post, Put, Query, Req, Res, UnauthorizedException,
 } from "@nestjs/common";
 import {UserService} from "../../core/serviceInterface/user/user.service";
 import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
@@ -13,6 +13,8 @@ import {AuthFormValidationPipe} from "../../common/AuthFormValidationPipe";
 import {AuthException} from "../../common/AuthException";
 import {AuthUserDto} from "../../common/dtos/AuthUser.dto";
 import {Request, Response} from "express";
+import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
+import {SetUserRoleDto} from "../../common/dtos/SetUserRole.dto";
 
 @Controller('')
 export class UserController {
@@ -77,6 +79,26 @@ export class UserController {
         } catch (e) {
             console.log(e);
             throw new BadRequestException()
+        }
+    }
+
+    @Get('getUsers')
+    async getAllUsers(@Query() dto: PaginationLimitDto) {
+        try {
+            return this.userService.getAll(dto);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Put('setUserRole')
+    async setUserRole(@Body() dto: SetUserRoleDto) {
+        try {
+            return this.userService.setUserRole(dto);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
         }
     }
 }

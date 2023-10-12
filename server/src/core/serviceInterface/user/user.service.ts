@@ -7,13 +7,46 @@ import * as bcrypt from 'bcrypt';
 import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
 import {SignUpUserDto} from "../../../common/dtos/SignUpUser.dto";
 import {TokenService} from "../../../infrastructure/token/token.service";
+import {User} from "src/core/domain/User";
+import {SetUserRoleDto} from "../../../common/dtos/SetUserRole.dto";
+import {PaginationLimitDto} from "../../../common/dtos/PaginationLimit.dto";
+import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 
 @Injectable()
 export class UserService implements UserRepository {
     constructor(
         private prisma: PrismaService,
-        private tokenService: TokenService
+        private tokenService: TokenService,
+        private cloud: DropboxService
     ) {
+    }
+
+    async getAll(dto: PaginationLimitDto): Promise<Omit<User, 'password'>[]> {
+        return Promise.all((await this.prisma.user.findMany({
+            take: dto.take || 5,
+            skip: dto.skip || 0,
+
+        })).map(async (user) => {
+            const {password, ...userData} = user;
+            return {
+                ...userData,
+                avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link,
+            }
+        }))
+    }
+
+    async setUserRole(dto: SetUserRoleDto): Promise<Omit<User, 'password'>> {
+        const {password, ...user} =  await this.prisma.user.update({
+            where: {
+                id: dto.userId,
+            },
+            data: {
+                role:  {
+                    push:  dto.role
+                }
+            }
+        })
+        return user;
     }
 
     async create(dto: SignUpUserDto): Promise<AuthUserDto> {
