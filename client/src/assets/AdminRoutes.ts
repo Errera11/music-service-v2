@@ -7,5 +7,6 @@ export enum AdminRoutes {
     ALBUM_EDIT = '/admin/album/edit/',
     ALBUM_CREATE = '/admin/album/create/',
     USERS_PAGE = '/admin/users/',
-    BACK_TO_SERVICE = '/'
+    BACK_TO_SERVICE = '/',
+    SEARCH_SONGS = '/admin/song/search',
 }
