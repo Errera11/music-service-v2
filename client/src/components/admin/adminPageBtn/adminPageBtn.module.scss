@@ -1,14 +1,12 @@
 @import '../../../assets/colors.module';
-.container {
+
+.button {
+  border: none;
+  padding: 10px;
   background: $description;
   cursor: pointer;
+  background: $description;
   text-align: center;
   width: 100%;
-  text-overflow:ellipsis;
-  button {
-    border: none;
-    padding: 10px;
-    background: $description;
-    cursor: pointer;
-  }
+  text-overflow: ellipsis;
 }

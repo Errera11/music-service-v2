@@ -9,7 +9,7 @@ interface IProps {
     children?: React.ReactNode
 }
 
-const SongPageLayout: React.FC<IProps> = ({title, children}) => {
+const AlbumPageLayout: React.FC<IProps> = ({title, children}) => {
 
     const router = useRouter();
 
@@ -29,4 +29,4 @@ const SongPageLayout: React.FC<IProps> = ({title, children}) => {
     );
 };
 
-export default SongPageLayout;
+export default AlbumPageLayout;

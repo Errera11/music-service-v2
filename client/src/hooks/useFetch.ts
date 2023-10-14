@@ -1,7 +1,7 @@
 import {useState} from "react";
 import {AxiosResponse} from "axios";
 
-type Callback<T> = (arg: any) => Promise<AxiosResponse<T>>
+type Callback<T> = (arg: any) => Promise<AxiosResponse<T>>;
 
 type ReturnType<T, A> = [
     fetch: (arg: A) => Promise<void>,
@@ -10,7 +10,7 @@ type ReturnType<T, A> = [
     data: T | undefined
 ]
 
-const useFetch = <T, A = void>(fetchCallback: Callback<T>): ReturnType<T, A> => {
+const useFetch = <T, A>(fetchCallback: Callback<T>): ReturnType<T, A> => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
     const [data, setData] = useState<T>();

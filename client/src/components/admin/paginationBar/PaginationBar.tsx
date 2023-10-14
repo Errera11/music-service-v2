@@ -15,6 +15,7 @@ const PaginationBar: React.FC<IProps> = ({currentPage, totalPages, setPage}) => 
         if(i > totalPages) break
         pages.push(i);
     }
+
     return (
         <div className={styles.container}>
             {(currentPage - pagesRange > 1) && <span
