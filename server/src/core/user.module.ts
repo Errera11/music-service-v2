@@ -4,6 +4,7 @@ import {UserController} from "../infrastructure/controllers/user.controller";
 import {PrismaService} from "../infrastructure/prisma.service";
 import {SongModule} from "./song.module";
 import {TokenModule} from "./token.module";
+import {DropboxService} from "../infrastructure/cloud/dropbox.service";
 
 @Module(
     {
@@ -13,7 +14,8 @@ import {TokenModule} from "./token.module";
         ],
         providers: [
             PrismaService,
-            UserService
+            UserService,
+            DropboxService
         ],
         controllers: [UserController]
     }

@@ -1,4 +1,4 @@
-import {Injectable, UnauthorizedException} from "@nestjs/common";
+import {Inject, Injectable, UnauthorizedException} from "@nestjs/common";
 import {UserRepository} from "../../domainInterface/UserRepository/UserRepository";
 import {LoginUserDto} from "../../../common/dtos/LoginUser.dto";
 import {PrismaService} from "../../../infrastructure/prisma.service";
@@ -17,20 +17,27 @@ export class UserService implements UserRepository {
     constructor(
         private prisma: PrismaService,
         private tokenService: TokenService,
-        private cloud: DropboxService
+        @Inject(DropboxService) private cloud: DropboxService
     ) {
     }
 
-    async getAll(dto: PaginationLimitDto): Promise<Omit<User, 'password'>[]> {
-        return Promise.all((await this.prisma.user.findMany({
+    async getAll(dto: PaginationLimitDto): Promise<(Omit<User, 'password'> & {is_email_auth: boolean})[]> {
+        return await Promise.all((await this.prisma.user.findMany({
             take: dto.take || 5,
             skip: dto.skip || 0,
-
+            include: {
+                email_auth: {
+                    select: {
+                        is_email_auth: true
+                    }
+                }
+            }
         })).map(async (user) => {
-            const {password, ...userData} = user;
+            const {password, avatar, email_auth, ...userData} = user;
             return {
                 ...userData,
-                avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link,
+                avatar: avatar ? (await this.cloud.getFileStreamableUrl(user.avatar)).result.link : '',
+                is_email_auth: email_auth.is_email_auth
             }
         }))
     }
