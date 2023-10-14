@@ -9,9 +9,7 @@ interface IProps {
 
 const AdminPageBtn: React.FC<IProps> = ({title, onClick, disabled}) => {
     return (
-        <div onClick={onClick} className={styles.container}>
-            <button disabled={disabled}>{title}</button>
-        </div>
+        <button className={styles.button} onClick={onClick} disabled={disabled}>{title}</button>
     );
 };
 
