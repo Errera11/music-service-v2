@@ -33,9 +33,12 @@ export class DropboxService {
     }
 
     getFileStreamableUrl(id: string): Promise<DropboxResponse<DropboxTempLinkResponse>> {
-        return this.dbx.filesGetTemporaryLink({
-            path: id
-        })
+            if(!id) return Promise.resolve(new DropboxResponse(409, {}, {
+                link: ''
+            }))
+            return this.dbx.filesGetTemporaryLink({
+                path: id
+            })
     }
 
     deleteFile(id: string) {
