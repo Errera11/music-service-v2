@@ -92,10 +92,20 @@ export class UserController {
         }
     }
 
-    @Put('setUserRole')
-    async setUserRole(@Body() dto: SetUserRoleDto) {
+    @Put('makeAdmin')
+    async makeAdmin(@Body() dto: SetUserRoleDto) {
         try {
-            return this.userService.setUserRole(dto);
+            return this.userService.makeAdmin(dto);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Put('revokeAdmin')
+    async revokeAdmin(@Body() dto: SetUserRoleDto) {
+        try {
+            return this.userService.revokeAdmin(dto);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
