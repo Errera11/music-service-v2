@@ -12,6 +12,6 @@ export interface DropboxDownloadResponse {
     fileBinary: ArrayBuffer
 }
 
-export interface DropboxTempLinkResponse {
+export class DropboxTempLinkResponse {
     link: string
 }
