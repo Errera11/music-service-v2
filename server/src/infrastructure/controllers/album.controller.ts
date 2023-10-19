@@ -13,10 +13,21 @@ import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
 import {CreateAlbumDto} from "../../common/dtos/CreateAlbum.dto";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {UpdateAlbumDto} from "../../common/dtos/UpdateAlbum.dto";
+import {SearchSongDto} from "../../common/dtos/SearchSong.dto";
 
 @Controller('album')
 export class AlbumController {
     constructor(private albumService: AlbumService) {}
+
+    @Get('search')
+    searchAlbum(@Query() dto: SearchSongDto) {
+        try {
+            return this.albumService.searchAlbum(dto)
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
 
     @Post('addSong')
     addSongToAlbum(@Query(ParseIntPipe) dto: {songId: number, albumId: number}) {
