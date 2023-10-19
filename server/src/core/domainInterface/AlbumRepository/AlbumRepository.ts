@@ -3,6 +3,7 @@ import {Album} from "../../domain/Album";
 import {AlbumSongs} from "../../domain/AlbumSongs";
 import {UpdateAlbumDto} from "../../../common/dtos/UpdateAlbum.dto";
 import {Song} from "../../domain/Song";
+import {SearchSongDto} from "../../../common/dtos/SearchSong.dto";
 
 export interface AlbumRepository {
     getAlbums(skip: number, take: number): Promise<Album[]>
@@ -12,4 +13,5 @@ export interface AlbumRepository {
     addSongToAlbum(songId: number, albumId: number): Promise<AlbumSongs>
     deleteSongFromAlbum(songId: number, albumId: number): Promise<{song_id: number}>
     getAlbumById(albumId: number): Promise<Album & { songs: Song[] }>
+    searchAlbum(dto: SearchSongDto): Promise<{albums: Album[], totalCount: number}>
 }
