@@ -8,10 +8,52 @@ import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 import {Song} from "../../domain/Song";
 import * as uuid from 'uuid';
 import {Inject} from "@nestjs/common";
+import {SearchSongDto} from "../../../common/dtos/SearchSong.dto";
 
 export class AlbumService implements AlbumRepository {
 
-    constructor(@Inject(DropboxService) private cloud: DropboxService, private prisma: PrismaService) {}
+    constructor(@Inject(DropboxService) private cloud: DropboxService, private prisma: PrismaService) {
+    }
+
+    async searchAlbum(dto: SearchSongDto): Promise<{
+        albums: (Album & { album_songs: number[] })[],
+        totalCount: number
+    }> {
+        const dbAlbums = await this.prisma.album.findMany({
+            take: dto?.take || 5,
+            skip: dto?.skip || 0,
+            where: {
+                title: {
+                    contains: dto?.query || '',
+                    mode: "insensitive"
+                }
+            },
+            include: {
+                album_songs: {
+                    select: {
+                        song_id: true
+                    }
+                }
+            }
+        })
+        const totalCount = await this.prisma.album.count({
+            where: {
+                title: {
+                    contains: dto?.query || '',
+                    mode: "insensitive"
+                }
+            },
+        })
+        const albums = await Promise.all(dbAlbums.map(async (album) => ({
+            ...album,
+            image: (await this.cloud.getFileStreamableUrl(album.image)).result.link,
+            album_songs: album.album_songs.map(obj => obj.song_id)
+        })))
+        return {
+            albums,
+            totalCount
+        }
+    }
 
     addSongToAlbum(songId: number, albumId: number): Promise<AlbumSongs> {
         return this.prisma.albumSongs.create({
@@ -20,7 +62,7 @@ export class AlbumService implements AlbumRepository {
     }
 
     async createAlbum(dto: CreateAlbumDto): Promise<Album & { album_songs: number[] }> {
-        const {album_songs, image,  ...createData} = dto;
+        const {album_songs, image, ...createData} = dto;
         const albumUuid = uuid.v4() + '.' + image.originalname.split('.').pop();
         const response = await this.cloud.uploadFile(dto.image, 'image', albumUuid);
         const album = await this.prisma.album.create({
@@ -51,7 +93,7 @@ export class AlbumService implements AlbumRepository {
     async deleteAlbum(albumId: number): Promise<Album> {
         const album = await this.prisma.album.delete({
             where: {
-                id: albumId
+                id: albumId,
             }
         })
         await this.cloud.deleteFile(album.image)
@@ -70,8 +112,16 @@ export class AlbumService implements AlbumRepository {
 
     async updateAlbum(album: UpdateAlbumDto): Promise<Album & { album_songs: number[] }> {
         const {id, album_songs, ...rest} = album;
+        const {album_songs: currentAlbumSongs} = await this.prisma.album.findUnique({
+            where: {
+                id
+            },
+            include: {
+                album_songs: true
+            },
+        })
         let imageId = undefined;
-        if(album.image) {
+        if (album.image) {
             const fileName = uuid.v4() + '.' + album.image.originalname.split('.').pop();
             imageId = (await this.cloud.uploadFile(album.image.buffer, 'image', fileName)).result.id;
             const {image: imageToDelete} = await this.prisma.album.findUnique({
@@ -83,7 +133,12 @@ export class AlbumService implements AlbumRepository {
                 }
             })
             await this.cloud.deleteFile(imageToDelete);
+
         }
+        const normalizedCurrentAlbumSongs = currentAlbumSongs.map(obj => obj.song_id);
+        const albumSongsToCreate = album_songs.filter(id => normalizedCurrentAlbumSongs.indexOf(id) === -1);
+        const arrDiff = normalizedCurrentAlbumSongs.filter(id => album_songs.indexOf(id) === -1);
+        const albumSongsToDelete = arrDiff.filter(id => !!albumSongsToCreate.indexOf(id));
         const updatedAlbum = await this.prisma.album.update({
             where: {
                 id
@@ -92,8 +147,13 @@ export class AlbumService implements AlbumRepository {
                 ...rest,
                 image: imageId,
                 album_songs: {
+                    deleteMany: {
+                        song_id: {
+                            in: albumSongsToDelete
+                        }
+                    },
                     createMany: {
-                        data: album_songs?.map(item => ({song_id: item})) || []
+                        data: albumSongsToCreate?.map(item => ({song_id: item})) || undefined
                     }
                 },
             },
@@ -112,8 +172,11 @@ export class AlbumService implements AlbumRepository {
         }
     }
 
-    async getAlbums(skip?: number, take?: number): Promise<Album[]> {
-        const albums = await this.prisma.album.findMany({
+    async getAlbums(skip?: number, take?: number): Promise<{
+        albums: (Album & { album_songs: number[] })[],
+        totalCount: number
+    }> {
+        const dbAlbums = await this.prisma.album.findMany({
             skip: skip || 0,
             take: take || 10,
             include: {
@@ -124,11 +187,16 @@ export class AlbumService implements AlbumRepository {
                 }
             }
         })
-        return Promise.all(albums.map(async (album) => ({
+        const albumsTotalCount = await this.prisma.album.count();
+        const albums = await Promise.all(dbAlbums.map(async (album) => ({
             ...album,
             image: (await this.cloud.getFileStreamableUrl(album.image)).result.link,
             album_songs: album.album_songs.map(obj => obj.song_id)
         })))
+        return {
+            albums,
+            totalCount: albumsTotalCount
+        }
     }
 
     async getAlbumById(albumId: number): Promise<Album & { songs: Song[] }> {
