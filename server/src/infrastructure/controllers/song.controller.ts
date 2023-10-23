@@ -9,13 +9,12 @@ import {
     Param, ParseIntPipe,
     Post, Put, Query, Req,
     UploadedFiles,
-    UseInterceptors
+    UseInterceptors, ValidationPipe
 } from "@nestjs/common";
 import {SongService} from "../../core/serviceInterface/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
 import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
-import {DeleteSongDto} from "../../common/dtos/DeleteSong.dto";
 import {UpdateSongDto} from "../../common/dtos/UpdateSong.dto";
 
 @Controller('songs')
@@ -24,7 +23,7 @@ export class SongController {
     constructor(private songService: SongService) {}
 
     @Get('search')
-    searchSong(@Query() dto: PaginationLimitDto,
+    searchSong(@Query(new ValidationPipe({transform: true})) dto: PaginationLimitDto,
                @Query() query: { query: string, userId?: string }) {
         try {
             return this.songService.searchSong(query.query, dto.skip, dto.take, query?.userId);
@@ -49,7 +48,7 @@ export class SongController {
         {name: 'audio', maxCount: 1},
         {name: 'image', maxCount: 1},
     ]))
-    async create(@Body() dto: CreateSongDto, @UploadedFiles() files: {
+    async create(@Body(new ValidationPipe({transform: true})) dto: CreateSongDto, @UploadedFiles() files: {
         audio: Express.Multer.File[],
         image: Express.Multer.File[],
     }) {
@@ -73,7 +72,7 @@ export class SongController {
         {name: 'audio', maxCount: 1},
         {name: 'image', maxCount: 1},
     ]))
-    async updateSong(@Req() req: Request, @Body() dto: UpdateSongDto, @UploadedFiles() files: {
+    async updateSong(@Req() req: Request, @Body(new ValidationPipe({transform: true})) dto: UpdateSongDto, @UploadedFiles() files: {
         audio: Express.Multer.File[],
         image: Express.Multer.File[],
     }) {
@@ -119,7 +118,7 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserSongs(@Query() paginationLimit: PaginationLimitDto,
+    getUserSongs(@Query(new ValidationPipe({transform: true})) paginationLimit: PaginationLimitDto,
                  @Query() queryParams: { id: string, userId?: string }) {
         try {
             return this.songService.getUserSongs(queryParams.id, paginationLimit.skip, paginationLimit.take);
@@ -140,7 +139,7 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query() paginationLimit: PaginationLimitDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) paginationLimit: PaginationLimitDto) {
         try {
             return this.songService.getAll(paginationLimit.skip, paginationLimit.take)
         } catch (e) {

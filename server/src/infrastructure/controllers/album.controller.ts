@@ -6,7 +6,7 @@ import {
     Post, Put,
     Query,
     UploadedFiles,
-    UseInterceptors
+    UseInterceptors, ValidationPipe
 } from "@nestjs/common";
 import {AlbumService} from "../../core/serviceInterface/album/album.service";
 import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
@@ -40,7 +40,7 @@ export class AlbumController {
     }
 
     @Get('')
-    getAll(@Query() dto: PaginationLimitDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: PaginationLimitDto) {
         try {
             return this.albumService.getAlbums(dto.skip, dto.take)
         } catch (e) {
@@ -53,7 +53,7 @@ export class AlbumController {
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'image', maxCount: 1}
     ]))
-    createAlbum(@Body() dto: CreateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[],}) {
+    createAlbum(@Body(new ValidationPipe({transform: true})) dto: CreateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[],}) {
         try {
             return this.albumService.createAlbum({
                 ...dto,
@@ -69,11 +69,11 @@ export class AlbumController {
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'image', maxCount: 1}
     ]))
-    updateAlbum(@Body() album: UpdateAlbumDto, @UploadedFiles() files: {image: Express.Multer.File[]}) {
+    updateAlbum(@Body(new ValidationPipe({transform: true})) album: UpdateAlbumDto, @UploadedFiles() files: {image?: Express.Multer.File[] | undefined}) {
         try {
             return this.albumService.updateAlbum({
                 ...album,
-                image: files.image[0]
+                image: files.image ? files.image[0] : undefined
             })
         } catch (e) {
             console.log(e);
