@@ -11,7 +11,6 @@ const ClientPlayer = React.memo(dynamic(() => import('../components/player/Playe
 }));
 
 export default function Layout({children}: { children?: ReactElement }) {
-    console.log('Layot render');
 
     const dispatch = useAppDispatch();
     const audio = useTypedSelector(state => state.player.audio)
@@ -28,9 +27,9 @@ export default function Layout({children}: { children?: ReactElement }) {
 
     return (
         <div style={{margin: '10px'}}>
-            <nav><Navbar/></nav>
+            <nav style={{position: 'fixed', height: audio ? '86vh': '97vh'}}><Navbar/></nav>
             <AuthBtns/>
-            <main style={{marginLeft: '20vw', height: (audio ? '86vh' : '96vh')}}>{children}</main>
+            <main style={{marginLeft: '20vw', height: '100vh'}}>{children}</main>
             <ClientPlayer/>
         </div>
     )
