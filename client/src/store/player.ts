@@ -1,25 +1,18 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Song} from "@/assets/types/Song";
 
-interface PlayerState extends Song{
+interface PlayerState {
     currentTime: number
     isPlaying: boolean
     volume: number
+    duration: number
 }
 
 const playerInitialState: PlayerState = {
-    id: 0,
-    description: "",
-    artist: "",
-    audio: "",
-    title: "",
     currentTime: 0,
     volume: 0.5,
-    image: "",
     isPlaying: true,
-    name: "",
     duration: 0,
-    isLiked: false
 }
 
 const playerSlice = createSlice({

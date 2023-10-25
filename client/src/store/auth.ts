@@ -42,7 +42,6 @@ export const signupThunk = createAsyncThunk(
             localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
-            console.log(e);
             if (axios.isAxiosError(e)) {
                 throw e.response?.data.message
             }
@@ -94,6 +93,7 @@ const authSlice = createSlice({
             state.user = action.payload as AuthSuccessResponse;
         })
         builder.addCase(signupThunk.rejected, (state, action) => {
+            console.log(JSON.parse(action.error.message as string));
             state.error = JSON.parse(action.error.message as string);
         })
 
