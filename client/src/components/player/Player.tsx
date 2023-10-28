@@ -5,30 +5,35 @@ import {playerActions} from "@/store/player";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {normalizeTime} from "@/assets/normalizeTime";
 import HeartSvg from "@/assets/svg/HeartSvg";
-import {LazyImage} from "@/components/LazyImage";
+import {LazyImage} from "@/components/lazyImage/LazyImage";
+import {songActions} from "@/store/song";
+import {useSong} from "@/hooks/useSong";
 
 const playingSong: HTMLAudioElement = document.createElement('audio');
 
 const Player = () => {
 
     const {
-        id: songId,
-        audio,
+        // id: songId,
+        // audio,
         duration,
         volume,
-        artist,
-        image,
-        title,
+        // artist,
+        // image,
+        // title,
         currentTime,
         isPlaying,
-        isLiked
     } = useTypedSelector(state => state.player);
+
+    const {currentSong, songs} = useTypedSelector(state => state.songs);
 
     const {setDuration, setIsPlaying, setVolume, setCurrentTime} = playerActions;
     const dispatch = useAppDispatch();
 
+    const {skipSong, skipBackSong} = useSong();
+
     useEffect(() => {
-        playingSong.src = audio;
+        playingSong.src = currentSong.audio;
         playingSong.volume = volume;
         playingSong.onloadedmetadata = () => {
             if(isPlaying) {
@@ -43,6 +48,7 @@ const Player = () => {
 
         playingSong.onended = () => {
             dispatch(setIsPlaying(false));
+            skipSong();
         }
 
         playingSong.ontimeupdate = () => {
@@ -53,7 +59,7 @@ const Player = () => {
             dispatch(setVolume(playingSong.volume));
         }
 
-    }, [songId])
+    }, [currentSong?.id])
 
     const timeLineHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (duration) {
@@ -74,26 +80,34 @@ const Player = () => {
         }
     }
 
-    if (!title) return <></>
+    const onSkipSong = () => {
+        skipSong();
+    }
+
+    const onSkipBackSong = () => {
+        skipBackSong()
+    }
+
+    if (!currentSong?.id) return <></>
 
     return (
         <div className={styles.container}>
             <div className={styles.info}>
                 <div className={styles.imageWrapper}>
-                    <LazyImage src={image} className={styles.image}/>
+                    <LazyImage src={currentSong.image} className={styles.image}/>
                 </div>
                 <div className={styles.music_info}>
-                    <span className={styles.title}>{title}</span>
-                    <span className={styles.artist}>{artist}</span>
+                    <span className={styles.title}>{currentSong.title}</span>
+                    <span className={styles.artist}>{currentSong.artist}</span>
                 </div>
                 <div className={styles.like}>
-                    <HeartSvg isActive={isLiked} width={'35px'} height={'35px'} />
+                    <HeartSvg isActive={currentSong.isLiked} width={'35px'} height={'35px'} />
                 </div>
             </div>
             <div className={styles.playback}>
                 <div className={styles.controllers}>
                     {/*Player skip back*/}
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    <svg onClick={() => onSkipBackSong()} xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                          className={styles.back} viewBox="0 0 16 16">
                         <path
                             d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.713 3.31 4 3.655 4 4.308v7.384c0 .653.713.998 1.233.696L11.5 8.752V12a.5.5 0 0 0 1 0V4zM5 4.633 10.804 8 5 11.367V4.633z"/>
@@ -114,7 +128,7 @@ const Player = () => {
                         }
                     </svg>
                     {/*Player skip*/}
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor"
+                    <svg onClick={() => onSkipSong()} xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                          className={styles.skip} viewBox="0 0 16 16">
                         <path
                             d="M12.5 4a.5.5 0 0 0-1 0v3.248L5.233 3.612C4.713 3.31 4 3.655 4 4.308v7.384c0 .653.713.998 1.233.696L11.5 8.752V12a.5.5 0 0 0 1 0V4zM5 4.633 10.804 8 5 11.367V4.633z"/>

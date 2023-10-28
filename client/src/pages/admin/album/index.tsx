@@ -1,32 +1,52 @@
 import React from 'react';
 import AlbumPageLayout from "@/components/admin/adminPageLayouts/AlbumPageLayout";
-import {InferGetServerSidePropsType} from "next";
-import {albumApi} from "@/api/album";
+import {GetServerSideProps, InferGetServerSidePropsType} from "next";
+import {albumApi, IGetAllAlbumResponse} from "@/api/album";
 import AdminAlbumList from "@/components/admin/adminAlbumList/AdminAlbumList";
+import useSsgPagination from "@/components/admin/useSsgPagination/useSsgPaginaton";
+import PaginationBar from "@/components/admin/paginationBar/PaginationBar";
+import styles from '../../../styles/admin/album/album.module.scss';
 
-const Index = ({albums}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
+    const takeVolume = 5;
+    const {setPage, totalPages, currentPage} = useSsgPagination({totalItemsCount: data.totalCount, takeVolume});
+    console.log(data);
     return (
         <AlbumPageLayout title={'Search albums'}>
-            {albums && <AdminAlbumList albums={albums}/>}
+            <div className={styles.container}>
+                {data?.albums && <div className={styles.albumList}>
+                    <AdminAlbumList albums={data.albums}/>
+                </div>}
+                <div>
+                    <PaginationBar currentPage={currentPage} totalPages={totalPages} setPage={setPage} />
+                </div>
+            </div>
         </AlbumPageLayout>
     );
 };
 
 export default Index;
 
-export const getServerSideProps = async () => {
+export const getServerSideProps: GetServerSideProps<{data: IGetAllAlbumResponse}> = async ({query}) => {
     try {
-        const {data} = await albumApi.getAll({});
+        const paginate: {page?: number, take?: number} = query;
+        const page = paginate?.page ?? 1;
+        const take = paginate?.take ?? 5;
+        const {data} = await albumApi.getAll({
+            skip: (page - 1) * take,
+            take
+        });
         return {
             props: {
-                albums: data
+                data
             }
         }
     } catch (e) {
         console.log(e);
         return {
             props: {
-                albums: []
+                data: {} as IGetAllAlbumResponse
             }
         }
     }

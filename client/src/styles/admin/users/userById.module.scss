@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  justify-content: space-around;
+
+  .avatar {
+    width: 200px;
+    height: 200px;
+  }
+
+  .userInfoSample {
+    font-weight: bold;
+  }
+
+  .userInfo, .userInfoSample {
+    display: grid;
+    grid-template-rows: repeat(10, 1fr);
+    * {
+      padding: 5px 5px 10px 0;
+    }
+  }
+}

@@ -7,6 +7,8 @@ import {AxiosResponse} from "axios";
 import {Song} from "@/assets/types/Song";
 import styles from './songForm.module.scss';
 import {set} from "immutable";
+import {CreateSongDto} from "@/assets/dto/CreateSongDto";
+import {UpdateSongDto} from "@/assets/dto/UpdateSongDto";
 
 export interface IGenre {
     id: number
@@ -14,12 +16,13 @@ export interface IGenre {
 }
 
 export interface IProps {
-    onSubmit: (formdata: FormData) => Promise<AxiosResponse<Song>>
+    onSubmit: (dto: UpdateSongDto | CreateSongDto) => Promise<AxiosResponse<Song>>
     song?: Song
     btnAction: 'Create' | 'Update'
 }
 
 const SongForm: React.FC<IProps> = ({onSubmit, song, btnAction}) => {
+
     const [isDisabled, setIsDisabled] = useState(false);
 
     const [title, setTitle] = useState(song?.title);
@@ -56,16 +59,14 @@ const SongForm: React.FC<IProps> = ({onSubmit, song, btnAction}) => {
         setIsDisabled(true);
         e.stopPropagation();
         e.preventDefault();
-        const formdata = new FormData();
-        formdata.append('id', String(song?.id || -1));
-        formdata.append('title', title || '');
-        formdata.append('description', description || '');
-        formdata.append('audio', audio as Blob || '');
-        formdata.append('image', image as Blob || '');
-        formdata.append('artist', artist || '');
-        formdata.append('genre', JSON.stringify(selectedSongGenres.map(item => ({id: item.id, genre: item.title}))));
-        if (formdata.get('artist')) onSubmit(formdata).then(response => {
-            console.log(response)
+
+         onSubmit({
+            title,
+            audio: audio || '',
+            artist,
+            id: song?.id,
+            image: image || '',
+            description
         }).finally(() => setIsDisabled(false))
     }
 

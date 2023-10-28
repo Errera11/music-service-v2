@@ -7,16 +7,13 @@ import SearchPageSvg from "@/assets/svg/SearchPageSvg";
 import PlaylistPageSvg from "@/assets/svg/PlaylistPageSvg";
 import {useRouter} from "next/router";
 import {AppRoutes} from "@/assets/appRoutes";
-import {useTypedSelector} from "@/hooks/useTypedSelector";
 
 const Navbar = () => {
 
     const router = useRouter();
 
-    const {audio} = useTypedSelector(state => state.player)
-
     return (
-        <div className={styles.container} style={audio ? {height: '86vh'} : {height: '97vh'}}>
+        <div className={styles.container}>
             <div className={styles.upperBar}>
                 <BarButton
                     title={'Search'}

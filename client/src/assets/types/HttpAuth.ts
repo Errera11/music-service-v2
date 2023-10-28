@@ -1,3 +1,5 @@
+import {UserRoles} from "@/assets/types/User";
+
 export type AuthConstraintsError = [{
     property: string,
     constraints: string
@@ -11,7 +13,7 @@ export type AuthError = {
 export interface AuthSuccessResponse {
     email: string,
     name: string,
-    role: string[],
+    role: UserRoles[],
     avatar: string,
     is_email_auth: boolean,
     authToken: string,

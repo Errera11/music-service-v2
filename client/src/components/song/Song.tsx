@@ -13,13 +13,14 @@ interface IProps {
 
 const Song: React.FC<IProps> = ({song}) => {
 
-    const [playerSong, setSong] = useSong();
+    const {currentSong, setSong} = useSong();
+
     const [removeSongFromFavorite, error, isSuccess] = useRemoveFromFavorite();
 
     return (
         <div className={styles.container}>
             {error && <PopupSuccess message={error} isFailure={!!error} isSuccess={isSuccess}/>}
-            <div className={styles.song + ' ' + (playerSong.id === song.id ? styles.active : '')}>
+            <div className={styles.song + ' ' + (currentSong.id === song.id ? styles.active : '')}>
                 <div className={styles.songNote}>
                     <MusicNoteSvg width={'25px'} height={'25px'} isActive={false}/>
                 </div>
@@ -32,7 +33,7 @@ const Song: React.FC<IProps> = ({song}) => {
                     </span>
                 </div>
                 <div onClick={() => removeSongFromFavorite(song.id)}>
-                    <HeartSvg isActive={playerSong.isLiked} width={'25px'} height={'25px'} />
+                    <HeartSvg isActive={currentSong.isLiked} width={'25px'} height={'25px'} />
                 </div>
                 <div className={styles.duration}>
                     {song.duration}

@@ -1,58 +1,50 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
-import Layout from "@/components/Layout";
+import React, {useEffect, useState} from 'react';
 import Head from "next/head";
 import SearchBar from "@/components/searchBar/SearchBar";
 import styles from '../../styles/search/search.module.scss';
-import {songsApi} from "@/api/songs";
+import {ISongApiResponse, songsApi} from "@/api/songs";
 import SongsList from "@/components/songsList/SongsList";
 import useFetch from "@/hooks/useFetch";
 import Loader from "@/components/loader/Loader";
-import {Song} from "@/assets/types/Song";
+import {useDynamicPagination} from "@/hooks/useDynamicPagination";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
+import {useAppDispatch} from "@/hooks/useAppDispatch";
+import {songActions} from "@/store/song";
 
 const Search = () => {
-
-    const [pageNumber, setPageNumber] = useState(1);
     const searchTake = 10;
-    // TODO maybe incorrect calculation
-    const searchSkip = (pageNumber - 1) * searchTake;
     const [query, setQuery] = useState('')
-    const [fetch, isLoading, isError] = useFetch((...args) => songsApi.searchSongs(query, ...args))
-    const [songs, setSongs] = useState<Song[]>([]);
-    const [hasMoreSongs, setHasMoreSongs] = useState(false)
+    const {
+        fetch,
+        isLoading,
+        isError,
+        data
+    } = useFetch<ISongApiResponse, Parameters<typeof songsApi.searchSongs>[0]>(songsApi.searchSongs);
+    const {lastElementRef, currentPage, setPage} = useDynamicPagination({
+        volume: searchTake,
+        totalCount: data?.totalCount || 0
+    })
 
-    const observer = useRef<null | IntersectionObserver>(null)
-    const lastElementRef = useCallback((node: HTMLElement) => {
-        if (isLoading || !node) return;
-        observer.current?.disconnect()
-        observer.current?.observe(node)
-    }, [])
-
-    useEffect(() => {
-        observer.current = new IntersectionObserver(entries => {
-            if (entries[0].isIntersecting) {
-                setPageNumber(prev => prev + 1)
-            }
-        })
-    }, [])
+    const songs = useTypedSelector(state => state.songs.songs);
+    const {setSongs} = songActions;
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (query) fetch().then(data => {
-            if (data) {
-                if (data.data.songs.length) setSongs(prev => [...prev, ...data.data.songs]);
-                else setSongs([])
-            }
-
-        })
+        setPage(1);
+        fetch({
+            take: searchTake,
+            currentPage: 1,
+            query
+        }).then(response => dispatch(setSongs(response.songs)))
     }, [query])
 
     useEffect(() => {
-        if (hasMoreSongs) fetch(searchSkip, searchTake).then(data => {
-            if (data) {
-                setSongs(prev => [...prev, ...data.data.songs])
-                setHasMoreSongs(searchSkip < data.data.totalCount)
-            }
-        })
-    }, [pageNumber])
+        if(query) fetch({
+            query,
+            take: searchTake,
+            currentPage
+        }).then((response) => setSongs([...songs, ...response.songs]))
+    }, [currentPage])
 
     return (
         <>
@@ -63,12 +55,14 @@ const Search = () => {
                 <div className={styles.searchBar}>
                     <SearchBar onSearch={(query: string) => setQuery(query)}/>
                 </div>
-                {(songs?.length) &&
+                {!isLoading && (songs) &&
                     <SongsList lastElementRef={lastElementRef} type={'list'} songs={songs}/>}
-                {(!songs?.length && !isLoading) && <div className={styles.searchFailureMessage}>No songs found</div>}
+                {(!songs.length && !isLoading) &&
+                    <div className={styles.searchFailureMessage}>No songs found</div>}
                 {isLoading && <div className={styles.loader}>
                     <Loader/>
                 </div>}
+                {isError && <div>Some error happened</div>}
             </div>
         </>
     );

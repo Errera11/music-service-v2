@@ -1,6 +1,7 @@
 
 import api from './root';
-import {CreateAlbumDto, UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {UpdateAlbumDto} from "@/assets/dto/UpdateAlbumDto";
 import {Album, AlbumById, AlbumSongs} from "@/assets/types/Album";
 
 export interface IGetAllAlbumResponse {
@@ -39,7 +40,7 @@ const updateAlbum = (dto: UpdateAlbumDto) => {
     formdata.append('author', dto.author || '');
     formdata.append('description', dto.description || '');
     formdata.append('image', dto.image || '');
-    formdata.append('album_songs', JSON.stringify(dto.album_songs || []));
+    formdata.append('album_songs', JSON.stringify(dto?.album_songs || []));
     return api.put<Album>('album/update', formdata);
 }
 

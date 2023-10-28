@@ -1,4 +1,4 @@
-import React, {LegacyRef, MutableRefObject} from 'react';
+import React, {LegacyRef} from 'react';
 import {Song} from "@/assets/types/Song";
 import styles from './songsList.module.scss';
 import SongItem from '../song/Song';

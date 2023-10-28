@@ -12,11 +12,11 @@ const SearchBar = ({onSearch}: { onSearch: (query: string) => void }) => {
     }
 
     useMemo(() => {
+
         clearTimeout(timeoutId);
 
         timeoutId = setTimeout(() => {
-            onSearch(query)
-            clearTimeout(timeoutId);
+            onSearch(query);
         }, 700);
 
     }, [query])

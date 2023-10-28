@@ -3,8 +3,8 @@ import {
     Body,
     Controller, Delete, Get,
     HttpException,
-    HttpStatus, InternalServerErrorException,
-    Post, Put, Query, Req, Res, UnauthorizedException,
+    HttpStatus, InternalServerErrorException, Param,
+    Post, Put, Query, Req, Res, UnauthorizedException, UsePipes,
 } from "@nestjs/common";
 import {UserService} from "../../core/serviceInterface/user/user.service";
 import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
@@ -28,8 +28,8 @@ export class UserController {
             response.cookie('refreshToken', refreshToken, {httpOnly: true});
             return data;
         } catch (e) {
-            console.log(new AuthException('none', e.message, HttpStatus.BAD_REQUEST));
-            throw new AuthException('none', e.message, HttpStatus.BAD_REQUEST);
+            console.log(e);
+            throw new AuthException('', e.message, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -41,7 +41,7 @@ export class UserController {
             return data;
         } catch (e) {
             console.log(e);
-            throw new HttpException(e.message, HttpStatus.BAD_REQUEST);
+            throw new AuthException('', e.message, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -62,7 +62,6 @@ export class UserController {
     async refreshSession(@Res({passthrough: true}) response: Response, @Req() request: Request): Promise<Omit<AuthUserDto, 'refreshToken'>> {
         try {
             const oldRefreshToken = request.cookies['refreshToken'];
-            console.log(request.cookies['refreshToken']);
             const {refreshToken, ...userData} = await this.userService.refreshSession(oldRefreshToken);
             response['cookie']('refreshToken', refreshToken, {httpOnly: true});
             return userData;
@@ -106,6 +105,16 @@ export class UserController {
     async revokeAdmin(@Body() dto: SetUserRoleDto) {
         try {
             return this.userService.revokeAdmin(dto);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('getUserById/:id')
+    async getUserById(@Param('id') id: string) {
+        try {
+            return this.userService.getUserById(id);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

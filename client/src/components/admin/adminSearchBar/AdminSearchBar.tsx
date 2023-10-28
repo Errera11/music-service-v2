@@ -8,7 +8,6 @@ interface IProps {
 
 const AdminSearchBar: React.FC<IProps> = ({value, onChange, placeholder}) => {
     return (
-
         <input style={{
             border: '2px solid gray',
             borderRadius: '15px',

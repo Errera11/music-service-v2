@@ -1,35 +1,39 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {AlbumById} from "@/assets/types/Album";
+import {Album, AlbumById} from "@/assets/types/Album";
 import styles from './albumForm.module.scss';
 import AdminPageInput from "@/components/admin/adminPageInput/AdminPageInput";
 import AdminPageBtn from "@/components/admin/adminPageBtn/AdminPageBtn";
-import {CreateAlbumDto, UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
 import AdminSongListItem from "@/components/admin/adminSongListItem/AdminSongListItem";
 import PaginationBar from "@/components/admin/paginationBar/PaginationBar";
-import {Song} from "@/assets/types/Song";
 import useFetch from "@/hooks/useFetch";
 import {ISongApiResponse, songsApi} from "@/api/songs";
 import usePagination from "@/hooks/usePagination";
 import AdminSearchBar from "@/components/admin/adminSearchBar/AdminSearchBar";
+import {UpdateAlbumDto} from "@/assets/dto/UpdateAlbumDto";
+import {AxiosResponse} from "axios";
+import {Song} from "@/assets/types/Song";
 
 export interface IProps {
-    onSubmit: (dto: CreateAlbumDto | UpdateAlbumDto) => void,
+    onSubmit: (dto: CreateAlbumDto | UpdateAlbumDto) => Promise<AxiosResponse<Album>>,
     btnAction: 'Create' | 'Edit',
     album?: AlbumById
 }
 
 const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
 
+    const [isDisabled, setIsDisabled] = useState(false)
+
     const [title, setTitle] = useState(album?.title || '');
     const [author, setAuthor] = useState(album?.author || '');
     const [description, setDescription] = useState(album?.description || '');
-    const [image, setImage] = useState<File | string | null>(album?.image || '')
-    const [albumSongs, setAlbumSongs] = useState<Song[]>([])
+    const [image, setImage] = useState<File | undefined>();
+    const [albumSongs, setAlbumSongs] = useState<Song[]>(album?.songs || [])
 
     const imageRef = useRef<HTMLInputElement>(null);
 
     const [songSearchQuery, setSongSearchQuery] = useState('');
-    const [fetchSongs, isLoading, isError, data] = useFetch<ISongApiResponse, Parameters<typeof songsApi.searchSongs>[0]>(songsApi.searchSongs);
+    const {fetch: fetchSongs, isLoading, isError, data} = useFetch<ISongApiResponse, Parameters<typeof songsApi.searchSongs>[0]>(songsApi.searchSongs);
     const songsTakeVolume = 5;
     const {setPage, currentPage, totalPages} = usePagination(songsTakeVolume, data?.totalCount || 0)
     const handleSearchSong = (e: React.FormEvent) => {
@@ -50,10 +54,16 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
     }, [currentPage])
 
     const onFormSubmit = (e: React.MouseEvent) => {
-        e.preventDefault()
-        if(title && author && (image instanceof File)) {
-            onSubmit({id: album?.id, title, image, description, author, album_songs: albumSongs.map(song => song.id) || []})
-        }
+        e.preventDefault();
+        setIsDisabled(true);
+        return onSubmit({
+            id: album?.id,
+            title,
+            image,
+            description,
+            author,
+            album_songs: albumSongs.map(song => song.id) || []} as UpdateAlbumDto)
+            .finally(() => setIsDisabled(false))
     }
 
     return (
@@ -64,7 +74,7 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
                     <input onChange={e => setImage(e.target.files![0])} style={{display: 'none'}} type={'file'}
                            accept={'image/*'} ref={imageRef}/>
                     <div className={styles.imageCreate} onClick={() => imageRef.current?.click()}>
-                        {image && <img src={typeof image === 'string' ? image : URL.createObjectURL(image)}/>}
+                        {album?.image && <img src={typeof album.image === 'string' ? album.image : URL.createObjectURL(album.image)}/>}
                         <div className={styles.hover}>Select image</div>
                     </div>
                 </div>
@@ -82,7 +92,7 @@ const AlbumForm: React.FC<IProps> = ({onSubmit, album, btnAction}) => {
                         value={description}
                         onChange={e => setDescription(e.target.value)}/>
                     <div className={styles.submitBtn}>
-                        <AdminPageBtn onClick={e => onFormSubmit(e)} title={btnAction}/>
+                        <AdminPageBtn disabled={isDisabled} onClick={e => onFormSubmit(e)} title={btnAction}/>
                     </div>
                 </div>
             </form>

@@ -5,7 +5,7 @@ export interface Album {
     title: string
     description?: string
     author: string
-    image: string
+    image: string | File
     album_songs: number[]
 }
 

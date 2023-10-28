@@ -1,7 +1,6 @@
 @import '../../assets/colors.module';
 .container {
-  background: black;
-  position: fixed;
+  height: 100%;
   .upperBar, .lowerBar {
     width: 20vw;
     background: $barColor;

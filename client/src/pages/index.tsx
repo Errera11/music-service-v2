@@ -2,8 +2,17 @@ import Head from 'next/head'
 import {songsApi} from "@/api/songs";
 import {InferGetStaticPropsType} from "next";
 import SongsList from "@/components/songsList/SongsList";
+import {useSong} from "@/hooks/useSong";
+import {useEffect} from "react";
 
-export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof getStaticProps>) {
+export default function Home({songs}: InferGetStaticPropsType<typeof getStaticProps>) {
+
+    const {setSongs} = useSong();
+
+    useEffect(() => {
+        setSongs(songs);
+    }, [])
+
     return (
         <>
             <Head>
@@ -25,7 +34,7 @@ export default function Home({songs, totalCount}: InferGetStaticPropsType<typeof
 
 export const getStaticProps = async () => {
     try {
-        const {songs, totalCount} = (await songsApi.getAllSongs()).data;
+        const {songs, totalCount} = (await songsApi.getAllSongs({})).data;
         return {
             props: {
                 songs,
@@ -38,7 +47,8 @@ export const getStaticProps = async () => {
             props: {
                 songs: [],
                 totalCount: 0
-            }
+            },
+            revalidate: 60 * 60 * 60
         }
     }
 }

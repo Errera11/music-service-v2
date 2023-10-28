@@ -1,0 +1,21 @@
+
+.container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  .albumList {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  .searchBar {
+    width: 200px;
+    margin: 20px 0;
+  }
+
+  .paginationBar {
+    margin: 20px 0;
+  }
+
+}

@@ -11,6 +11,7 @@ import {User} from "src/core/domain/User";
 import {SetUserRoleDto} from "../../../common/dtos/SetUserRole.dto";
 import {PaginationLimitDto} from "../../../common/dtos/PaginationLimit.dto";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
+import {UserRoles} from "@prisma/client";
 
 @Injectable()
 export class UserService implements UserRepository {
@@ -21,39 +22,77 @@ export class UserService implements UserRepository {
     ) {
     }
 
-    async getAll(dto: PaginationLimitDto): Promise<(Omit<User, 'password'> & {is_email_auth: boolean})[]> {
-        return await Promise.all((await this.prisma.user.findMany({
-            take: dto.take || 5,
-            skip: dto.skip || 0,
-            include: {
-                email_auth: {
-                    select: {
-                        is_email_auth: true
+    async getAll(dto: PaginationLimitDto): Promise<{
+        users: (Omit<User, 'password'> & {is_email_auth: boolean})[],
+        totalCount: number
+    }> {
+        const totalUsersCount = await this.prisma.user.count();
+        return {
+            //@ts-ignore
+            users: await Promise.all((await this.prisma.user.findMany({
+                take: dto.take || 5,
+                skip: dto.skip || 0,
+                include: {
+                    email_auth: {
+                        select: {
+                            is_email_auth: true
+                        }
                     }
                 }
-            }
-        })).map(async (user) => {
-            const {password, avatar, email_auth, ...userData} = user;
-            return {
-                ...userData,
-                avatar: avatar ? (await this.cloud.getFileStreamableUrl(user.avatar)).result.link : '',
-                is_email_auth: email_auth.is_email_auth
-            }
-        }))
+            })).map(async (user) => {
+                const {password, avatar, email_auth, ...userData} = user;
+                return {
+                    ...userData,
+                    avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link,
+                    is_email_auth: email_auth.is_email_auth
+                }
+            })),
+            totalCount: totalUsersCount
+        }
     }
 
-    async setUserRole(dto: SetUserRoleDto): Promise<Omit<User, 'password'>> {
-        const {password, ...user} =  await this.prisma.user.update({
+    async makeAdmin(dto: SetUserRoleDto): Promise<Omit<User, 'password'>> {
+        const { role, ...user} =  await this.prisma.user.findUnique({
             where: {
                 id: dto.userId,
-            },
-            data: {
-                role:  {
-                    push:  dto.role
-                }
             }
         })
-        return user;
+        const {password, ...updatedUser} = await this.prisma.user.update({
+            where: {
+                id: dto.userId
+            },
+            data: {
+                role: {
+                    push: UserRoles.ADMIN
+                }
+            }
+        });
+        //@ts-ignore
+        return {
+            ...updatedUser,
+            avatar: (await this.cloud.getFileStreamableUrl(updatedUser.avatar)).result.link
+        }
+    }
+
+    async revokeAdmin(dto: SetUserRoleDto): Promise<Omit<User, 'password'>> {
+        const { role, ...user} =  await this.prisma.user.findUnique({
+            where: {
+                id: dto.userId,
+            }
+        })
+        const {password, ...updatedUser} = await this.prisma.user.update({
+            where: {
+                id: dto.userId
+            },
+            data: {
+                role: role.filter(role => role !== UserRoles.ADMIN)
+            }
+        });
+        //@ts-ignore
+        return {
+            ...updatedUser,
+            avatar: (await this.cloud.getFileStreamableUrl(updatedUser.avatar)).result.link
+        }
     }
 
     async create(dto: SignUpUserDto): Promise<AuthUserDto> {
@@ -119,7 +158,7 @@ export class UserService implements UserRepository {
             name: user.name,
             role: user.role,
         })
-        // Check out count of user sessions and if there are more than 5, drop all
+        // Check out count of users sessions and if there are more than 5, drop all
         // sessions except currently created in case of security
         const userSessionsCount = await this.prisma.tokenSession.count({
             where: {
@@ -220,5 +259,33 @@ export class UserService implements UserRepository {
             throw new UnauthorizedException();
         }
 
+    }
+
+    async getUserById(userId: string): Promise<{
+        user: Omit<User, 'password'>,
+        userFavSongsCount: number,
+        userPlaylistsCount: number
+    }> {
+        const userFavSongsCount = await this.prisma.playlist.count({
+            where: {
+                user_id: userId
+            }
+        })
+        const userPlaylistsCount = await this.prisma.favorite.count({
+            where: {
+                user_id: userId
+            }
+        })
+        const {password, ...user} = await this.prisma.user.findUnique({
+            where: {
+                id: userId
+            }
+        })
+        return {
+            //@ts-ignore
+            user,
+            userFavSongsCount,
+            userPlaylistsCount
+        }
     }
 }

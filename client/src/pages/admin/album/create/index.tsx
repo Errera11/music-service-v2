@@ -12,7 +12,7 @@ const Index = () => {
 
     return (
         <AlbumPageLayout title={'Create album'}>
-            <AlbumForm btnAction={'Create'} onSubmit={onSubmit}/>
+            <AlbumForm btnAction={'Create'} onSubmit={(dto) => onSubmit(dto as CreateAlbumDto)}/>
         </AlbumPageLayout>
     );
 };

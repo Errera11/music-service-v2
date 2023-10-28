@@ -41,7 +41,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     console.log(req);
 
     try {
-        const {songs, totalCount} = (await songsApi.getAllSongs()).data
+        const {songs, totalCount} = (await songsApi.getAllSongs({})).data
         return {
             props: {
                 songs,
@@ -50,5 +50,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
         }
     } catch (e) {
         console.log(e);
+        return {
+            props: {}
+        }
     }
 }

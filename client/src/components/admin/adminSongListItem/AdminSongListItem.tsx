@@ -30,7 +30,6 @@ const AdminSongListItem: React.FC<IProps> = ({song}) => {
     }
 
     useEffect(() => {
-
         const listener = (e: MouseEvent) => {
             if (e.target instanceof HTMLElement &&
                 !popupRef.current?.contains(e.target) &&

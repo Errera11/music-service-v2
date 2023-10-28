@@ -35,7 +35,6 @@ const Login = () => {
 
     return (
         <>
-
             <Head>
                 <title>Login</title>
             </Head>

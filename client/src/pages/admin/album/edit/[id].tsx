@@ -2,7 +2,7 @@ import React from 'react';
 import AlbumForm from "@/components/admin/albumForm/AlbumForm";
 import {albumApi} from "@/api/album";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
-import {UpdateAlbumDto} from "@/assets/dto/CreateAlbumDto";
+import {UpdateAlbumDto} from "@/assets/dto/UpdateAlbumDto";
 import AlbumPageLayout from "@/components/admin/adminPageLayouts/AlbumPageLayout";
 
 const Id = ({album}: InferGetServerSidePropsType<typeof getServerSideProps>) => {

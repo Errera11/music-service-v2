@@ -8,8 +8,9 @@ import {playerActions} from "@/store/player";
 export function useSong() {
     const dispatch = useAppDispatch();
     const song = useTypedSelector(state => state.songs.currentSong);
-    const {setCurrentTime} = playerActions;
     const {skipNext, skipBack} = songActions;
+    const {setCurrentTime, setIsPlaying} = playerActions;
+    const {setCurrentSong, setSongs: setSongsAC} = songActions;
 
     const skipSong = useCallback(() => {
         dispatch(setCurrentTime(0));
@@ -17,15 +18,25 @@ export function useSong() {
     }, [])
 
     const skipBackSong = useCallback(() => {
-        song && dispatch(setCurrentTime(0));
+        dispatch(setCurrentTime(0));
         dispatch(skipBack());
     }, [])
 
-    const {setCurrentSong} = songActions;
+    const setSong = (song: Song) => {
+        dispatch(setCurrentTime(0));
+        dispatch(setIsPlaying(true));
+        dispatch(setCurrentSong(song));
+    }
+
+    const setSongs = useCallback((songs: Song[]) => {
+        dispatch(setSongsAC(songs));
+    }, []);
+
     return {
         currentSong: song,
-        setSong: (song: Song) => dispatch(setCurrentSong(song)),
         skipSong,
-        skipBackSong
+        skipBackSong,
+        setSong,
+        setSongs
     }
 }

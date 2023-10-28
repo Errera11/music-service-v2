@@ -1,7 +1,7 @@
 import {useMemo, useState} from "react";
 
 interface IReturnType {
-    setPage: (page: number) => void
+    setPage: (page: number | ((prevState: number) => number)) => void
     currentPage: number
     totalPages: number
 }
@@ -12,7 +12,7 @@ export default (volume: number = 5, totalItemsCount: number): IReturnType => {
     const totalPages = useMemo(() => Math.ceil(totalItemsCount / volume), [totalItemsCount])
 
     return {
-        setPage: (page: number) => setCurrentPage(page),
+        setPage: setCurrentPage,
         currentPage,
         totalPages
     }

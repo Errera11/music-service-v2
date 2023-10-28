@@ -86,7 +86,6 @@
       .playerButton {
         width: 40px;
         height: 40px;
-        cursor: pointer;
       }
 
       display: flex;
@@ -102,6 +101,16 @@
       .back, .skip {
         width: 35px;
         height: 35px;
+      }
+
+      .back, .skip, .playerButton {
+        cursor: pointer;
+        &:hover {
+          * {
+            transition: 150ms ease-in-out;
+            fill: white;
+          }
+        }
       }
     }
 

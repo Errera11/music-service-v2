@@ -25,10 +25,10 @@ const removeFromFavorite = ({authToken, songId}: {authToken: string, songId: num
     }
 })
 
-const searchSongs = ({query, skip, take}: {query?: string, skip?: number, take?: number}) => api.get<ISongApiResponse>('/songs/search', {
+const searchSongs = ({query, currentPage, take}: {query?: string, currentPage?: number, take?: number}) => api.get<ISongApiResponse>('/songs/search', {
     params: {
         query,
-        skip,
+        skip: (take && currentPage) && (currentPage - 1) * take,
         take
     }
 })

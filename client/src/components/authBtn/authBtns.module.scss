@@ -1,12 +1,12 @@
 @import '../../assets/colors.module';
 
 .container {
-  position: fixed;
+  position: absolute;
+  z-index: 999;
   right: 0;
-  display: flex;
+  top: 10px;
+  display: inline-flex;
   align-items: center;
-
-
   .dropdown {
     position: absolute;
     background: black;

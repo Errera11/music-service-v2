@@ -3,11 +3,11 @@ import {Song} from "@/assets/types/Song";
 import {useSong} from "@/hooks/useSong";
 import styles from './songPlate.module.scss'
 import play from '../../assets/svg/play-circle.svg';
-import {LazyImage} from "@/components/LazyImage";
+import {LazyImage} from "@/components/lazyImage/LazyImage";
 
 const SongPlate: React.FC<{ song: Song }> = ({song}) => {
+    const {setSong} = useSong()
     const {image, title, artist} = song;
-    const [ activeSong, setSong] = useSong()
     return (
         <div onClick={() => setSong(song)} className={styles.container}>
             <div className={styles.imageWrapper}>

@@ -13,11 +13,15 @@ export interface UserRepository {
         authToken: string
     }>
     loginByToken(authToken: string): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>>
-
     getAll(dto: PaginationLimitDto): Promise<{
         users: (Omit<User, 'password'> & {is_email_auth: boolean})[],
         totalCount: number
     }>
     makeAdmin(dto: SetUserRoleDto): Promise<Omit<User, 'password'>>
     revokeAdmin(dto: SetUserRoleDto): Promise<Omit<User, 'password'>>
+    getUserById(userId: string): Promise<{
+        user: Omit<User, 'password'>,
+        userFavSongsCount: number,
+        userPlaylistsCount: number
+    }>
 }

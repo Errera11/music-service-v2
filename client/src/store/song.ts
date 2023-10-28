@@ -16,6 +16,7 @@ const songsSlice = createSlice({
     initialState: initialSongsState,
     reducers: {
         setSongs: (state, action: PayloadAction<Song[]>) => {
+            console.log(action.payload);
             state.songs = action.payload;
         },
         skipNext: (state) => {

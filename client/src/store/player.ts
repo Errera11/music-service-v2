@@ -19,9 +19,9 @@ const playerSlice = createSlice({
     name: 'player',
     initialState: playerInitialState,
     reducers: {
-        setSong(state, action: PayloadAction<Song>) {
-            return { ...action.payload, currentTime: 0, isPlaying: true, duration: 0, volume: state.volume};
-        },
+        // setSong(state, action: PayloadAction<Song>) {
+        //     return { ...action.payload, currentTime: 0, isPlaying: true, duration: 0, volume: state.volume};
+        // },
         setVolume(state, action: PayloadAction<number>) {
             state.volume = action.payload;
         },
