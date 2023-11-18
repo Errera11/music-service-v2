@@ -75,6 +75,11 @@ const updateSong = (dto: UpdateSongDto) => {
     return api.put<Song>('songs/update', formdata)
 };
 
+const addToFavorite = ({authToken, songId}: {authToken: string, songId: number}) => api.post('/favorite', {
+    authToken,
+    songId
+})
+
 export const songsApi = {
     getAllSongs,
     removeFromFavorite,
@@ -84,5 +89,6 @@ export const songsApi = {
     createGenre,
     deleteSong,
     getSongById,
-    updateSong
+    updateSong,
+    addToFavorite
 }
