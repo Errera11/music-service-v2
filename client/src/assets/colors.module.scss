@@ -6,6 +6,7 @@ $userPageBg: linear-gradient(to top, rgb(34, 34,34 ) 0%, rgb(133, 131, 131) 80%,
 $playerBg: #262626;
 $playerProgressBar: #303030;
 $playerCurrentTime: #bd0015;
+$albumPageBg: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 65%, rgba(60,60,60,1) 100%);
 
 :export {
   description: $description;
