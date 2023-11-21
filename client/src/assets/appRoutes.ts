@@ -6,5 +6,6 @@ export enum AppRoutes {
     SONGS_PAGE = '/songs',
     LOGIN_PAGE = '/login',
     SIGNUP_PAGE = '/signup',
-    USER_PAGE = '/user'
+    USER_PAGE = '/user',
+    ALBUM_PAGE = '/album' // album/[id]
 }
