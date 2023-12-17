@@ -1,12 +1,14 @@
 export enum UserRoles {
-    USER,
-    ADMIN
+    USER = 'USER',
+    ADMIN = 'ADMIN'
 }
+
 export class User {
     id: string
     name: string
     email: string
     password: string
-    role: UserRoles[]
+    role: string[]
     avatar: string
+    is_email_auth: boolean
 }

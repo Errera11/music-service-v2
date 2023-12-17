@@ -1,3 +1,4 @@
+import {Song} from "./Song";
 
 export class Album {
     id: number
@@ -5,4 +6,6 @@ export class Album {
     description: string
     author: string
     image: string
+    album_songs: Song[]
+    isLiked: boolean
 }

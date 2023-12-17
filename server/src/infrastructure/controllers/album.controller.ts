@@ -8,26 +8,15 @@ import {
     UploadedFiles,
     UseInterceptors, ValidationPipe
 } from "@nestjs/common";
-import {AlbumService} from "../../core/serviceInterface/album/album.service";
-import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
-import {CreateAlbumDto} from "../../common/dtos/CreateAlbum.dto";
+import {AlbumService} from "../../core/services/album/album.service";
+import {CreateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/CreateAlbum.dto";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
-import {UpdateAlbumDto} from "../../common/dtos/UpdateAlbum.dto";
-import {SearchSongDto} from "../../common/dtos/SearchSong.dto";
+import {UpdateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/UpdateAlbum.dto";
+import {SearchUserItemDto} from "../../common/dtos/SearchUserItem.dto";
 
 @Controller('album')
 export class AlbumController {
     constructor(private albumService: AlbumService) {}
-
-    @Get('search')
-    searchAlbum(@Query() dto: SearchSongDto) {
-        try {
-            return this.albumService.searchAlbum(dto)
-        } catch (e) {
-            console.log(e);
-            throw new InternalServerErrorException();
-        }
-    }
 
     @Post('addSong')
     addSongToAlbum(@Query(ParseIntPipe) dto: {songId: number, albumId: number}) {
@@ -40,9 +29,11 @@ export class AlbumController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) dto: PaginationLimitDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
         try {
-            return this.albumService.getAlbums(dto.skip, dto.take)
+            return this.albumService.getAlbums({
+                ...dto
+            })
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException()

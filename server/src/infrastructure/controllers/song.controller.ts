@@ -5,35 +5,39 @@ import {
     Delete,
     Get,
     HttpException,
-    HttpStatus, InternalServerErrorException,
-    Param, ParseIntPipe,
-    Post, Put, Query, Req,
+    HttpStatus,
+    InternalServerErrorException,
+    Param,
+    ParseIntPipe,
+    Post,
+    Put,
+    Query,
+    Req,
     UploadedFiles,
-    UseInterceptors, ValidationPipe
+    UseGuards,
+    UseInterceptors,
+    ValidationPipe
 } from "@nestjs/common";
-import {SongService} from "../../core/serviceInterface/song/song.service";
+import {SongService} from "../../core/services/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
-import {CreateSongDto} from "../../common/dtos/CreateSong.dto";
+import {CreateSongDto} from "../../common/dtos/infrastructureDto/songDto/CreateSong.dto";
 import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
-import {UpdateSongDto} from "../../common/dtos/UpdateSong.dto";
+import {UpdateSongDto} from "../../common/dtos/infrastructureDto/songDto/UpdateSong.dto";
+import {Roles} from "../guards/roles.decorator";
+import {AuthGuard} from "../guards/auth.guards";
+import {UserRoles} from "../../core/domain/User";
+import {SearchItemDto} from "../../common/dtos/SearchItem.dto";
+import {SearchUserItemDto} from "../../common/dtos/SearchUserItem.dto";
+import {UserItemDto} from "../../common/dtos/UserItem.dto";
 
 @Controller('songs')
 export class SongController {
 
     constructor(private songService: SongService) {}
 
-    @Get('search')
-    searchSong(@Query(new ValidationPipe({transform: true})) dto: PaginationLimitDto,
-               @Query() query: { query: string, userId?: string }) {
-        try {
-            return this.songService.searchSong(query.query, dto.skip, dto.take, query?.userId);
-        } catch (e) {
-            console.log(e);
-            throw new InternalServerErrorException();
-        }
-    }
-
     @Delete('delete/:id')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async delete(@Param('id', ParseIntPipe) id: number) {
         try {
             return await this.songService.delete(id)
@@ -57,9 +61,11 @@ export class SongController {
                 throw new HttpException('Image and audio must be provided', HttpStatus.BAD_REQUEST);
             }
             return await this.songService.createSong(
-                dto,
-                files.image[0],
-                files.audio[0],
+                {
+                    ...dto,
+                    image: files.image[0],
+                    audio: files.audio[0],
+                }
             )
         } catch (e) {
             console.log(e);
@@ -87,10 +93,9 @@ export class SongController {
     }
 
     @Get('genres')
-    async getAllGenres() {
+    async getAllGenres(@Query() dto: SearchItemDto) {
         try {
-            const resp = await this.songService.getAllGenres();
-            return resp
+            return await this.songService.getAllGenres(dto);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -110,7 +115,10 @@ export class SongController {
     @Post('favorite')
     addToFavorite(@Body() dto: { userId: string, songId: number }) {
         try {
-            return this.songService.addToFavorite(dto.userId, dto.songId);
+            return this.songService.addToFavorite({
+                userId: dto.userId,
+                itemId: dto.songId
+            });
         } catch (e) {
             console.log(e);
             throw new BadRequestException();
@@ -118,20 +126,19 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserSongs(@Query(new ValidationPipe({transform: true})) paginationLimit: PaginationLimitDto,
-                 @Query() queryParams: { id: string, userId?: string }) {
+    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
         try {
-            return this.songService.getUserSongs(queryParams.id, paginationLimit.skip, paginationLimit.take);
+            return this.songService.getUserFavSongs(dto);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
         }
     }
 
-    @Delete('removeFavorite')
-    removeFromFavorite(@Query() queryParams: { userId: string, songId: number }) {
+    @Delete('removeFromFavorite')
+    removeFromFavorite(@Query() dto: UserItemDto) {
         try {
-            return this.songService.removeFromFavorite(queryParams.userId, queryParams.songId)
+            return this.songService.removeFromFavorite(dto)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -139,9 +146,9 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) paginationLimit: PaginationLimitDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
         try {
-            return this.songService.getAll(paginationLimit.skip, paginationLimit.take)
+            return this.songService.getAll(dto)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -151,7 +158,7 @@ export class SongController {
     @Get('/:id')
     getTrackById(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.songService.getTrackById(id);
+            return this.songService.getSongById(id);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

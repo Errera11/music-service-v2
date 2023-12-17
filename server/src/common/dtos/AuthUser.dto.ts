@@ -1,4 +1,6 @@
+
 export class AuthUserDto {
+    readonly id: string
     readonly email: string
     readonly name: string
     readonly role: string[]

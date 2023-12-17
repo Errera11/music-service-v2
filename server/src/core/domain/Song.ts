@@ -1,3 +1,5 @@
+import {Genre} from "./Genre";
+
 export class Song {
     id: number
     title: string
@@ -6,4 +8,6 @@ export class Song {
     description: string
     artist: string
     duration: number
+    genre: Genre[]
+    isLiked: boolean
 }

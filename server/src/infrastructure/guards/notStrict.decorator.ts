@@ -1,3 +1,3 @@
 import {SetMetadata} from "@nestjs/common";
 
-const notStrict = (notStrictRoute: boolean) => SetMetadata('notStrict', notStrictRoute)
+export const NotStrict = (notStrictRoute: boolean) => SetMetadata('notStrict', notStrictRoute)

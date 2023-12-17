@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRoles {
+    USER
+    ADMIN
+}
+
+model User {
+    id String @id
+    name String @unique
+    email String @unique
+    password String
+    role UserRoles[] @default([USER])
+    favorite Favorite[]
+    playlist Playlist[]
+    email_auth EmailAuth?
+    avatar String?
+    token TokenSession[]
+    user_album_favorite UserAlbumFavorite[]
+}
+
+model TokenSession {
+    id Int @id @default(autoincrement())
+    refreshToken String @unique
+    user_id String
+    user User @relation(fields: [user_id], references: [id])
+}
+
+model Song {
+    id Int @id @default(autoincrement())
+    //TODO migrate
+    title String @unique() // song name i.e. "Eye of the tiger"
+    image String
+    audio String
+    description String?
+    artist String
+    duration Int
+    favorite Favorite[]
+    playlist_songs PlaylistSongs[]
+    album_songs AlbumSongs[]
+    genre MusicGenres[]
+}
+
+model MusicGenres {
+    id Int @id @default(autoincrement())
+    song_id Int
+    song Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+    genre_id Int
+    genre Genres @relation(fields: [genre_id], references: [id], onDelete: Cascade)
+}
+
+model Genres {
+    id Int @id @default(autoincrement())
+    genre String @unique
+    music_genres MusicGenres[]
+}
+
+model UserAlbumFavorite {
+    id Int @id @default(autoincrement())
+    album Album @relation(fields: [album_id], references: [id])
+    user User @relation(fields: [user_id], references: [id])
+    album_id Int
+    user_id String
+}
+
+model Album {
+    id Int @id @default(autoincrement())
+    title String
+    description String?
+    author String
+    album_songs AlbumSongs[]
+    user_album_favorite UserAlbumFavorite[]
+    image String
+}
+
+model Favorite {
+    id Int @id @default(autoincrement())
+    user User @relation(fields: [user_id], references: [id])
+    song Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+    user_id String
+    song_id Int
+}
+
+model Playlist {
+    id Int @id @default(autoincrement())
+    title String
+    description String
+    user User @relation(fields: [user_id], references: [id])
+    user_id String
+    playlist_songs PlaylistSongs[]
+}
+
+model AlbumSongs {
+    id Int @id @default(autoincrement())
+    album Album @relation(fields: [album_id], references: [id], onDelete: Cascade)
+    album_id Int
+    song Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+    song_id Int
+}
+
+model PlaylistSongs {
+    id Int @id @default(autoincrement())
+    playlist Playlist @relation(fields: [playlist_id], references: [id], onDelete: Cascade)
+    playlist_id Int
+    song Song @relation(fields: [song_id], references: [id], onDelete: Cascade)
+    song_id Int
+}
+
+model EmailAuth {
+    id Int @id @default(autoincrement())
+    user User @relation(fields: [user_id], references: [id])
+    user_id String @unique
+    is_email_auth Boolean @default(false)
+}

@@ -2,13 +2,12 @@ import {
     BadRequestException,
     Body,
     Controller, Delete, Get,
-    HttpException,
     HttpStatus, InternalServerErrorException, Param,
-    Post, Put, Query, Req, Res, UnauthorizedException, UsePipes,
+    Post, Put, Query, Req, Res, UnauthorizedException,
 } from "@nestjs/common";
-import {UserService} from "../../core/serviceInterface/user/user.service";
-import {LoginUserDto} from "../../common/dtos/LoginUser.dto";
-import {SignUpUserDto} from "../../common/dtos/SignUpUser.dto";
+import {UserService} from "../../core/services/user/user.service";
+import {LoginUserDto} from "../../common/dtos/infrastructureDto/userDto/LoginUser.dto";
+import {SignUpUserDto} from "../../common/dtos/infrastructureDto/userDto/SignUpUser.dto";
 import {AuthFormValidationPipe} from "../../common/AuthFormValidationPipe";
 import {AuthException} from "../../common/AuthException";
 import {AuthUserDto} from "../../common/dtos/AuthUser.dto";
@@ -94,7 +93,7 @@ export class UserController {
     @Put('makeAdmin')
     async makeAdmin(@Body() dto: SetUserRoleDto) {
         try {
-            return this.userService.makeAdmin(dto);
+            return this.userService.makeAdmin(dto.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -104,7 +103,7 @@ export class UserController {
     @Put('revokeAdmin')
     async revokeAdmin(@Body() dto: SetUserRoleDto) {
         try {
-            return this.userService.revokeAdmin(dto);
+            return this.userService.revokeAdmin(dto.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
