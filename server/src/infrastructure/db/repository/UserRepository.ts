@@ -1,11 +1,13 @@
 import {IUserRepository} from "../../../core/repositoryInterface/UserRepository/IUserRepository";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
-import {SearchItemDto} from "../../../common/dtos/SearchItem.dto";
+import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {User, UserRoles} from "../../../core/domain/User";
 import {PrismaService} from "../../prisma.service";
 import {CreateUserDto} from "../../../common/dtos/repositoryDto/userDto/CreateUser.dto";
 import {UserMapper} from "../mappers/User.mapper";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 export class UserRepository implements IUserRepository {
 
     constructor(private prisma: PrismaService, private userMapper: UserMapper) {}
@@ -27,7 +29,7 @@ export class UserRepository implements IUserRepository {
         return this.userMapper.userEntityToDomain(user);
     }
 
-    async getAll(dto: SearchItemDto): Promise<GetItemsListDto<User>> {
+    async getAll(dto: SearchItemsDto): Promise<GetItemsListDto<User>> {
         const users = await this.prisma.user.findMany({
             skip: dto.skip || 0,
             take: dto.take || 5,
@@ -57,7 +59,7 @@ export class UserRepository implements IUserRepository {
         }
     }
 
-    async getUserByEmail(email: string): Promise<User> {
+    async getUserByEmail(email: string): Promise<User | null> {
         const user = await this.prisma.user.findUnique({
             where: {
                 email
@@ -66,7 +68,8 @@ export class UserRepository implements IUserRepository {
                 email_auth: true
             }
         });
-        return this.userMapper.userEntityToDomain(user);
+        if(!user) return
+        if(user.id) return this.userMapper.userEntityToDomain(user);
     }
 
     async getUserById(userId: string): Promise<{ user: User; userFavSongsCount: number; userPlaylistsCount: number }> {
@@ -131,4 +134,16 @@ export class UserRepository implements IUserRepository {
         return this.userMapper.userEntityToDomain(user);
     }
 
+    async getUserByName(name: string): Promise<User | null> {
+        const user =  await this.prisma.user.findUnique({
+            where: {
+                name
+            },
+            include: {
+                email_auth: true
+            }
+        })
+        if(!user) return
+        if(user.id) return this.userMapper.userEntityToDomain(user);
+    }
 }

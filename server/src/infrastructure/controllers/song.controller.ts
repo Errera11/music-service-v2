@@ -26,9 +26,9 @@ import {UpdateSongDto} from "../../common/dtos/infrastructureDto/songDto/UpdateS
 import {Roles} from "../guards/roles.decorator";
 import {AuthGuard} from "../guards/auth.guards";
 import {UserRoles} from "../../core/domain/User";
-import {SearchItemDto} from "../../common/dtos/SearchItem.dto";
+import {SearchItemsDto} from "../../common/dtos/SearchItems.dto";
+import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
 import {SearchUserItemDto} from "../../common/dtos/SearchUserItem.dto";
-import {UserItemDto} from "../../common/dtos/UserItem.dto";
 
 @Controller('songs')
 export class SongController {
@@ -93,7 +93,7 @@ export class SongController {
     }
 
     @Get('genres')
-    async getAllGenres(@Query() dto: SearchItemDto) {
+    async getAllGenres(@Query() dto: SearchItemsDto) {
         try {
             return await this.songService.getAllGenres(dto);
         } catch (e) {
@@ -126,7 +126,7 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
+    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
         try {
             return this.songService.getUserFavSongs(dto);
         } catch (e) {
@@ -136,7 +136,7 @@ export class SongController {
     }
 
     @Delete('removeFromFavorite')
-    removeFromFavorite(@Query() dto: UserItemDto) {
+    removeFromFavorite(@Query() dto: SearchUserItemDto) {
         try {
             return this.songService.removeFromFavorite(dto)
         } catch (e) {
@@ -146,7 +146,7 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
         try {
             return this.songService.getAll(dto)
         } catch (e) {

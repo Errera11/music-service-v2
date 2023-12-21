@@ -1,25 +1,97 @@
 import {Injectable} from "@nestjs/common";
-import {PlaylistController} from "../../../infrastructure/controllers/playlist.controller";
-import {IPlaylistRepository} from "../../repositoryInterface/PlaylistRepository/IPlaylistRepository";
-import {CreatePlaylistDto} from "../../../common/dtos/CreatePlaylist.dto";
+import {IPlaylistService} from "./IPlaylistService";
 import {Song} from "../../domain/Song";
+import {PlaylistRepository} from "../../../infrastructure/db/repository/PlaylistRepository";
+import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
 import {Playlist} from "../../domain/Playlist";
+import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
+import {CreatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/CreatePlaylist.dto";
+import {GetUserItems} from "../../../common/dtos/GetUserItems";
+import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
+import {UpdatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/UpdatePlaylist.dto";
+const uuid = require('uuid');
+
 @Injectable()
-export class PlaylistService {
-    constructor() {}
+export class PlaylistService implements IPlaylistService {
+    constructor(private playlistRepository: PlaylistRepository,
+                private cloud: DropboxService) {}
 
-
-    createPlaylist(dto: CreatePlaylistDto): Playlist {
-        return undefined;
+    async addSongToPlaylist(dto: SearchUserItemDto & {songId: number}): Promise<Song> {
+        const song = await this.playlistRepository.addSongToPlaylist(dto);
+        return {
+            ...song,
+            image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
+            audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link,
+        }
     }
 
-    deletePlaylist({playlist_id}: { playlist_id: number }): Playlist {
-        return undefined;
+    async createPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
+        const playlistImageName = uuid.v4() + dto.image.originalname.split('.').pop();
+        const savedPlaylistImage = await this.cloud.uploadFile(dto.image.buffer, 'image', playlistImageName)
+        return this.playlistRepository.createPlaylist({
+            ...dto,
+            image: savedPlaylistImage.result.id
+        });
     }
 
-    removeFromPlaylist({song_id, user_id}: { song_id: number; user_id: number }): Song {
-        return undefined;
+    async deletePlaylist(dto: SearchUserItemDto): Promise<Playlist> {
+        const playlist = await this.playlistRepository.getPlaylistById(dto);
+        await this.cloud.deleteFile(playlist.image);
+        return this.playlistRepository.deletePlaylist(dto)
     }
+
+    getPlaylistById(dto: SearchUserItemDto): Promise<Playlist> {
+        return this.playlistRepository.getPlaylistById(dto);
+    }
+
+    async getPlaylistSongs(dto: GetUserItems): Promise<GetItemsListDto<Song>> {
+        const songs = await this.playlistRepository.getPlaylistSongs(dto);
+        return {
+            ...songs,
+            items: await Promise.all(songs.items.map( async (song) => ({
+                ...song,
+                image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
+                audio: (await this.cloud.getFileStreamableUrl(song.audio)).result.link,
+            })))
+        }
+    }
+
+    async getUserPlaylists(dto: GetUserItems): Promise<GetItemsListDto<Playlist>> {
+        const playlists = await this.playlistRepository.getPlaylistSongs(dto);
+        return {
+            ...playlists,
+            items: await Promise.all(playlists.items.map( async (playlist) => ({
+                ...playlist,
+                image: (await this.cloud.getFileStreamableUrl(playlist.image)).result.link,
+            })))
+        }
+    }
+
+    removeSongFromPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
+        return this.playlistRepository.removeSongFromPlaylist(dto);
+    }
+
+    async updatePlaylist(dto: UpdatePlaylistDto): Promise<Playlist> {
+        let newPlaylistImage;
+        const playlist = await this.playlistRepository.getPlaylistById({
+            itemId: dto.playlist_id,
+            userId: dto.user_id
+        })
+        if(dto.image) {
+            const imageName = uuid.v4() + dto.image.originalname.split('.').pop();
+            await this.cloud.deleteFile(playlist.image);
+            newPlaylistImage = await this.cloud.uploadFile(dto.image.buffer, 'image', imageName);
+        }
+        const updatedPlaylist = await this.playlistRepository.updatePlaylist({
+            ...dto,
+            image: newPlaylistImage && newPlaylistImage.result.id
+        })
+        return {
+            ...updatedPlaylist,
+            image: updatedPlaylist?.image && (await this.cloud.getFileStreamableUrl(updatedPlaylist.image)).result.link
+        }
+    }
+
 
 }
 

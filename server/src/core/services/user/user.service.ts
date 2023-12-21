@@ -6,11 +6,11 @@ import {AuthUserDto} from "../../../common/dtos/AuthUser.dto";
 import {SignUpUserDto} from "../../../common/dtos/infrastructureDto/userDto/SignUpUser.dto";
 import {TokenService} from "../token/token.service";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
-import {SearchItemDto} from "../../../common/dtos/SearchItem.dto";
+import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {IUserService} from "./IUserService";
 import {UserRepository} from "../../../infrastructure/db/repository/UserRepository";
 import {UserDto} from "../../../common/dtos/infrastructureDto/userDto/User.dto";
-import {UserItemDto} from "../../../common/dtos/UserItem.dto";
+import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -22,7 +22,7 @@ export class UserService implements IUserService {
     ) {
     }
 
-    async getAll(dto: SearchItemDto) {
+    async getAll(dto: SearchItemsDto) {
         const users = await this.userRepository.getAll(dto);
         return {
             ...users,
@@ -34,7 +34,7 @@ export class UserService implements IUserService {
     }
 
     async makeAdmin(userId: string): Promise<UserDto> {
-        const {password, ...user} =  await this.userRepository.makeAdmin(userId)
+        const {password, ...user} = await this.userRepository.makeAdmin(userId)
         return {
             ...user,
             avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link
@@ -42,7 +42,7 @@ export class UserService implements IUserService {
     }
 
     async revokeAdmin(userId: string): Promise<UserDto> {
-        const {password, ...user} =  await this.userRepository.revokeAdmin(userId);
+        const {password, ...user} = await this.userRepository.revokeAdmin(userId);
         return {
             ...user,
             avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link
@@ -50,16 +50,24 @@ export class UserService implements IUserService {
     }
 
     async create(dto: SignUpUserDto): Promise<AuthUserDto> {
+        dto = {
+            ...dto,
+            name: dto.name.trim()
+        }
         const existingUser = await this.userRepository.getUserByEmail(dto.email);
         if (existingUser) {
             throw new Error(`User with email ${dto.email} already exists`);
         }
+        const userWithSameName = await this.userRepository.getUserByName(dto.name);
+        if (userWithSameName) {
+            throw new Error(`User with name ${dto.name} already exists`);
+        }
         const uudid: string = uuid.v4();
         const hashedPassword = await bcrypt.hash(dto.password, 3);
         const newUser = await this.userRepository.create({
+            ...dto,
             id: uudid,
             password: hashedPassword,
-            ...dto
         })
         const {authToken, refreshToken} = await this.tokenService.signTokens({
             id: newUser.id,
@@ -76,10 +84,10 @@ export class UserService implements IUserService {
     }
 
     async login(dto: LoginUserDto): Promise<AuthUserDto> {
-        const {password, ...user} = await this.userRepository.getUserByEmail(dto.email);
+        const user = await this.userRepository.getUserByEmail(dto.email);
         if (!user)
             throw new Error(`User with email ${dto.email} doesn't exists`);
-        const isValidPassword = bcrypt.compare(dto.password, password);
+        const isValidPassword = await bcrypt.compare(dto.password, user.password);
         if (!isValidPassword) throw new Error(`Invalid email or password`);
         const {authToken, refreshToken} = await this.tokenService.signTokens({
             id: user.id,
@@ -95,7 +103,7 @@ export class UserService implements IUserService {
         }
     }
 
-    async logout(dto: UserItemDto) {
+    async logout(dto: SearchUserItemDto) {
         return this.tokenService.disableRefreshToken(dto);
     }
 

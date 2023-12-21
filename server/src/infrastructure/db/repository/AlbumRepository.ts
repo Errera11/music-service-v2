@@ -9,7 +9,7 @@ import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {UpdateAlbumDto} from "../../../common/dtos/repositoryDto/albumDto/UpdateAlbum.dto";
 import {IAlbumRepository} from "../../../core/repositoryInterface/AlbumRepository/IAlbumRepository";
 import {SongMapper} from "../mappers/Song.mapper";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
 
 @Injectable()
 export class AlbumRepository implements IAlbumRepository {
@@ -155,7 +155,7 @@ export class AlbumRepository implements IAlbumRepository {
         }
     }
 
-    async getAlbums(dto: SearchUserItemDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>> {
+    async getAlbums(dto: SearchUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>> | void> {
         try {
             const albums = await this.prisma.album.findMany({
                 take: dto?.take || 5,

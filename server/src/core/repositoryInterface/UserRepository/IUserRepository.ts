@@ -1,11 +1,11 @@
 import {User} from "../../domain/User";
-import {SearchItemDto} from "../../../common/dtos/SearchItem.dto";
+import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {CreateUserDto} from "../../../common/dtos/repositoryDto/userDto/CreateUser.dto";
 
 export interface IUserRepository {
     create(dto: CreateUserDto): Promise<User>
-    getAll(dto: SearchItemDto): Promise<GetItemsListDto<User>>
+    getAll(dto: SearchItemsDto): Promise<GetItemsListDto<User>>
     makeAdmin(userId: string): Promise<User>
     revokeAdmin(userId: string): Promise<User>
     getUserById(userId: string): Promise<{
@@ -13,5 +13,6 @@ export interface IUserRepository {
         userFavSongsCount: number,
         userPlaylistsCount: number
     }>
-    getUserByEmail(email: string): Promise<User>
+    getUserByEmail(email: string): Promise<User | null>
+    getUserByName(name: string): Promise<User | null>
 }

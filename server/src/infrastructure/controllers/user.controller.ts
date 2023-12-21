@@ -21,10 +21,11 @@ export class UserController {
     }
 
     @Post('login')
-    async login(@Body(AuthFormValidationPipe()) dto: LoginUserDto, @Res({passthrough: true}) response: Response): Promise<Omit<AuthUserDto, 'refreshToken'>> {
+    async login(@Body(AuthFormValidationPipe()) dto: LoginUserDto, @Res({passthrough: true}) response: Response): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>> {
         try {
-            const {refreshToken, ...data} = await this.userService.login(dto);
+            const {refreshToken, authToken,  ...data} = await this.userService.login(dto);
             response.cookie('refreshToken', refreshToken, {httpOnly: true});
+            response.cookie('authToken', authToken, {httpOnly: true});
             return data;
         } catch (e) {
             console.log(e);
@@ -33,10 +34,11 @@ export class UserController {
     }
 
     @Post('signup')
-    async create(@Body(AuthFormValidationPipe()) dto: SignUpUserDto, @Res({passthrough: true}) response: Response): Promise<Omit<AuthUserDto, 'refreshToken'>> {
+    async create(@Body(AuthFormValidationPipe()) dto: SignUpUserDto, @Res({passthrough: true}) response: Response): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>> {
         try {
-            const {refreshToken, ...data} = await this.userService.create(dto);
+            const {refreshToken, authToken, ...data} = await this.userService.create(dto);
             response.cookie('refreshToken', refreshToken, {httpOnly: true});
+            response.cookie('authToken', authToken, {httpOnly: true});
             return data;
         } catch (e) {
             console.log(e);
@@ -48,6 +50,7 @@ export class UserController {
     async logout(@Res({passthrough: true}) response: Response, @Req() request: Request) {
         try {
             response.cookie('refreshToken', ' ');
+            response.cookie('authToken', ' ');
             const refreshToken = request.cookies['refreshToken'];
             if (!refreshToken) throw new UnauthorizedException();
             return this.userService.logout(refreshToken);
@@ -58,10 +61,11 @@ export class UserController {
     }
 
     @Post('refreshSession')
-    async refreshSession(@Res({passthrough: true}) response: Response, @Req() request: Request): Promise<Omit<AuthUserDto, 'refreshToken'>> {
+    async refreshSession(@Res({passthrough: true}) response: Response, @Req() request: Request): Promise<Omit<AuthUserDto, 'refreshToken' | 'authToken'>> {
         try {
             const oldRefreshToken = request.cookies['refreshToken'];
-            const {refreshToken, ...userData} = await this.userService.refreshSession(oldRefreshToken);
+            const {refreshToken, authToken, ...userData} = await this.userService.refreshSession(oldRefreshToken);
+            response['cookie']('refreshToken', refreshToken, {httpOnly: true});
             response['cookie']('refreshToken', refreshToken, {httpOnly: true});
             return userData;
         } catch (e) {

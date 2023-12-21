@@ -12,7 +12,7 @@ import {AlbumService} from "../../core/services/album/album.service";
 import {CreateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/CreateAlbum.dto";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {UpdateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/UpdateAlbum.dto";
-import {SearchUserItemDto} from "../../common/dtos/SearchUserItem.dto";
+import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
 
 @Controller('album')
 export class AlbumController {
@@ -29,7 +29,7 @@ export class AlbumController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
         try {
             return this.albumService.getAlbums({
                 ...dto

@@ -6,6 +6,7 @@ import {SongModule} from "./song.module";
 import {TokenModule} from "./token.module";
 import {DropboxService} from "../infrastructure/cloud/dropbox.service";
 import {UserRepository} from "../infrastructure/db/repository/UserRepository";
+import {UserMapper} from "../infrastructure/db/mappers/User.mapper";
 
 @Module(
     {
@@ -17,7 +18,8 @@ import {UserRepository} from "../infrastructure/db/repository/UserRepository";
             PrismaService,
             UserService,
             DropboxService,
-            UserRepository
+            UserRepository,
+            UserMapper
         ],
         controllers: [UserController]
     }

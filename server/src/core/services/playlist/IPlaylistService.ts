@@ -1,12 +1,13 @@
-import {Song} from "../../domain/Song";
 import {Playlist} from "../../domain/Playlist";
-import {CreatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/CreatePlaylist.dto";
+import {Song} from "../../domain/Song";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
-import {UpdatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/UpdatePlaylist.dto";
-import { GetUserItems} from "../../../common/dtos/GetUserItems";
+import {SearchUserItemDto} from "../../../../dist/common/dtos/SearchUserItem.dto";
+import {GetUserItems} from "../../../common/dtos/GetUserItems";
+import {CreatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/CreatePlaylist.dto";
+import {UpdatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/UpdatePlaylist.dto";
 
-export interface IPlaylistRepository {
+
+export interface IPlaylistService {
     createPlaylist(dto: CreatePlaylistDto): Promise<Playlist>
     deletePlaylist(dto: SearchUserItemDto): Promise<Playlist>
     addSongToPlaylist(dto: SearchUserItemDto & {songId: number}): Promise<Song>

@@ -8,7 +8,7 @@ import {Inject} from "@nestjs/common";
 import {AlbumRepository} from "../../../infrastructure/db/repository/AlbumRepository";
 import {IAlbumService} from "./IAlbumService";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
 
 export class AlbumService implements IAlbumService {
 
@@ -69,10 +69,14 @@ export class AlbumService implements IAlbumService {
         }
     }
 
-    async getAlbums(dto: SearchUserItemDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>> {
+    async getAlbums(dto: SearchUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>> {
         const albums = await this.albumRepository.getAlbums({
             ...dto
         })
+        if(!albums) return {
+            items: [] as Album[],
+            totalCount: 0
+        }
         const albumsWithImageUrl = await Promise.all(albums.items.map(async (album) => ({
             ...album,
             image: (await this.cloud.getFileStreamableUrl(album.image)).result.link

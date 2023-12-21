@@ -21,17 +21,19 @@ export class AuthGuard implements CanActivate {
         const roles = this.reflector.get<UserRoles[] | undefined>('roles', context.getHandler());
         try {
             const request: Request = context.switchToHttp().getRequest();
-            const user = this.tokenService.verifyAuthToken(request.headers['Authorization'])
+            const user = this.tokenService.verifyAuthToken(request.credentials['authorization'])
                 .then(user => {
                     if(roles?.some(role => user.role.includes(role))) {
-                        request.headers['user'] = user;
+                        request['user'] = user;
                         return true;
                     }
                     return false
                 })
         } catch (e) {
-            if(!roles) return true
             console.log(e);
+            // if roles are empty there is no restriction to pass through guard
+            // (useful to use guard for parsing token)
+            if(!roles) return true
             return false;
         }
 

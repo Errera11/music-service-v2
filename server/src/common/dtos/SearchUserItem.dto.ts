@@ -1,7 +1,8 @@
-import {SearchItemDto} from "./SearchItem.dto";
-import {IsOptional} from "class-validator";
+import {IsNotEmpty} from "class-validator";
+import {Transform} from "class-transformer";
 
-export class SearchUserItemDto extends SearchItemDto {
-    @IsOptional()
-    userId?: string
+export class SearchUserItemDto {
+    readonly userId: string
+    @IsNotEmpty()
+    readonly itemId: number | string
 }

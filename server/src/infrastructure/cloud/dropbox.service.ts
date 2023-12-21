@@ -8,6 +8,7 @@ const Dropbox = require('dropbox').Dropbox;
 
 @Injectable()
 export class DropboxService {
+
     private dbx
 
     constructor() {

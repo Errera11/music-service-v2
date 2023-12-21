@@ -8,9 +8,9 @@ import {UpdateSongDto} from "src/common/dtos/infrastructureDto/songDto/UpdateSon
 import {ISongService} from "./ISongService";
 import {SongRepository} from "../../../infrastructure/db/repository/SongRepository";
 import {Genre} from "../../domain/Genre";
-import {SearchItemDto} from "../../../common/dtos/SearchItem.dto";
-import {UserItemDto} from "../../../common/dtos/UserItem.dto";
+import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 
 @Injectable()
@@ -46,12 +46,14 @@ export class SongService implements ISongService {
         return this.songRepository.createSongGenre(genre)
     }
 
-    getAllGenres(dto: SearchItemDto) {
-        return this.songRepository.getAllGenres(dto);
+    async getAllGenres(dto: SearchItemsDto) {
+        const genres =  await this.songRepository.getAllGenres(dto);
+        if (!genres) return [] as Genre[]
+        return genres
     }
 
 
-    addToFavorite(dto: UserItemDto): Promise<Song> {
+    addToFavorite(dto: SearchUserItemDto): Promise<Song> {
         return this.songRepository.addToFavorite(dto)
     }
 
@@ -64,8 +66,12 @@ export class SongService implements ISongService {
         }
     }
 
-    async getUserFavSongs(dto: SearchUserItemDto): Promise<GetItemsListDto<Song>> {
+    async getUserFavSongs(dto: SearchUserItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.songRepository.getUserFavSongs(dto);
+        if(!songs) return {
+            items: [],
+            totalCount: 0
+        }
         return {
             ...songs,
             items: await Promise.all(songs.items.map(async (song) => ({
@@ -76,8 +82,12 @@ export class SongService implements ISongService {
         };
     }
 
-    async getAll(dto: SearchUserItemDto): Promise<GetItemsListDto<Song>> {
+    async getAll(dto: SearchUserItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.songRepository.getAll(dto)
+        if(!songs) return {
+            items: [] as Song[],
+            totalCount: 0
+        }
         return {
             ...songs,
             items: await Promise.all(songs.items.map(async (item) => ({
@@ -108,7 +118,7 @@ export class SongService implements ISongService {
         return this.songRepository.delete(id);
     }
 
-    async removeFromFavorite(dto: UserItemDto): Promise<Song> {
+    async removeFromFavorite(dto: SearchUserItemDto): Promise<Song> {
         await this.songRepository.removeFromFavorite(dto);
         return this.songRepository.getSongById(dto.itemId as number);
     }

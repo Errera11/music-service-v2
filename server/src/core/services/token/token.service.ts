@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {SignTokenDTO} from "../../../common/types/token";
 import {ITokenService} from "./ITokenService";
 import {TokenRepository} from "../../../infrastructure/db/repository/TokenRepository";
-import {UserItemDto} from "../../../common/dtos/UserItem.dto";
+import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
 
 //TODO rewrite to DI/JWT service
 const jwt_decode = require('jwt-decode');
@@ -11,9 +11,10 @@ const jwt = require('jsonwebtoken');
 @Injectable()
 export class TokenService implements ITokenService {
 
-    constructor(private tokenRepository: TokenRepository) {}
+    constructor(private tokenRepository: TokenRepository) {
+    }
 
-    disableRefreshToken(dto: UserItemDto): Promise<string> {
+    disableRefreshToken(dto: SearchUserItemDto): Promise<string> {
         return this.tokenRepository.deleteRefreshToken(dto);
     }
 
@@ -22,17 +23,19 @@ export class TokenService implements ITokenService {
         authToken: string
     }> {
         const authToken = jwt.sign({
-                id: dto.id,
-                email: dto.email,
-                name: dto.name,
-                role: dto.role,
-            }, process.env.SECRET_ACCESS, {expiresIn: '1min'})
+            id: dto.id,
+            email: dto.email,
+            name: dto.name,
+            role: dto.role,
+            created_at: new Date()
+        }, process.env.SECRET_ACCESS, {expiresIn: '1min'})
         const refreshToken = jwt.sign({
-                id: dto.id,
-                email: dto.email,
-                name: dto.name,
-                role: dto.role,
-            }, process.env.SECRET_REFRESH, {expiresIn: '1h'})
+            id: dto.id,
+            email: dto.email,
+            name: dto.name,
+            role: dto.role,
+            created_at: new Date()
+        }, process.env.SECRET_REFRESH, {expiresIn: '1h'})
         await this.tokenRepository.saveRefreshToken({
             userId: dto.id,
             itemId: refreshToken

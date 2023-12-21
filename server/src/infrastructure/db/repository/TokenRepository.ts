@@ -1,12 +1,14 @@
 import {ITokenRepository} from "../../../core/repositoryInterface/TokenRepository/ITokenRepository";
 import {PrismaService} from "../../prisma.service";
-import {UserItemDto} from "../../../common/dtos/UserItem.dto";
+import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 export class TokenRepository implements ITokenRepository {
 
     constructor(private prisma: PrismaService) {}
 
-    async deleteRefreshToken(dto: UserItemDto): Promise<string> {
+    async deleteRefreshToken(dto: SearchUserItemDto): Promise<string> {
         const refreshToken = await this.prisma.tokenSession.deleteMany({
             where: {
                 refreshToken: dto.itemId as string,
@@ -16,7 +18,7 @@ export class TokenRepository implements ITokenRepository {
         return dto.itemId as string;
     }
 
-    saveRefreshToken(dto: UserItemDto) {
+    saveRefreshToken(dto: SearchUserItemDto) {
         return this.prisma.tokenSession.create({
             data: {
                 user_id: dto.userId,

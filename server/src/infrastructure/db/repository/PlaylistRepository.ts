@@ -1,126 +1,102 @@
 import {IPlaylistRepository} from "../../../core/repositoryInterface/PlaylistRepository/IPlaylistRepository";
-import {Song} from "../../../core/domain/Song";
-import {CreatePlaylistDto} from "../../../common/dtos/CreatePlaylist.dto";
-import {Playlist} from "../../../core/domain/Playlist";
 import {PrismaService} from "../../prisma.service";
 import {SongMapper} from "../mappers/Song.mapper";
-import {PaginationLimitDto} from "../../../common/dtos/PaginationLimit.dto";
+import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {CreatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/CreatePlaylist.dto";
+import {Playlist} from "../../../core/domain/Playlist";
+import {Song} from "../../../core/domain/Song";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
+import {UpdatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/UpdatePlaylist.dto";
+import {PlaylistMapper} from "../mappers/Playlist.mapper";
+import {GetUserItems} from "../../../common/dtos/GetUserItems";
+import {Injectable} from "@nestjs/common";
 
+@Injectable()
 export class PlaylistRepository implements IPlaylistRepository {
 
     constructor(private prisma: PrismaService,
                 private songMapper: SongMapper) {
     }
 
-    async addToPlaylist({songId, playlistId}: {songId: number, playlistId: number}): Promise<Song> {
+    async addSongToPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
         await this.prisma.playlist.update({
             where: {
-                id: playlistId
+                id: dto.itemId as number,
+                user_id: dto.userId
             },
             data: {
                 playlist_songs: {
                     create: {
-                        song_id: songId
+                        song_id: dto.songId as number,
                     }
                 }
             }
         })
-        const addedSong = await this.prisma.song.findUnique({
+        const song = await this.prisma.song.findUnique({
             where: {
-                id: songId
+                id: dto.songId as number
             },
             include: {
-                favorite: true,
                 genre: {
                     include: {
                         genre: true
                     }
+                },
+                favorite: {
+                    where: {
+                        user_id: dto.userId
+                    }
                 }
-            }
+            },
         })
-        return this.songMapper.songEntityToDomain(addedSong);
+        return this.songMapper.songEntityToDomain(song);
     }
 
-    async createPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
-        const playlist = await this.prisma.playlist.create({
+    createPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
+        return this.prisma.playlist.create({
             data: {
-                user_id: dto.user_id,
                 title: dto.title,
-                description: dto.description
+                description: dto.description,
+                image: dto.image,
+                user_id: dto.user_id
             }
         })
-        return {
-            ...playlist,
-            songs: []
-        }
     }
 
-    async deletePlaylist({playlistId}: {playlistId: number}): Promise<Playlist> {
+    async deletePlaylist(dto: SearchUserItemDto): Promise<Playlist> {
         const playlist = await this.prisma.playlist.findUnique({
             where: {
-                id: playlistId
+                user_id: dto.userId,
+                id: dto.itemId as number
             }
         })
         await this.prisma.playlist.delete({
             where: {
-                id: playlistId
-            }
-        })
-        return {
-            ...playlist,
-            songs: []
-        }
-    }
-
-    async getUserPlaylists(dto: { userId: string } & PaginationLimitDto): Promise<GetItemsListDto<Omit<Playlist, 'songs'>>> {
-        const playlists = await this.prisma.playlist.findMany({
-            where: {
-                user_id: dto.userId,
-            },
-            skip: dto.skip || 0,
-            take: dto.take || 5,
-        })
-        const userPlaylistsTotalCount = await this.prisma.playlist.count({
-            where: {
+                id: dto.itemId as number,
                 user_id: dto.userId
             }
         })
-        return {
-            items: playlists,
-            totalCount: userPlaylistsTotalCount
-        }
+        return playlist;
     }
 
-    async removeFromPlaylist({songId, playlistId}: { songId: number; playlistId: number }): Promise<Song> {
-        const songToRemove = await this.prisma.song.findUnique({
+    async getPlaylistById(dto: SearchUserItemDto): Promise<Playlist> {
+        return  this.prisma.playlist.findUnique({
             where: {
-                id: songId
+                id: dto.itemId as number,
+                user_id: dto.userId
             },
-            include: {
-                genre: {
-                    select: {
-                        genre: true
-                    }
-                },
-                favorite: true
-            }
         })
-        await this.prisma.playlistSongs.deleteMany({
-            where: {
-                playlist_id: playlistId,
-                song_id: songId
-            }
-        })
-        return this.songMapper.songEntityToDomain(songToRemove);
     }
 
-    async getPlaylistById({userId, playlistId}: { userId: string; playlistId: number }): Promise<Playlist> {
-        const playlist = await this.prisma.playlist.findUnique({
+    async getPlaylistSongs(dto: GetUserItems): Promise<GetItemsListDto<Song>> {
+        const playlistSongs = await this.prisma.playlist.findMany({
             where: {
-                id: playlistId,
+                id: dto.parentId as number,
+                user_id: dto.userId
             },
-            include: {
+            skip: dto.skip,
+            take: dto.take,
+            select: {
                 playlist_songs: {
                     select: {
                         song: {
@@ -137,10 +113,81 @@ export class PlaylistRepository implements IPlaylistRepository {
                 }
             }
         })
+        const songsTotalCount = await this.prisma.playlistSongs.count({
+            where: {
+                playlist: {
+                    id: dto.parentId as number,
+                    user_id: dto.userId
+                }
+            }
+        })
         return {
-            ...playlist,
-            songs: playlist.playlist_songs.map(song => this.songMapper.songEntityToDomain(song.song))
+            items: playlistSongs[0].playlist_songs.map(song => this.songMapper.songEntityToDomain(song.song)),
+            totalCount: songsTotalCount
         }
+    }
+
+    async getUserPlaylists(dto: GetUserItems): Promise<GetItemsListDto<Playlist>> {
+        const playlists = await this.prisma.playlist.findMany({
+            where: {
+                user_id: dto.userId,
+                title: {
+                    contains: dto.query,
+                    mode: "insensitive"
+                }
+            },
+            skip: dto.skip,
+            take: dto.take
+        })
+        const userPlaylistsTotalCount = await this.prisma.playlist.count({
+            where: {
+                user_id: dto.userId
+            },
+        })
+        return {
+            items: playlists,
+            totalCount: userPlaylistsTotalCount
+        }
+    }
+
+    async removeSongFromPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
+        const song = await this.prisma.song.findUnique({
+            where: {
+                id: dto.songId
+            },
+            include: {
+                genre: {
+                    select: {
+                        genre: true
+                    }
+                },
+                favorite: true
+            }
+        })
+        await this.prisma.playlistSongs.deleteMany({
+            where: {
+                song_id: dto.songId,
+                playlist_id: dto.itemId as number,
+                playlist: {
+                    user_id: dto.userId
+                }
+            }
+        })
+        return this.songMapper.songEntityToDomain(song);
+    }
+
+    updatePlaylist(dto: UpdatePlaylistDto): Promise<Playlist> {
+        return this.prisma.playlist.update({
+            where: {
+                id: dto.playlist_id,
+                user_id: dto.user_id
+            },
+            data: {
+                title: dto.title,
+                description: dto.description,
+                image: dto.image
+            }
+        })
     }
 
 }
