@@ -2,7 +2,7 @@ import {Injectable} from "@nestjs/common";
 import {SignTokenDTO} from "../../../common/types/token";
 import {ITokenService} from "./ITokenService";
 import {TokenRepository} from "../../../infrastructure/db/repository/TokenRepository";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 
 //TODO rewrite to DI/JWT service
 const jwt_decode = require('jwt-decode');
@@ -14,7 +14,7 @@ export class TokenService implements ITokenService {
     constructor(private tokenRepository: TokenRepository) {
     }
 
-    disableRefreshToken(dto: SearchUserItemDto): Promise<string> {
+    disableRefreshToken(dto: GetUserItemDto): Promise<string> {
         return this.tokenRepository.deleteRefreshToken(dto);
     }
 
@@ -28,7 +28,7 @@ export class TokenService implements ITokenService {
             name: dto.name,
             role: dto.role,
             created_at: new Date()
-        }, process.env.SECRET_ACCESS, {expiresIn: '1min'})
+        }, process.env.SECRET_ACCESS, {expiresIn: '1h'})
         const refreshToken = jwt.sign({
             id: dto.id,
             email: dto.email,
@@ -49,8 +49,10 @@ export class TokenService implements ITokenService {
     async verifyAuthToken(token: string): Promise<SignTokenDTO> {
         try {
             const tokenCode = token.split(' ').pop();
-            return jwt.verify(tokenCode, process.env.SECRET_ACCESS)
+            jwt.verify(tokenCode, process.env.SECRET_ACCESS)
+            return jwt_decode(tokenCode);
         } catch (e) {
+            console.log(e);
             throw new Error('Invalid authorization token');
         }
     }

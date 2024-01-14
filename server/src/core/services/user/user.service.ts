@@ -10,7 +10,7 @@ import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {IUserService} from "./IUserService";
 import {UserRepository} from "../../../infrastructure/db/repository/UserRepository";
 import {UserDto} from "../../../common/dtos/infrastructureDto/userDto/User.dto";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 
 @Injectable()
 export class UserService implements IUserService {
@@ -103,13 +103,13 @@ export class UserService implements IUserService {
         }
     }
 
-    async logout(dto: SearchUserItemDto) {
+    async logout(dto: GetUserItemDto) {
         return this.tokenService.disableRefreshToken(dto);
     }
 
     async refreshSession(oldRefreshToken: string): Promise<AuthUserDto> {
         try {
-            const decodedUser = await this.tokenService.verifyRefreshToken(oldRefreshToken);
+            const decodedUser = await this.tokenService.verifyRefreshToken(oldRefreshToken.split(' ').pop());
             const deletedRefreshToken = await this.tokenService.disableRefreshToken({
                 userId: decodedUser.id,
                 itemId: oldRefreshToken
@@ -131,14 +131,15 @@ export class UserService implements IUserService {
 
     async loginByToken(token: string): Promise<UserDto> {
         try {
-            const userDecoded = await this.tokenService.verifyAuthToken(token);
+            const userDecoded = await this.tokenService.verifyRefreshToken(token.split(' ').pop());
             const {password, ...user} = await this.userRepository.getUserByEmail(userDecoded.email);
             if (!user) throw new Error(`User doesn't exists`);
             return {
                 ...user,
-                avatar: (await this.cloud.getFileStreamableUrl(user.email)).result.link
+                avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link
             }
         } catch (e) {
+            console.log(e);
             throw new UnauthorizedException();
         }
 

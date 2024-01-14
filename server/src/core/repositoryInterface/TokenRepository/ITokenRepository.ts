@@ -1,6 +1,6 @@
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 
 export interface ITokenRepository {
-    deleteRefreshToken(dto: SearchUserItemDto): Promise<string>
-    saveRefreshToken(dto: SearchUserItemDto): Promise<any>
+    deleteRefreshToken(dto: GetUserItemDto): Promise<string>
+    saveRefreshToken(dto: GetUserItemDto): Promise<any>
 }

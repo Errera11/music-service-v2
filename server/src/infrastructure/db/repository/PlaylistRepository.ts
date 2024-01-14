@@ -1,15 +1,15 @@
 import {IPlaylistRepository} from "../../../core/repositoryInterface/PlaylistRepository/IPlaylistRepository";
 import {PrismaService} from "../../prisma.service";
 import {SongMapper} from "../mappers/Song.mapper";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 import {CreatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/CreatePlaylist.dto";
 import {Playlist} from "../../../core/domain/Playlist";
 import {Song} from "../../../core/domain/Song";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {UpdatePlaylistDto} from "../../../common/dtos/repositoryDto/playlistDto/UpdatePlaylist.dto";
-import {PlaylistMapper} from "../mappers/Playlist.mapper";
-import {GetUserItems} from "../../../common/dtos/GetUserItems";
 import {Injectable} from "@nestjs/common";
+import {GetParentItemsDto} from "../../../common/dtos/GetParentItems.dto";
+import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
 
 @Injectable()
 export class PlaylistRepository implements IPlaylistRepository {
@@ -18,7 +18,7 @@ export class PlaylistRepository implements IPlaylistRepository {
                 private songMapper: SongMapper) {
     }
 
-    async addSongToPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
+    async addSongToPlaylist(dto: GetUserItemDto & { songId: number }): Promise<Song> {
         await this.prisma.playlist.update({
             where: {
                 id: dto.itemId as number,
@@ -63,7 +63,7 @@ export class PlaylistRepository implements IPlaylistRepository {
         })
     }
 
-    async deletePlaylist(dto: SearchUserItemDto): Promise<Playlist> {
+    async deletePlaylist(dto: GetUserItemDto): Promise<Playlist> {
         const playlist = await this.prisma.playlist.findUnique({
             where: {
                 user_id: dto.userId,
@@ -79,7 +79,7 @@ export class PlaylistRepository implements IPlaylistRepository {
         return playlist;
     }
 
-    async getPlaylistById(dto: SearchUserItemDto): Promise<Playlist> {
+    async getPlaylistById(dto: GetUserItemDto): Promise<Playlist> {
         return  this.prisma.playlist.findUnique({
             where: {
                 id: dto.itemId as number,
@@ -88,14 +88,13 @@ export class PlaylistRepository implements IPlaylistRepository {
         })
     }
 
-    async getPlaylistSongs(dto: GetUserItems): Promise<GetItemsListDto<Song>> {
+    async getPlaylistSongs(dto: GetParentItemsDto): Promise<GetItemsListDto<Song>> {
         const playlistSongs = await this.prisma.playlist.findMany({
             where: {
-                id: dto.parentId as number,
-                user_id: dto.userId
+                id: Number(dto.parentId)
             },
-            skip: dto.skip,
-            take: dto.take,
+            skip: dto.skip || 0,
+            take: dto.take || 10,
             select: {
                 playlist_songs: {
                     select: {
@@ -116,18 +115,17 @@ export class PlaylistRepository implements IPlaylistRepository {
         const songsTotalCount = await this.prisma.playlistSongs.count({
             where: {
                 playlist: {
-                    id: dto.parentId as number,
-                    user_id: dto.userId
+                    id: Number(dto.parentId),
                 }
             }
         })
         return {
-            items: playlistSongs[0].playlist_songs.map(song => this.songMapper.songEntityToDomain(song.song)),
+            items: !!playlistSongs[0] && playlistSongs[0].playlist_songs.map(song => this.songMapper.songEntityToDomain(song.song)),
             totalCount: songsTotalCount
         }
     }
 
-    async getUserPlaylists(dto: GetUserItems): Promise<GetItemsListDto<Playlist>> {
+    async getUserPlaylists(dto: GetUserItemsDto): Promise<GetItemsListDto<Playlist>> {
         const playlists = await this.prisma.playlist.findMany({
             where: {
                 user_id: dto.userId,
@@ -150,7 +148,7 @@ export class PlaylistRepository implements IPlaylistRepository {
         }
     }
 
-    async removeSongFromPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
+    async removeSongFromPlaylist(dto: GetUserItemDto & { songId: number }): Promise<Song> {
         const song = await this.prisma.song.findUnique({
             where: {
                 id: dto.songId

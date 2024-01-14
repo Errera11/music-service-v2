@@ -2,13 +2,14 @@ import {Injectable} from "@nestjs/common";
 import {IPlaylistService} from "./IPlaylistService";
 import {Song} from "../../domain/Song";
 import {PlaylistRepository} from "../../../infrastructure/db/repository/PlaylistRepository";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 import {Playlist} from "../../domain/Playlist";
 import {DropboxService} from "../../../infrastructure/cloud/dropbox.service";
 import {CreatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/CreatePlaylist.dto";
-import {GetUserItems} from "../../../common/dtos/GetUserItems";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {UpdatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/UpdatePlaylist.dto";
+import {GetParentItemsDto} from "../../../common/dtos/GetParentItems.dto";
+import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
 const uuid = require('uuid');
 
 @Injectable()
@@ -16,7 +17,7 @@ export class PlaylistService implements IPlaylistService {
     constructor(private playlistRepository: PlaylistRepository,
                 private cloud: DropboxService) {}
 
-    async addSongToPlaylist(dto: SearchUserItemDto & {songId: number}): Promise<Song> {
+    async addSongToPlaylist(dto: GetUserItemDto & {songId: number}): Promise<Song> {
         const song = await this.playlistRepository.addSongToPlaylist(dto);
         return {
             ...song,
@@ -34,17 +35,17 @@ export class PlaylistService implements IPlaylistService {
         });
     }
 
-    async deletePlaylist(dto: SearchUserItemDto): Promise<Playlist> {
+    async deletePlaylist(dto: GetUserItemDto): Promise<Playlist> {
         const playlist = await this.playlistRepository.getPlaylistById(dto);
         await this.cloud.deleteFile(playlist.image);
         return this.playlistRepository.deletePlaylist(dto)
     }
 
-    getPlaylistById(dto: SearchUserItemDto): Promise<Playlist> {
+    getPlaylistById(dto: GetUserItemDto): Promise<Playlist> {
         return this.playlistRepository.getPlaylistById(dto);
     }
 
-    async getPlaylistSongs(dto: GetUserItems): Promise<GetItemsListDto<Song>> {
+    async getPlaylistSongs(dto: GetParentItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.playlistRepository.getPlaylistSongs(dto);
         return {
             ...songs,
@@ -56,8 +57,8 @@ export class PlaylistService implements IPlaylistService {
         }
     }
 
-    async getUserPlaylists(dto: GetUserItems): Promise<GetItemsListDto<Playlist>> {
-        const playlists = await this.playlistRepository.getPlaylistSongs(dto);
+    async getUserPlaylists(dto: GetUserItemsDto): Promise<GetItemsListDto<Playlist>> {
+        const playlists = await this.playlistRepository.getUserPlaylists(dto);
         return {
             ...playlists,
             items: await Promise.all(playlists.items.map( async (playlist) => ({
@@ -67,7 +68,7 @@ export class PlaylistService implements IPlaylistService {
         }
     }
 
-    removeSongFromPlaylist(dto: SearchUserItemDto & { songId: number }): Promise<Song> {
+    removeSongFromPlaylist(dto: GetUserItemDto & { songId: number }): Promise<Song> {
         return this.playlistRepository.removeSongFromPlaylist(dto);
     }
 
@@ -91,7 +92,5 @@ export class PlaylistService implements IPlaylistService {
             image: updatedPlaylist?.image && (await this.cloud.getFileStreamableUrl(updatedPlaylist.image)).result.link
         }
     }
-
-
 }
 

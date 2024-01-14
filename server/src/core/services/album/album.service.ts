@@ -15,7 +15,7 @@ export class AlbumService implements IAlbumService {
     constructor(@Inject(DropboxService) private cloud: DropboxService,
                 private albumRepository: AlbumRepository) {}
 
-    async addSongToAlbum(songId: number, albumId: number): Promise<Song> {
+    async addSongToAlbum({songId, albumId}: {songId: number, albumId: number}): Promise<Song> {
         return this.albumRepository.addSongToAlbum(songId, albumId);
     }
 
@@ -37,13 +37,13 @@ export class AlbumService implements IAlbumService {
         }
     }
 
-    async deleteAlbum(albumId: number): Promise<Omit<Album, 'album_songs'>> {
+    async deleteAlbum({albumId}: {albumId: number}): Promise<Omit<Album, 'album_songs'>> {
         const album = await this.albumRepository.getAlbumById(albumId)
         await this.cloud.deleteFile(album.image)
         return this.albumRepository.deleteAlbum(albumId);
     }
 
-    async deleteSongFromAlbum(songId: number, albumId: number): Promise<Song> {
+    async deleteSongFromAlbum({songId, albumId}: {songId: number, albumId: number}): Promise<Song> {
         return this.albumRepository.deleteSongFromAlbum(songId, albumId);
     }
 
@@ -87,7 +87,7 @@ export class AlbumService implements IAlbumService {
         };
     }
 
-    async getAlbumById(albumId: number): Promise<Album & { songs: Song[] }> {
+    async getAlbumById({albumId}: {albumId: number}): Promise<Album & { songs: Song[] }> {
         const album = await this.albumRepository.getAlbumById(albumId)
         return {
             ...album,

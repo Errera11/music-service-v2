@@ -7,4 +7,5 @@ export class Album {
     author: string
     image: string
     isLiked: boolean
+    album_songs: Song[]
 }

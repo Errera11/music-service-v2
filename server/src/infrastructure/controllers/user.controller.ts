@@ -3,7 +3,7 @@ import {
     Body,
     Controller, Delete, Get,
     HttpStatus, InternalServerErrorException, Param,
-    Post, Put, Query, Req, Res, UnauthorizedException,
+    Post, Put, Query, Req, Res, UnauthorizedException, UseGuards,
 } from "@nestjs/common";
 import {UserService} from "../../core/services/user/user.service";
 import {LoginUserDto} from "../../common/dtos/infrastructureDto/userDto/LoginUser.dto";
@@ -14,6 +14,9 @@ import {AuthUserDto} from "../../common/dtos/AuthUser.dto";
 import {Request, Response} from "express";
 import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
 import {SetUserRoleDto} from "../../common/dtos/SetUserRole.dto";
+import {UserRoles} from "../../core/domain/User";
+import {Roles} from "../guards/roles.decorator";
+import {AuthGuard} from "../guards/auth.guards";
 
 @Controller('')
 export class UserController {
@@ -52,7 +55,7 @@ export class UserController {
             response.cookie('refreshToken', ' ');
             response.cookie('authToken', ' ');
             const refreshToken = request.cookies['refreshToken'];
-            if (!refreshToken) throw new UnauthorizedException();
+            if (!refreshToken) return  new UnauthorizedException();
             return this.userService.logout(refreshToken);
         } catch (e) {
             console.log(e);
@@ -65,7 +68,7 @@ export class UserController {
         try {
             const oldRefreshToken = request.cookies['refreshToken'];
             const {refreshToken, authToken, ...userData} = await this.userService.refreshSession(oldRefreshToken);
-            response['cookie']('refreshToken', refreshToken, {httpOnly: true});
+            response['cookie']('authToken', authToken, {httpOnly: true});
             response['cookie']('refreshToken', refreshToken, {httpOnly: true});
             return userData;
         } catch (e) {
@@ -74,17 +77,21 @@ export class UserController {
         }
     }
 
-    @Get('loginByAuthToken')
-    async loginByAuthToken(@Req() request: Request) {
+    @Get('loginByRefreshToken')
+    async loginByRefreshToken(@Req() request: Request) {
+        const refreshToken = request.cookies['refreshToken'];
+        if(!refreshToken) throw new UnauthorizedException();
         try {
-            return this.userService.loginByToken(request.headers.authorization)
+            return this.userService.loginByToken(request.cookies['refreshToken']);
         } catch (e) {
             console.log(e);
-            throw new BadRequestException()
+            throw new InternalServerErrorException();
         }
     }
 
     @Get('getUsers')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async getAllUsers(@Query() dto: PaginationLimitDto) {
         try {
             return this.userService.getAll(dto);
@@ -95,6 +102,8 @@ export class UserController {
     }
 
     @Put('makeAdmin')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async makeAdmin(@Body() dto: SetUserRoleDto) {
         try {
             return this.userService.makeAdmin(dto.userId);
@@ -105,6 +114,8 @@ export class UserController {
     }
 
     @Put('revokeAdmin')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async revokeAdmin(@Body() dto: SetUserRoleDto) {
         try {
             return this.userService.revokeAdmin(dto.userId);
@@ -115,6 +126,8 @@ export class UserController {
     }
 
     @Get('getUserById/:id')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async getUserById(@Param('id') id: string) {
         try {
             return this.userService.getUserById(id);

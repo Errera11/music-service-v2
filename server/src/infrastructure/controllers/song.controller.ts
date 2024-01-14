@@ -21,14 +21,15 @@ import {
 import {SongService} from "../../core/services/song/song.service";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {CreateSongDto} from "../../common/dtos/infrastructureDto/songDto/CreateSong.dto";
-import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
 import {UpdateSongDto} from "../../common/dtos/infrastructureDto/songDto/UpdateSong.dto";
 import {Roles} from "../guards/roles.decorator";
 import {AuthGuard} from "../guards/auth.guards";
 import {UserRoles} from "../../core/domain/User";
 import {SearchItemsDto} from "../../common/dtos/SearchItems.dto";
 import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
-import {SearchUserItemDto} from "../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../common/dtos/GetUserItem.dto";
+import {GetUserItemsDto} from "../../common/dtos/GetParentItems.dto";
+import {AuthReq} from "../../common/types/authReq";
 
 @Controller('songs')
 export class SongController {
@@ -48,6 +49,8 @@ export class SongController {
     }
 
     @Post('create')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'audio', maxCount: 1},
         {name: 'image', maxCount: 1},
@@ -58,7 +61,7 @@ export class SongController {
     }) {
         try {
             if (!files.image[0] || !files.audio[0]) {
-                throw new HttpException('Image and audio must be provided', HttpStatus.BAD_REQUEST);
+                return new HttpException('Image and audio must be provided', HttpStatus.BAD_REQUEST);
             }
             return await this.songService.createSong(
                 {
@@ -74,6 +77,8 @@ export class SongController {
     }
 
     @Put('update')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'audio', maxCount: 1},
         {name: 'image', maxCount: 1},
@@ -103,6 +108,8 @@ export class SongController {
     }
 
     @Post('createGenre')
+    @Roles(UserRoles.ADMIN)
+    @UseGuards(AuthGuard)
     async createGenre(@Body() data: { genre: string }) {
         try {
             return this.songService.createSongGenre(data.genre)
@@ -113,6 +120,8 @@ export class SongController {
     }
 
     @Post('favorite')
+    @Roles(UserRoles.USER)
+    @UseGuards(AuthGuard)
     addToFavorite(@Body() dto: { userId: string, songId: number }) {
         try {
             return this.songService.addToFavorite({
@@ -126,9 +135,14 @@ export class SongController {
     }
 
     @Get('mySongs')
-    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
+    @Roles(UserRoles.USER)
+    @UseGuards(AuthGuard)
+    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: GetUserItemsDto, @Req() req: AuthReq) {
         try {
-            return this.songService.getUserFavSongs(dto);
+            return this.songService.getUserFavSongs({
+                ...dto,
+                userId: req.user.id
+            });
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -136,7 +150,9 @@ export class SongController {
     }
 
     @Delete('removeFromFavorite')
-    removeFromFavorite(@Query() dto: SearchUserItemDto) {
+    @Roles(UserRoles.USER)
+    @UseGuards(AuthGuard)
+    removeFromFavorite(@Query() dto: GetUserItemDto) {
         try {
             return this.songService.removeFromFavorite(dto)
         } catch (e) {

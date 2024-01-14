@@ -1,8 +1,8 @@
 import {SignTokenDTO} from "../../../common/types/token";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 
 export interface ITokenService {
-    disableRefreshToken(dto: SearchUserItemDto): Promise<string>
+    disableRefreshToken(dto: GetUserItemDto): Promise<string>
     verifyRefreshToken(token: string): Promise<SignTokenDTO>
     verifyAuthToken(token: string): Promise<SignTokenDTO>
     signTokens(dto: SignTokenDTO): Promise<{

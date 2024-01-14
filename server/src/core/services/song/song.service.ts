@@ -9,7 +9,7 @@ import {ISongService} from "./ISongService";
 import {SongRepository} from "../../../infrastructure/db/repository/SongRepository";
 import {Genre} from "../../domain/Genre";
 import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
-import {SearchUserItemDto} from "../../../common/dtos/SearchUserItem.dto";
+import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
 import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 
@@ -22,8 +22,8 @@ export class SongService implements ISongService {
     }
 
     async updateSong(dto: UpdateSongDto): Promise<Song> {
-        let audioId = null;
-        let imageId = null;
+        let audioId;
+        let imageId;
         const existingSongRecord = await this.songRepository.getSongById(dto.id);
         if (dto.audio) {
             await this.cloud.deleteFile(existingSongRecord.audio);
@@ -53,7 +53,7 @@ export class SongService implements ISongService {
     }
 
 
-    addToFavorite(dto: SearchUserItemDto): Promise<Song> {
+    addToFavorite(dto: GetUserItemDto): Promise<Song> {
         return this.songRepository.addToFavorite(dto)
     }
 
@@ -84,7 +84,7 @@ export class SongService implements ISongService {
 
     async getAll(dto: SearchUserItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.songRepository.getAll(dto)
-        if(!songs) return {
+        if(!songs.items.length) return {
             items: [] as Song[],
             totalCount: 0
         }
@@ -118,7 +118,7 @@ export class SongService implements ISongService {
         return this.songRepository.delete(id);
     }
 
-    async removeFromFavorite(dto: SearchUserItemDto): Promise<Song> {
+    async removeFromFavorite(dto: GetUserItemDto): Promise<Song> {
         await this.songRepository.removeFromFavorite(dto);
         return this.songRepository.getSongById(dto.itemId as number);
     }

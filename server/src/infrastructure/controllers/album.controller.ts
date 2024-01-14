@@ -13,15 +13,19 @@ import {CreateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/Creat
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {UpdateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/UpdateAlbum.dto";
 import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
+import {ParentItemDto} from "../../common/dtos/ParentItem.dto";
 
 @Controller('album')
 export class AlbumController {
     constructor(private albumService: AlbumService) {}
 
     @Post('addSong')
-    addSongToAlbum(@Query(ParseIntPipe) dto: {songId: number, albumId: number}) {
+    addSongToAlbum(@Query(ParseIntPipe) dto: ParentItemDto) {
         try {
-            return this.albumService.addSongToAlbum(Number(dto.songId), Number(dto.albumId));
+            return this.albumService.addSongToAlbum({
+                songId: dto.itemId,
+                albumId: dto.parentId
+            });
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException()
@@ -73,9 +77,12 @@ export class AlbumController {
     }
 
     @Delete('removeSong')
-    removeSong(@Query() dto: {songId: number, albumId: number}) {
+    removeSong(@Query() dto: ParentItemDto) {
         try {
-            return this.albumService.deleteSongFromAlbum(Number(dto.songId), Number(dto.albumId));
+            return this.albumService.deleteSongFromAlbum({
+                songId: dto.itemId,
+                albumId: dto.parentId
+            });
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -85,7 +92,9 @@ export class AlbumController {
     @Delete('delete/:id')
     deleteAlbum(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.albumService.deleteAlbum(id)
+            return this.albumService.deleteAlbum({
+                albumId: id
+            })
         } catch(e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -95,7 +104,9 @@ export class AlbumController {
     @Get('getAlbumById/:id')
     getAlbumById(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.albumService.getAlbumById(id);
+            return this.albumService.getAlbumById({
+                albumId: id
+            });
         } catch(e) {
             console.log(e);
             throw new InternalServerErrorException();

@@ -1,4 +1,4 @@
-import {Module} from "@nestjs/common";
+import {MiddlewareConsumer, Module, NestModule} from "@nestjs/common";
 import {UserService} from "./services/user/user.service";
 import {UserController} from "../infrastructure/controllers/user.controller";
 import {PrismaService} from "../infrastructure/prisma.service";
@@ -7,6 +7,7 @@ import {TokenModule} from "./token.module";
 import {DropboxService} from "../infrastructure/cloud/dropbox.service";
 import {UserRepository} from "../infrastructure/db/repository/UserRepository";
 import {UserMapper} from "../infrastructure/db/mappers/User.mapper";
+import {SessionMiddleware} from "../infrastructure/middlewares/SessionMiddleware";
 
 @Module(
     {
@@ -19,9 +20,16 @@ import {UserMapper} from "../infrastructure/db/mappers/User.mapper";
             UserService,
             DropboxService,
             UserRepository,
-            UserMapper
+            UserMapper,
         ],
         controllers: [UserController]
     }
 )
-export class UserModule {}
+export class UserModule implements NestModule {
+    configure(consumer: MiddlewareConsumer): any {
+        consumer
+            .apply(SessionMiddleware)
+            .forRoutes('getUserById/:id', '/revokeAdmin', '/makeAdmin', '/getUsers')
+    }
+
+}
