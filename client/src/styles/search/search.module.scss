@@ -3,21 +3,16 @@
 .container {
   padding: 1px;
   height: 100%;
+  position: relative;
   .searchBar {
     width: 50%;
     margin: 0 0 20px 10px;
   }
-  .loader {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .searchFailureMessage {
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .loader, .searchFailureMessage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     font-size: 1.3rem;
     color: $description;
   }

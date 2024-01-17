@@ -2,7 +2,6 @@ import React from 'react';
 import styles from '@/styles/user/user.module.scss';
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import UserIconSvg from "@/assets/svg/UserIconSvg";
-import Layout from "@/components/Layout";
 import Head from "next/head";
 
 const Index = () => {

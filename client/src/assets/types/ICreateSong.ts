@@ -1,4 +1,4 @@
-export interface CreateSongDto {
+export interface ICreateSong {
     readonly title: string
     readonly description?: string
     readonly artist: string

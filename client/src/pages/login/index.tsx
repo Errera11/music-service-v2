@@ -3,14 +3,13 @@ import Link from "next/link";
 import Image from "next/image";
 import WavePic from '../../assets/wave.png';
 import React, {useState} from "react";
-import {AppRoutes} from "@/assets/appRoutes";
+import {appRoutes} from "@/assets/appRoutes";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {useRouter} from "next/router";
 import {loginThunk} from "@/store/auth";
 import AuthError from "@/components/authError/AuthError";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import Head from "next/head";
-import {AuthSuccessResponse} from "@/assets/types/HttpAuth";
 
 const Login = () => {
 
@@ -27,8 +26,7 @@ const Login = () => {
         dispatch(loginThunk({email, password}))
             .unwrap()
             .then((data) => {
-                localStorage.setItem('authToken', (data as AuthSuccessResponse).authToken);
-                router.push(AppRoutes.HOME_PAGE)
+                router.push(appRoutes.HOME_PAGE)
             })
             .catch(err => console.log(err))
     }
@@ -49,11 +47,11 @@ const Login = () => {
                         type={'password'}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder={'Password'}/>
-                    {err && <AuthError error={err[0].constraints}/>}
                     <button onClick={e => loginHandler()}>Sign In</button>
+                    {err && <AuthError error={err[0].constraints}/>}
                     <div className={styles.createAccount}>
                         Don't have an account?&nbsp;
-                        <Link href={AppRoutes.SIGNUP_PAGE}>Sign Up!</Link>
+                        <Link href={appRoutes.SIGNUP_PAGE}>Sign Up!</Link>
                     </div>
                 </div>
             </div>

@@ -1,17 +1,12 @@
 import Head from 'next/head'
-import {songsApi} from "@/api/songs";
 import {InferGetStaticPropsType} from "next";
-import SongsList from "@/components/songsList/SongsList";
-import {useSong} from "@/hooks/useSong";
-import {useEffect} from "react";
+import {albumApi} from "@/api/album";
+import AlbumList from "@/components/albumList/AlbumList";
+import styles from '../styles/index/index.module.scss';
 
-export default function Home({songs}: InferGetStaticPropsType<typeof getStaticProps>) {
+// Listened/released/favTracks/playRandomSongMaybe
 
-    const {setSongs} = useSong();
-
-    useEffect(() => {
-        setSongs(songs);
-    }, [])
+export default function Home({items}: InferGetStaticPropsType<typeof getStaticProps>) {
 
     return (
         <>
@@ -23,9 +18,13 @@ export default function Home({songs}: InferGetStaticPropsType<typeof getStaticPr
             </Head>
 
             <>
-                <h1 style={{color: 'white', fontSize: '1.5rem', margin: '15px'}}>Welcome back</h1>
-                <h2 style={{color: 'white', margin: '15px'}}>Newest songs</h2>
-                <SongsList songs={songs} type={'plate'}/>
+                <div className={styles.container}>
+                    <h1>Welcome back</h1>
+                    <h2>Newest songs</h2>
+                    <div className={styles.albumList}>
+                        {items && <AlbumList albums={items}/>}
+                    </div>
+                </div>
             </>
 
         </>
@@ -34,10 +33,10 @@ export default function Home({songs}: InferGetStaticPropsType<typeof getStaticPr
 
 export const getStaticProps = async () => {
     try {
-        const {songs, totalCount} = (await songsApi.getAllSongs({})).data;
+        const {items, totalCount} = (await albumApi.getAll({})).data;
         return {
             props: {
-                songs,
+                items,
                 totalCount
             }
         }

@@ -2,14 +2,14 @@ import React from 'react';
 import SongPageLayout from "@/components/admin/adminPageLayouts/SongPageLayout";
 import {songsApi} from "@/api/songs";
 import SongForm from "@/components/admin/songForm/SongForm";
-import {CreateSongDto} from "@/assets/dto/CreateSongDto";
+import {ICreateSong} from "@/assets/types/ICreateSong";
 
 const Index = () => {
-    const onCreateSong = (dto: CreateSongDto) => songsApi.createSong(dto)
+    const onCreateSong = (dto: ICreateSong) => songsApi.createSong(dto)
 
     return (
         <SongPageLayout title={'Create song'}>
-            <SongForm btnAction={'Create'} onSubmit={(dto: CreateSongDto) => onCreateSong(dto)} />
+            <SongForm btnAction={'Create'} onSubmit={(dto: ICreateSong) => onCreateSong(dto)} />
         </SongPageLayout>
     );
 };

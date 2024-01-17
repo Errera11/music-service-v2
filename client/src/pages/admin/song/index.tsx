@@ -6,21 +6,25 @@ import AdminSongList from "@/components/admin/adminSongList/AdminSongList";
 import PaginationBar from "@/components/admin/paginationBar/PaginationBar";
 import styles from '../../../styles/admin/album/album.module.scss';
 import useSsgPagination from "@/components/admin/useSsgPagination/useSsgPaginaton";
+import {Song} from "@/assets/types/Song";
+import {IGetItemsList} from "@/assets/types/IGetItemsList";
 
-const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Index = ({items, totalCount}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+
     const songTakeVolume = 5;
     const {setPage, totalPages, currentPage} = useSsgPagination({
-        totalItemsCount: data.totalCount,
+        totalItemsCount: totalCount,
         takeVolume: songTakeVolume
     })
+
     return (
         <SongPageLayout title={'All songs'}>
             <div className={styles.container}>
                 <div className={styles.songList}>
-                    <AdminSongList songs={data.songs}/>
+                    <AdminSongList songs={items}/>
                 </div>
                 <div className={styles.paginationBar}>
-                    <PaginationBar currentPage={currentPage} totalPages={totalPages} setPage={setPage}/>
+                    {!!items.length && <PaginationBar currentPage={currentPage} totalPages={totalPages} setPage={setPage}/>}
                 </div>
             </div>
         </SongPageLayout>
@@ -29,17 +33,21 @@ const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) =
 
 export default Index;
 
-export const getServerSideProps: GetServerSideProps = async ({query}) => {
-    const page = ((query && query['page']) || 1) as number;
-    const takeVolume = ((query && query['takeVolume']) || 5) as number;
-    const {data}
-        = await songsApi.getAllSongs({
-        take: takeVolume,
-        skip: (page - 1) * takeVolume
-    });
-    return {
-        props: {
-            data
+export const getServerSideProps: GetServerSideProps<IGetItemsList<Song>> = async ({query}) => {
+    try {
+        const page = ((query && query['page']) || 1) as number;
+        const takeVolume = ((query && query['takeVolume']) || 5) as number;
+        const {data} = await songsApi.getAllSongs({
+            take: takeVolume,
+            skip: (page - 1) * takeVolume
+        });
+        return {
+            props: data
+        }
+    } catch (e) {
+        console.log(e);
+        return {
+            props: {} as IGetItemsList<Song>
         }
     }
 }

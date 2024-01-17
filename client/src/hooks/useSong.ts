@@ -7,7 +7,7 @@ import {playerActions} from "@/store/player";
 
 export function useSong() {
     const dispatch = useAppDispatch();
-    const song = useTypedSelector(state => state.songs.currentSong);
+    const {currentSong: song, songs: songsList} = useTypedSelector(state => state.songs);
     const {skipNext, skipBack} = songActions;
     const {setCurrentTime, setIsPlaying} = playerActions;
     const {setCurrentSong, setSongs: setSongsAC} = songActions;
@@ -37,6 +37,8 @@ export function useSong() {
         skipSong,
         skipBackSong,
         setSong,
-        setSongs
+        setSongs,
+        songsList,
+        song
     }
 }

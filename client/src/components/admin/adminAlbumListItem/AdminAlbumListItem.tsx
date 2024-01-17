@@ -3,7 +3,7 @@ import {Album} from "@/assets/types/Album";
 import styles from './adminAlbumListItem.module.scss';
 import gear from '../../../assets/svg/gear.svg';
 import {useRouter} from "next/router";
-import {AdminRoutes} from "@/assets/AdminRoutes";
+import {adminRoutes} from "@/assets/adminRoutes";
 import SettingPopup from "@/components/admin/settingPopup/SettingPopup";
 
 interface IProps {
@@ -36,7 +36,7 @@ const AdminAlbumListItem: React.FC<IProps> = ({album}) => {
             <img ref={settingsRef} onClick={() => setIsSettingsMenu(prev => !prev)} className={styles.settingsBtn} src={gear.src}/>
             {isSettingsMenu &&
                 <div className={styles.settingsPopup}>
-                    <SettingPopup properties={[{property: 'Edit', onClick: () => router.push(AdminRoutes.ALBUM_EDIT + album.id)}]} />
+                    <SettingPopup properties={[{property: 'Edit', onClick: () => router.push(adminRoutes.ALBUM_EDIT + album.id)}]} />
                 </div>}
         </div>
     );

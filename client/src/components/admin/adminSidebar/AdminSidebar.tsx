@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './adminSidebar.module.scss';
 import AdminSidebarBtn from "@/components/admin/adminSidebarBtn/AdminSidebarBtn";
 import {useRouter} from "next/router";
-import {AdminRoutes} from "@/assets/AdminRoutes";
+import {adminRoutes} from "@/assets/adminRoutes";
 
 const AdminSidebar = () => {
 
@@ -10,19 +10,19 @@ const AdminSidebar = () => {
 
     const btns = [{
         title: 'Songs',
-        onCLick: () => router.push(AdminRoutes.SONG_PAGE)
+        onCLick: () => router.push(adminRoutes.SONG_PAGE)
     },
         {
             title: 'Albums',
-            onCLick: () => router.push(AdminRoutes.ALBUM_PAGE)
+            onCLick: () => router.push(adminRoutes.ALBUM_PAGE)
         },
         {
             title: 'Users',
-            onCLick: () => router.push(AdminRoutes.USERS_PAGE)
+            onCLick: () => router.push(adminRoutes.USERS_PAGE)
         },
         {
             title: 'Back to service',
-            onCLick: () => router.push(AdminRoutes.BACK_TO_SERVICE)
+            onCLick: () => router.push(adminRoutes.BACK_TO_SERVICE)
         }
     ]
 

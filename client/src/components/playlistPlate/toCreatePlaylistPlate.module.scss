@@ -1,0 +1,34 @@
+@import "@/assets/colors.module";
+
+.container {
+  width: 185px;
+  height: 230px;
+  background: $playerBg;
+  border-radius: 5px;
+  display: flex;
+
+  &:hover {
+    .icon {
+      scale: 1.2;
+      transition-duration: 300ms;
+    }
+    scale: 0.95;
+    transition-duration: 300ms;
+  }
+
+  .icon {
+    display: block;
+    width: 70px;
+    height: 70px;
+    margin: auto;
+    cursor: pointer;
+    &:hover {
+      svg {
+        fill: dimgray;
+      }
+    }
+    svg {
+      fill: $description;
+    }
+  }
+}

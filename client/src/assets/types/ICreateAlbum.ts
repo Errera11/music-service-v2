@@ -1,4 +1,4 @@
-export interface CreateAlbumDto {
+export interface ICreateAlbum {
     readonly title: string
     readonly description?: string
     readonly author: string

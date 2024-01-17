@@ -7,6 +7,7 @@ $playerBg: #262626;
 $playerProgressBar: #303030;
 $playerCurrentTime: #bd0015;
 $albumPageBg: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 65%, rgba(60,60,60,1) 100%);
+$playlistPageBg: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 65%, rgba(255,0,4,0.2) 100%);
 
 :export {
   description: $description;
@@ -15,4 +16,5 @@ $albumPageBg: linear-gradient(to top, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 65%, rgba(
   barColor: $barColor;
   playerProgressBar: $playerProgressBar;
   playerCurrentTime: $playerCurrentTime;
+  playlistPageBg: $playlistPageBg;
 }

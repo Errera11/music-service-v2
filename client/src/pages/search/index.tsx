@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import Head from "next/head";
 import SearchBar from "@/components/searchBar/SearchBar";
 import styles from '../../styles/search/search.module.scss';
-import {ISongApiResponse, songsApi} from "@/api/songs";
+import {songsApi} from "@/api/songs";
 import SongsList from "@/components/songsList/SongsList";
 import useFetch from "@/hooks/useFetch";
 import Loader from "@/components/loader/Loader";
@@ -12,17 +12,20 @@ import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {songActions} from "@/store/song";
 
 const Search = () => {
+
     const searchTake = 10;
+    const [songsTotalCount, setSongsTotalCount] = useState(0);
     const [query, setQuery] = useState('')
+
     const {
         fetch,
         isLoading,
-        isError,
-        data
-    } = useFetch<ISongApiResponse, Parameters<typeof songsApi.searchSongs>[0]>(songsApi.searchSongs);
+        isError
+    } = useFetch<typeof songsApi.getAllSongs>(songsApi.getAllSongs);
+
     const {lastElementRef, currentPage, setPage} = useDynamicPagination({
         volume: searchTake,
-        totalCount: data?.totalCount || 0
+        totalCount: songsTotalCount
     })
 
     const songs = useTypedSelector(state => state.songs.songs);
@@ -33,17 +36,20 @@ const Search = () => {
         setPage(1);
         fetch({
             take: searchTake,
-            currentPage: 1,
-            query
-        }).then(response => dispatch(setSongs(response.songs)))
+            skip: (currentPage - 1) * searchTake,
+            query,
+        }).then(response => {
+            dispatch(setSongs(response.data.items));
+            setSongsTotalCount(response.data.totalCount);
+        })
     }, [query])
 
     useEffect(() => {
         if(query) fetch({
-            query,
             take: searchTake,
-            currentPage
-        }).then((response) => setSongs([...songs, ...response.songs]))
+            skip: (currentPage - 1) * searchTake,
+            query
+        }).then((response) => setSongs([...songs, ...response.data.items]))
     }, [currentPage])
 
     return (
@@ -55,8 +61,8 @@ const Search = () => {
                 <div className={styles.searchBar}>
                     <SearchBar onSearch={(query: string) => setQuery(query)}/>
                 </div>
-                {!isLoading && (songs) &&
-                    <SongsList lastElementRef={lastElementRef} type={'list'} songs={songs}/>}
+                {!isLoading && songs.length &&
+                    <SongsList lastElementRef={lastElementRef} songs={songs}/>}
                 {(!songs.length && !isLoading) &&
                     <div className={styles.searchFailureMessage}>No songs found</div>}
                 {isLoading && <div className={styles.loader}>

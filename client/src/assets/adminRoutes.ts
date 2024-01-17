@@ -1,5 +1,5 @@
 
-export enum AdminRoutes {
+export enum adminRoutes {
     ADMIN_HOME = '/admin',
     SONG_CREATE = '/admin/song/create',
     SONG_EDIT = '/admin/song/edit/',

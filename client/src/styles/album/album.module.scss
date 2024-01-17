@@ -1,0 +1,56 @@
+@import '../../assets/colors.module';
+
+.container {
+
+  background: $albumPageBg;
+
+  .albumInfo {
+
+    display: grid;
+    grid-template-rows: repeat(5, 1fr);
+    grid-template-columns: 1fr 1fr;
+    padding: 15px;
+    width: 50%;
+
+    .albumImage {
+      overflow: hidden;
+      width: 200px;
+      height: 200px;
+      border-radius: 5px;
+      grid-row-start: 1;
+      grid-row-end: 5;
+    }
+
+    .title, .author, .totalSongs {
+      grid-column-start: 2;
+      grid-column-end: 3;
+    }
+
+    .title {
+      color: white;
+      font-size: 2rem;
+      grid-row-start: 1;
+      grid-row-end: 2;
+    }
+
+    .author {
+      color: $description;
+      font-size: 1.5rem;
+      grid-row-start: 3;
+      grid-row-end: 4;
+    }
+
+    .totalSongs {
+      color: $description;
+      font-size: 0.9rem;
+      grid-row-start: 4;
+      grid-row-end: 5;
+    }
+
+  }
+
+  .songList {
+
+  }
+
+}

@@ -6,7 +6,6 @@ import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {normalizeTime} from "@/assets/normalizeTime";
 import HeartSvg from "@/assets/svg/HeartSvg";
 import {LazyImage} from "@/components/lazyImage/LazyImage";
-import {songActions} from "@/store/song";
 import {useSong} from "@/hooks/useSong";
 
 const playingSong: HTMLAudioElement = document.createElement('audio');
@@ -35,13 +34,10 @@ const Player = () => {
     useEffect(() => {
         playingSong.src = currentSong.audio;
         playingSong.volume = volume;
+        dispatch(setIsPlaying(false));
         playingSong.onloadedmetadata = () => {
-            if(isPlaying) {
-                dispatch(setIsPlaying(true));
-                playingSong.autoplay = true;
-            } else {
-                playingSong.autoplay = false;
-            }
+            dispatch(setIsPlaying(true));
+            playingSong.autoplay = true;
             dispatch(setDuration(playingSong.duration));
             playingSong.currentTime = currentTime;
         }
@@ -94,14 +90,14 @@ const Player = () => {
         <div className={styles.container}>
             <div className={styles.info}>
                 <div className={styles.imageWrapper}>
-                    <LazyImage src={currentSong.image} className={styles.image}/>
+                    <LazyImage src={currentSong.image} alt={'Song img'}/>
                 </div>
                 <div className={styles.music_info}>
                     <span className={styles.title}>{currentSong.title}</span>
                     <span className={styles.artist}>{currentSong.artist}</span>
                 </div>
                 <div className={styles.like}>
-                    <HeartSvg isActive={currentSong.isLiked} width={'35px'} height={'35px'} />
+                    <HeartSvg isActive={currentSong.isLiked} width={'35px'} height={'35px'}/>
                 </div>
             </div>
             <div className={styles.playback}>
@@ -136,7 +132,8 @@ const Player = () => {
                 </div>
                 <div className={styles.timeline}>
                     <span>{normalizeTime(currentTime)}</span>
-                    <input className={styles.timelineSlider} type={'range'} min={0} max={duration} value={currentTime} step={0.001}
+                    <input className={styles.timelineSlider} type={'range'} min={0} max={duration} value={currentTime}
+                           step={0.001}
                            onChange={timeLineHandler}
                     />
                     <span>{normalizeTime(duration)}</span>

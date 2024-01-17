@@ -24,7 +24,6 @@ export const loginThunk = createAsyncThunk(
     async ({email, password}: LoginRequest) => {
         try {
             const response = await authApi.login({email, password});
-            localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
@@ -39,7 +38,6 @@ export const signupThunk = createAsyncThunk(
     async ({email, password, name}: SignUpRequest) => {
         try {
             const response = await authApi.signup({email, password, name});
-            localStorage.setItem('authToken', (response.data as AuthSuccessResponse).authToken);
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
@@ -56,7 +54,6 @@ export const logoutThunk = createAsyncThunk(
     async () => {
         try {
             const response = await authApi.logout();
-            localStorage.setItem('authToken', '');
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
@@ -68,11 +65,11 @@ export const logoutThunk = createAsyncThunk(
     }
 );
 
-export const loginByTokenThunk = createAsyncThunk(
+export const loginByRefreshTokenThunk = createAsyncThunk(
     'auth/token',
-    async ({authToken}: { authToken: string }) => {
+    async () => {
         try {
-            const response = await authApi.loginByAuthToken({authToken});
+            const response = await authApi.loginByRefreshToken();
             return response.data;
         } catch (e) {
             if (axios.isAxiosError(e)) {
@@ -106,7 +103,7 @@ const authSlice = createSlice({
             state.error = undefined;
         })
 
-        builder.addMatcher(isAnyOf(loginThunk.fulfilled, loginByTokenThunk.fulfilled), (state, action) => {
+        builder.addMatcher(isAnyOf(loginThunk.fulfilled, loginByRefreshTokenThunk.fulfilled), (state, action) => {
             if (state.error) state.error = undefined;
             state.user = action.payload as AuthSuccessResponse;
         })

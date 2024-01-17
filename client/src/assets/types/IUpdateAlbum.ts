@@ -1,4 +1,4 @@
-export interface UpdateAlbumDto {
+export interface IUpdateAlbum {
     readonly id: number
     readonly title?: string
     readonly description?: string

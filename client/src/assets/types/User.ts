@@ -5,7 +5,7 @@ export enum UserRoles  {
 }
 
 export interface User {
-    id?: string
+    id: string
     email: string
     name: string
     role: UserRoles[]

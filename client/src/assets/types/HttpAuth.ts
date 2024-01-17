@@ -16,7 +16,6 @@ export interface AuthSuccessResponse {
     role: UserRoles[],
     avatar: string,
     is_email_auth: boolean,
-    authToken: string,
 }
 
 export type AuthResponse = AuthSuccessResponse | AuthError;

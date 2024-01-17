@@ -5,7 +5,7 @@ import gear from '../../../assets/svg/gear.svg';
 import Image from 'next/image';
 import {songsApi} from "@/api/songs";
 import {useRouter} from "next/router";
-import {AdminRoutes} from "@/assets/AdminRoutes";
+import {adminRoutes} from "@/assets/adminRoutes";
 import SettingPopup from "@/components/admin/settingPopup/SettingPopup";
 
 interface IProps {
@@ -66,7 +66,7 @@ const AdminSongListItem: React.FC<IProps> = ({song}) => {
                     <SettingPopup ref={popupRef} properties={[
                         {
                             property: 'Edit',
-                            onClick: () => router.push(AdminRoutes.SONG_EDIT + song.id)
+                            onClick: () => router.push(adminRoutes.SONG_EDIT + song.id)
                         },
                         {
                             property: 'Delete song',

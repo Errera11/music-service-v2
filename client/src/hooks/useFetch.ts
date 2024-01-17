@@ -1,37 +1,31 @@
 import {useState} from "react";
-import {AxiosResponse} from "axios";
 
-type Callback<T> = (arg: any) => Promise<AxiosResponse<T>>;
-
-type ReturnType<T, A> = {
-    fetch: (arg: A) => Promise<T>,
+type FnReturnType<R, A> = {
+    fetch: (arg: A) => Promise<R>,
     isLoading: boolean,
-    isError: boolean,
-    data: T | undefined
+    isError: boolean
 }
 
-const useFetch = <T, A>(fetchCallback: Callback<T>): ReturnType<T, A> => {
+const useFetch = <T extends (args: any) => any>(fetchCallback: T): FnReturnType<Awaited<ReturnType<T>>, Parameters<T>[0]> => {
 
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [isError, setIsError] = useState<boolean>(false);
-    const [data, setData] = useState<T>();
 
-    const fetch = (arg: A) => {
+    const fetch: (args: any) => ReturnType<T> = (arg) => {
         setIsLoading(true);
         return fetchCallback(arg)
-            .then((response) => {
+            .then((response: ReturnType<Awaited<typeof fetchCallback>>) => {
                 setIsError(false);
-                setData(response.data);
-                return response.data;
+                return response;
             })
-            .catch((e) => {
+            .catch((e: any) => {
                 setIsError(true)
                 throw e
             })
             .finally(() => setIsLoading(false));
     }
 
-    return {fetch, isLoading, isError, data}
+    return {fetch, isLoading, isError}
 }
 
 export default useFetch;

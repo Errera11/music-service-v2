@@ -1,4 +1,4 @@
-export interface UpdateSongDto {
+export interface IUpdateSong {
     readonly id: number
     readonly title?: string
     readonly description?: string

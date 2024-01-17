@@ -1,5 +1,5 @@
 
-export enum AppRoutes {
+export enum appRoutes {
     SEARCH_PAGE = '/search',
     HOME_PAGE = '/',
     PLAYLIST_PAGE = '/playlist',
@@ -7,5 +7,5 @@ export enum AppRoutes {
     LOGIN_PAGE = '/login',
     SIGNUP_PAGE = '/signup',
     USER_PAGE = '/user',
-    ALBUM_PAGE = '/album' // album/[id]
+    ALBUM_PAGE = '/album' // albumDto/[id]
 }

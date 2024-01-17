@@ -1,0 +1,67 @@
+@import '@/assets/colors.module';
+
+
+.wrapper {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 100;
+  .bg {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(10px);
+    z-index: -1;
+  }
+  .container {
+    background: black;
+    border-radius: 15px;
+    padding: 15px 20px;
+    width: fit-content;
+    height: fit-content;
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      input {
+        margin-bottom: 15px;
+      }
+
+      .playlistImage {
+        display: flex;
+        justify-content: center;
+        overflow: hidden;
+        cursor: pointer;
+        margin: 20px 0;
+        width: 170px;
+        height: 200px;
+        background: $barColor;
+        border-radius: 5px;
+
+        img {
+          width: 100%;
+          height: 100%;
+        }
+        span {
+          position: absolute;
+          align-self: flex-end;
+          color: $description;
+        }
+
+        &:hover {
+          scale: 0.98;
+          transition-duration: 300ms;
+        }
+
+      }
+    }
+  }
+}

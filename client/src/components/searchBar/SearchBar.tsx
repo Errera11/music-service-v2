@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import styles from './searchBar.module.scss';
 
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -11,7 +11,7 @@ const SearchBar = ({onSearch}: { onSearch: (query: string) => void }) => {
         setQuery(e.target.value)
     }
 
-    useMemo(() => {
+    useEffect(() => {
 
         clearTimeout(timeoutId);
 

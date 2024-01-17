@@ -4,14 +4,12 @@ import Image from "next/image";
 import WavePic from "@/assets/wave.png";
 import Link from "next/link";
 import Head from "next/head";
-import {AppRoutes} from "@/assets/appRoutes";
+import {appRoutes} from "@/assets/appRoutes";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {useRouter} from "next/router";
 import {signupThunk} from "@/store/auth";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import AuthError from "@/components/authError/AuthError";
-import {AuthSuccessResponse} from "@/assets/types/HttpAuth";
-import Loader from "@/components/loader/Loader";
 
 const SignUp = () => {
 
@@ -29,8 +27,7 @@ const SignUp = () => {
         dispatch(signupThunk({email, password, name}))
             .unwrap()
             .then((data ) => {
-                localStorage.setItem('authToken', (data as AuthSuccessResponse).authToken);
-                router.push(AppRoutes.HOME_PAGE)
+                router.push(appRoutes.HOME_PAGE)
             })
             .catch(err => console.log(err))
     }
@@ -58,7 +55,7 @@ const SignUp = () => {
                     {err && <AuthError error={err[0].constraints} />}
                     <div className={styles.createAccount}>
                         Already have an account?&nbsp;
-                        <Link href={AppRoutes.LOGIN_PAGE}>Log In!</Link>
+                        <Link href={appRoutes.LOGIN_PAGE}>Log In!</Link>
                     </div>
                 </div>
             </div>

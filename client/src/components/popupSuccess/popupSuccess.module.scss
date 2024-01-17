@@ -1,9 +1,9 @@
 @import '../../assets/colors.module';
 
 .container {
-  background: $description;
+  background: $playerProgressBar;
   padding: 15px;
-  position: absolute;
+  position: fixed;
   left: 50vw;
   top: 10px;
   display: flex;
@@ -12,8 +12,10 @@
   border-radius: 15px;
   box-shadow: 5px 5px 2px;
 
-  * {
-    margin: 0 5px;
+  .message {
+    color: $description;
+    font-size: 0.9rem;
+    margin-left: 5px;
   }
 
 }

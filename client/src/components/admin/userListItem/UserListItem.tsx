@@ -4,8 +4,6 @@ import styles from './userListItem.module.scss';
 import gear from '../../../assets/svg/gear.svg';
 import SettingPopup from "@/components/admin/settingPopup/SettingPopup";
 import {userApi} from "@/api/user";
-import {AxiosResponse} from "axios";
-import {router} from "next/client";
 import {useRouter} from "next/router";
 
 interface IProps {

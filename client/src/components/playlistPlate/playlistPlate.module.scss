@@ -1,0 +1,63 @@
+@import "@/assets/colors.module";
+
+.container  {
+  display: flex;
+  flex-direction: column;
+  width: 185px;
+  height: 230px;
+  border-radius: 8px;
+  background: $barColor;
+
+  &:hover {
+    cursor: pointer;
+    scale: 0.98;
+    transition-duration: 200ms;
+  }
+
+  .image {
+    width: 180px;
+    height: 190px;
+    align-self: center;
+    overflow: hidden;
+    border-radius: 10px;
+    box-sizing: content-box;
+    margin: 7px 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    .playBtn {
+      position: absolute;
+      opacity: 0;
+      scale: 0.5;
+      transition-duration: 100ms;
+      svg {
+        fill: $description;
+      }
+      &:hover {
+        svg {
+          fill: dimgray;
+        }
+      }
+    }
+
+    &:hover {
+      .playBtn {
+        opacity: 1;
+        scale: 0.8;
+      }
+    }
+  }
+
+  .title {
+    color: $description;
+    font-size: 0.9rem;
+    margin-left: 8px;
+  }
+
+  &:hover {
+    .title {
+      color: dimgray;
+    }
+  }
+
+}

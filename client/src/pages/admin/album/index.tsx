@@ -1,25 +1,26 @@
 import React from 'react';
 import AlbumPageLayout from "@/components/admin/adminPageLayouts/AlbumPageLayout";
 import {GetServerSideProps, InferGetServerSidePropsType} from "next";
-import {albumApi, IGetAllAlbumResponse} from "@/api/album";
+import {albumApi} from "@/api/album";
 import AdminAlbumList from "@/components/admin/adminAlbumList/AdminAlbumList";
 import useSsgPagination from "@/components/admin/useSsgPagination/useSsgPaginaton";
 import PaginationBar from "@/components/admin/paginationBar/PaginationBar";
 import styles from '../../../styles/admin/album/album.module.scss';
+import {IGetItemsList} from "@/assets/types/IGetItemsList";
+import {Album} from "@/assets/types/Album";
 
-const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
+const Index = ({items, totalCount}: InferGetServerSidePropsType<typeof getServerSideProps>) => {
 
     const takeVolume = 5;
-    const {setPage, totalPages, currentPage} = useSsgPagination({totalItemsCount: data.totalCount, takeVolume});
-    console.log(data);
+    const {setPage, totalPages, currentPage} = useSsgPagination({totalItemsCount: totalCount, takeVolume});
     return (
         <AlbumPageLayout title={'Search albums'}>
             <div className={styles.container}>
-                {data?.albums && <div className={styles.albumList}>
-                    <AdminAlbumList albums={data.albums}/>
+                {items && <div className={styles.albumList}>
+                    <AdminAlbumList albums={items}/>
                 </div>}
                 <div>
-                    <PaginationBar currentPage={currentPage} totalPages={totalPages} setPage={setPage} />
+                    {!!items.length && <PaginationBar currentPage={currentPage} totalPages={totalPages} setPage={setPage} />}
                 </div>
             </div>
         </AlbumPageLayout>
@@ -28,7 +29,7 @@ const Index = ({data}: InferGetServerSidePropsType<typeof getServerSideProps>) =
 
 export default Index;
 
-export const getServerSideProps: GetServerSideProps<{data: IGetAllAlbumResponse}> = async ({query}) => {
+export const getServerSideProps: GetServerSideProps<IGetItemsList<Album>> = async ({query}) => {
     try {
         const paginate: {page?: number, take?: number} = query;
         const page = paginate?.page ?? 1;
@@ -38,16 +39,12 @@ export const getServerSideProps: GetServerSideProps<{data: IGetAllAlbumResponse}
             take
         });
         return {
-            props: {
-                data
-            }
+            props: data
         }
     } catch (e) {
         console.log(e);
         return {
-            props: {
-                data: {} as IGetAllAlbumResponse
-            }
+            props: {} as IGetItemsList<Album>
         }
     }
 }

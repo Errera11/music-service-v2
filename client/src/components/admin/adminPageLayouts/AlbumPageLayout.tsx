@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminPageBtn from "@/components/admin/adminPageBtn/AdminPageBtn";
-import {AdminRoutes} from "@/assets/AdminRoutes";
+import {adminRoutes} from "@/assets/adminRoutes";
 import {useRouter} from "next/router";
 import styles from './adminPageLayout.module.scss';
 
@@ -18,9 +18,9 @@ const AlbumPageLayout: React.FC<IProps> = ({title, children}) => {
             <header className={styles.header}>
                 <h1>{title}</h1>
                 <div className={styles.btns}>
-                    <AdminPageBtn onClick={() => router.push(AdminRoutes.ALBUM_PAGE)} title={'All albums'}/>
-                    <AdminPageBtn onClick={() => router.push(AdminRoutes.ALBUM_CREATE)} title={'Create album'}/>
-                    <AdminPageBtn onClick={() => router.push(AdminRoutes.ALBUM_SEARCH)} title={'Search'}/>
+                    <AdminPageBtn onClick={() => router.push(adminRoutes.ALBUM_PAGE)} title={'All albums'}/>
+                    <AdminPageBtn onClick={() => router.push(adminRoutes.ALBUM_CREATE)} title={'Create albumDto'}/>
+                    <AdminPageBtn onClick={() => router.push(adminRoutes.ALBUM_SEARCH)} title={'Search'}/>
                 </div>
             </header>
             <>

@@ -1,14 +1,11 @@
-
 import api from './root';
-import {CreateAlbumDto} from "@/assets/dto/CreateAlbumDto";
-import {UpdateAlbumDto} from "@/assets/dto/UpdateAlbumDto";
+import {ICreateAlbum} from "@/assets/types/ICreateAlbum";
+import {IUpdateAlbum} from "@/assets/types/IUpdateAlbum";
 import {Album, AlbumById, AlbumSongs} from "@/assets/types/Album";
+import {IGetItemsList} from "@/assets/types/IGetItemsList";
+import {ISearchItems} from "@/assets/types/ISearchItems";
 
-export interface IGetAllAlbumResponse {
-    albums: Album[]
-    totalCount: number
-}
-
+// Granted to administrator
 const addSongToAlbum = ({songId, albumId}: {songId: number, albumId: number}) => api.post<AlbumSongs>('album/addSong', {}, {
     params: {
         songId,
@@ -16,14 +13,14 @@ const addSongToAlbum = ({songId, albumId}: {songId: number, albumId: number}) =>
     }
 })
 
-const getAll = ({skip, take}: {skip?: number, take?: number}) => api.get<IGetAllAlbumResponse>('album', {
+const getAll = (dto: ISearchItems) => api.get<IGetItemsList<Album>>('album', {
     params: {
-        skip,
-        take
+        ...dto
     }
 })
 
-const createAlbum = (dto: CreateAlbumDto) => {
+// Granted to administrator
+const createAlbum = (dto: ICreateAlbum) => {
     const formdata = new FormData();
     formdata.append('title', dto.title);
     formdata.append('author', dto.author);
@@ -33,7 +30,8 @@ const createAlbum = (dto: CreateAlbumDto) => {
     return api.post<Album>('album/create', formdata);
 }
 
-const updateAlbum = (dto: UpdateAlbumDto) => {
+// Granted to administrator
+const updateAlbum = (dto: IUpdateAlbum) => {
     const formdata = new FormData();
     formdata.append('id', String(dto.id))
     formdata.append('title', dto.title || '');
@@ -44,6 +42,7 @@ const updateAlbum = (dto: UpdateAlbumDto) => {
     return api.put<Album>('album/update', formdata);
 }
 
+// Granted to administrator
 const removeSong = ({songId, albumId}: { songId: number, albumId: number }) => api.delete<{song_id: number}>('album/removeSong', {
     params: {
         songId,
@@ -51,17 +50,10 @@ const removeSong = ({songId, albumId}: { songId: number, albumId: number }) => a
     }
 })
 
+// Granted to administrator
 const deleteAlbum = (albumId: number) => api.delete<Album>(`album/delete/${albumId}`)
 
 const getAlbumById = (albumId: number) => api.get<AlbumById>(`album/getAlbumById/${albumId}`)
-
-const searchAlbum = ({query, take, skip}: {query?: string, take?: number, skip?: number}) => api.get<IGetAllAlbumResponse>('album/search', {
-    params: {
-        query,
-        take,
-        skip
-    }
-})
 
 export const albumApi = {
     addSongToAlbum,
@@ -71,5 +63,4 @@ export const albumApi = {
     removeSong,
     deleteAlbum,
     getAlbumById,
-    searchAlbum
 }

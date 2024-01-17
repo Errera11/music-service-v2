@@ -6,9 +6,8 @@ import {songsApi} from "@/api/songs";
 import {AxiosResponse} from "axios";
 import {Song} from "@/assets/types/Song";
 import styles from './songForm.module.scss';
-import {set} from "immutable";
-import {CreateSongDto} from "@/assets/dto/CreateSongDto";
-import {UpdateSongDto} from "@/assets/dto/UpdateSongDto";
+import {ICreateSong} from "@/assets/types/ICreateSong";
+import {IUpdateSong} from "@/assets/types/IUpdateSong";
 
 export interface IGenre {
     id: number
@@ -16,7 +15,7 @@ export interface IGenre {
 }
 
 export interface IProps {
-    onSubmit: (dto: UpdateSongDto | CreateSongDto) => Promise<AxiosResponse<Song>>
+    onSubmit: (dto: IUpdateSong | ICreateSong) => Promise<AxiosResponse<Song>>
     song?: Song
     btnAction: 'Create' | 'Update'
 }

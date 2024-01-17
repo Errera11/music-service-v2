@@ -1,39 +1,37 @@
-import {AxiosError, AxiosResponse} from "axios";
-import {Song} from "@/assets/types/Song";
+import {AxiosRequestConfig, AxiosResponse} from "axios";
+import {Genre, Song} from "@/assets/types/Song";
 import api from "./root";
-import {CreateSongDto} from "@/assets/dto/CreateSongDto";
-import {UpdateSongDto} from "@/assets/dto/UpdateSongDto";
+import {ICreateSong} from "@/assets/types/ICreateSong";
+import {IUpdateSong} from "@/assets/types/IUpdateSong";
+import {IGetItemsList} from "@/assets/types/IGetItemsList";
+import {ISearchItems} from "@/assets/types/ISearchItems";
 
-export interface ISongApiResponse {
-    songs: Song[],
-    totalCount: number
-}
-
-const getAllSongs = ({skip, take}: { skip?: number, take?: number }) => api.get<ISongApiResponse, AxiosResponse<ISongApiResponse>>('songs', {
+// Granted everyone, using token to mark liked songs
+const getAllSongs = (dto: ISearchItems, req?: AxiosRequestConfig) => api.get<IGetItemsList<Song>>('songs', {
+    headers: req?.headers,
     params: {
-        take, skip
+        ...dto
     }
 });
 
-const removeFromFavorite = ({authToken, songId}: {authToken: string, songId: number}) => api.delete('songs/removeFromFavorite', {
+// Granted to authorized user
+const getUserFavSongs = (dto: ISearchItems, req?: AxiosRequestConfig) => api.get<IGetItemsList<Song>>('songs/mySongs', {
+    headers: req?.headers,
     params: {
-        authToken,
+        ...dto
+    }
+});
+
+// Granted to authorized user
+const removeFromFavorite = (songId: number, req?: AxiosRequestConfig) => api.delete<AxiosResponse<Song>>('songs/removeFromFavorite', {
+    headers: req?.headers,
+    params: {
         songId
-    },
-    headers: {
-        authorization: localStorage.getItem('authToken')
     }
 })
 
-const searchSongs = ({query, currentPage, take}: {query?: string, currentPage?: number, take?: number}) => api.get<ISongApiResponse>('/songs/search', {
-    params: {
-        query,
-        skip: (take && currentPage) && (currentPage - 1) * take,
-        take
-    }
-})
-
-const createSong = (dto: CreateSongDto) => {
+// Granted to administrator
+const createSong = (dto: ICreateSong, req?: AxiosRequestConfig) => {
     const formdata = new FormData();
     formdata.append('title', dto.title);
     formdata.append('artist', dto.artist);
@@ -42,29 +40,29 @@ const createSong = (dto: CreateSongDto) => {
     formdata.append('audio', dto.audio);
     formdata.append('image', dto.image);
     return api.post<Song>('/songs/create', formdata, {
-        headers: {
-            authorization: localStorage.getItem('authToken')
-        }
+        headers: req?.headers
     })
 }
 
-const getAllGenres = () => api.get<{genre: string, id: number}[]>('/songs/genres', {
-    headers: {
-        authorization: localStorage.getItem('authToken')
+// Granted to administrator?
+const getAllGenres = () => api.get<Genre[]>('/songs/genres', {})
+
+// Granted to administrator
+const createGenre = (genre: string, req?: AxiosRequestConfig) => api.post<Genre>('/songs/createGenre', {genre}, {
+        headers: req?.headers
     }
-})
+)
 
-const createGenre = (genre: string) => api.post<{genre: string, id: number}>('/songs/createGenre', {genre}, {
-    headers: {
-        authorization: localStorage.getItem('authToken')
-    }
-})
+// Granted to administrator
+const deleteSong = (id: number,  req?: AxiosRequestConfig) => api.delete<Song>(`/songs/delete/${id}`, {
+    headers: req?.headers
+});
 
-const deleteSong = (id: number) => api.delete<Song>(`/songs/delete/${id}`);
-
+// Granted everyone
 const getSongById = (id: number) => api.get<Song>(`/songs/${id}`);
 
-const updateSong = (dto: UpdateSongDto) => {
+// Granted to administrator
+const updateSong = (dto: IUpdateSong, req?: AxiosRequestConfig) => {
     const formdata = new FormData();
     formdata.append('title', dto.title || '');
     formdata.append('artist', dto.artist || '');
@@ -72,23 +70,27 @@ const updateSong = (dto: UpdateSongDto) => {
     formdata.append('genre', JSON.stringify(dto.genre || []));
     formdata.append('audio', dto.audio || '');
     formdata.append('image', dto.image || '');
-    return api.put<Song>('songs/update', formdata)
+    return api.put<Song>('songs/update', formdata, {
+        headers: req?.headers
+    })
 };
 
-const addToFavorite = ({authToken, songId}: {authToken: string, songId: number}) => api.post('/favorite', {
-    authToken,
+// Granted to authorized user
+const addToFavorite = ({songId}: {songId: number}, req?: AxiosRequestConfig) => api.post('/favorite', {
     songId
+}, {
+    headers: req?.headers
 })
 
 export const songsApi = {
     getAllSongs,
     removeFromFavorite,
-    searchSongs,
     createSong,
     getAllGenres,
     createGenre,
     deleteSong,
     getSongById,
     updateSong,
-    addToFavorite
+    addToFavorite,
+    getUserFavSongs
 }

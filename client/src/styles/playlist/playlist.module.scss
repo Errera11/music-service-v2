@@ -1,0 +1,26 @@
+.unauthMessage {
+  display: flex;
+  height: 100%;
+
+  span {
+    display: block;
+    margin: auto;
+    color: white;
+  }
+}
+
+.title {
+  color: white;
+  font-size: 1.8rem;
+  margin: 15px 20px;
+}
+
+.playlistList {
+  display: flex;
+  flex-wrap: wrap;
+
+  .toCreatePlate {
+    margin: 3px 5px;
+  }
+
+}

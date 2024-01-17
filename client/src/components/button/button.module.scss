@@ -1,0 +1,12 @@
+@import "@/assets/colors.module";
+
+.input {
+  width: 100%;
+  cursor: pointer;
+  padding: 10px 15px;
+  border: none;
+  outline: none;
+  border-radius: 15px;
+  background: $barColor;
+  color: $description;
+}

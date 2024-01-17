@@ -1,0 +1,17 @@
+@import '@/assets/colors.module';
+
+.container {
+  border: none;
+  input {
+    ::placeholder {
+      color: $description;
+    }
+    color: $description;
+    caret-color: $description;;
+    border-radius: 15px;
+    padding: 10px 15px;
+    background: $barColor;
+    border: none;
+    outline: none;
+  }
+}

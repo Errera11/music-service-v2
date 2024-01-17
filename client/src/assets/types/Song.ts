@@ -1,4 +1,4 @@
-export interface IGenre {
+export interface Genre {
     id: number
     genre: string
 }
@@ -12,5 +12,5 @@ export interface Song {
     audio: string
     duration: number
     isLiked: boolean
-    genre: IGenre[]
+    genre: Genre[]
 }

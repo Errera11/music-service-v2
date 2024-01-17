@@ -5,8 +5,9 @@ export interface Album {
     title: string
     description?: string
     author: string
-    image: string | File
+    image: string
     album_songs: number[]
+    isLiked: boolean
 }
 
 export interface AlbumById extends Omit<Album, 'album_songs'> {
