@@ -11,7 +11,6 @@ import {
     UseGuards,
     UseInterceptors, ValidationPipe
 } from "@nestjs/common";
-import {GetUserItemDto} from "../../common/dtos/GetUserItem.dto";
 import {Song} from "../../core/domain/Song";
 import {CreatePlaylistDto} from "../../common/dtos/infrastructureDto/playlistDto/CreatePlaylist.dto";
 import {Playlist} from "../../core/domain/Playlist";
@@ -27,21 +26,20 @@ import {PaginationLimitDto} from "../../common/dtos/PaginationLimit.dto";
 import {ParentItemDto} from "../../common/dtos/ParentItem.dto";
 import {SearchItemsDto} from "../../common/dtos/SearchItems.dto";
 
-@Controller('playlist')
+@Controller('api/playlists')
 export class PlaylistController {
 
     constructor(private playlistService: PlaylistService) {
     }
 
-    @Post('addSong')
+    @Post('songs')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     addSongToPlaylist(@Req() req: AuthReq, @Query(new ValidationPipe({transform: true})) dto: ParentItemDto): Promise<Song> {
         try {
             return this.playlistService.addSongToPlaylist({
-                userId: req.user.id,
-                itemId: dto.parentId,
-                songId: dto.itemId
+                ...dto,
+                userId: req.user.id
             });
         } catch (e) {
             console.log(e);
@@ -49,7 +47,7 @@ export class PlaylistController {
         }
     }
 
-    @Post('create')
+    @Post('')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([
@@ -59,7 +57,7 @@ export class PlaylistController {
         try {
             return this.playlistService.createPlaylist({
                 ...dto,
-                image: file[0].image,
+                image: file[0]?.image,
                 user_id: req.user.id
             })
         } catch (e) {
@@ -68,7 +66,7 @@ export class PlaylistController {
         }
     }
 
-    @Delete('delete/:id')
+    @Delete('/:id')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     async deletePlaylist(@Param('id', ParseIntPipe) id: number, @Req() req: AuthReq): Promise<Playlist> {
@@ -86,11 +84,12 @@ export class PlaylistController {
     @Get('/:id')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
-    getPlaylistById(@Param('id', ParseIntPipe) id: number, @Req() req: AuthReq): Promise<Playlist> {
+    getPlaylistById(@Param('id', ParseIntPipe) id: number, @Req() req: AuthReq, @Query() dto: PaginationLimitDto): Promise<Playlist> {
         try {
             return this.playlistService.getPlaylistById({
                 itemId: id,
-                userId: req.user.id
+                userId: req.user.id,
+                ...dto
             });
         } catch (e) {
             console.log(e);
@@ -115,14 +114,14 @@ export class PlaylistController {
         }
     }
 
-    @Get('')
+    @Get('/user/:id')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
-    getUserPlaylists(@Query() dto: PaginationLimitDto, @Req() req: AuthReq): Promise<GetItemsListDto<Playlist>> {
+    getUserPlaylists(@Param('id') userId, @Query() dto: PaginationLimitDto, @Req() req: AuthReq): Promise<GetItemsListDto<Playlist>> {
         try {
             return this.playlistService.getUserPlaylists({
                 ...dto,
-                userId: req.user.id
+                userId: userId
             });
         } catch (e) {
             console.log(e);
@@ -130,10 +129,10 @@ export class PlaylistController {
         }
     }
 
-    @Delete('removeSong')
+    @Delete('/songs')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
-    removeSongFromPlaylist(dto: GetUserItemDto & { songId: number }, @Req() req: AuthReq): Promise<Song> {
+    removeSongFromPlaylist(@Query() dto: ParentItemDto, @Req() req: AuthReq): Promise<Song> {
         try {
             return this.playlistService.removeSongFromPlaylist({
                 ...dto,
@@ -145,7 +144,7 @@ export class PlaylistController {
         }
     }
 
-    @Put('update')
+    @Put('')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([

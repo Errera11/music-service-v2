@@ -11,18 +11,18 @@ export class TokenRepository implements ITokenRepository {
     async deleteRefreshToken(dto: GetUserItemDto): Promise<string> {
         const refreshToken = await this.prisma.tokenSession.deleteMany({
             where: {
-                refreshToken: dto.itemId as string,
+                refreshToken: String(dto.itemId),
                 user_id: dto.userId
             }
         })
-        return dto.itemId as string;
+        return String(dto.itemId);
     }
 
     saveRefreshToken(dto: GetUserItemDto) {
         return this.prisma.tokenSession.create({
             data: {
                 user_id: dto.userId,
-                refreshToken: dto.itemId as string
+                refreshToken: String(dto.itemId)
             }
         })
     }

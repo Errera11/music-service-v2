@@ -6,12 +6,21 @@ import {Injectable} from "@nestjs/common";
 export class SongMapper {
     songEntityToDomain(dto: (SongEntity &
         { genre: ({ genre: Genres })[] } &
-        {favorite?: Favorite[]})): Song {
-        dto.genre[0].genre.genre
+        { favorite?: Favorite[] })): Song {
         return {
             ...dto,
             genre: dto.genre.map(genre => genre.genre),
             isLiked: !!dto?.favorite[0]?.id
         }
+    }
+
+    songEntitiesToDomains(dto: {song: (SongEntity &
+        { genre: ({ genre: Genres })[] } &
+        { favorite?: Favorite[] })}[]): Song[] {
+        return dto.map(({song}) => ({
+            ...song,
+            genre: song.genre.map(genre => genre.genre),
+            isLiked: !!song?.favorite[0]?.id
+        }))
     }
 }

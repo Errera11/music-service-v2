@@ -1,7 +1,12 @@
-import {IsNotEmpty} from "class-validator";
+import {Transform} from "class-transformer";
 
 export class GetUserItemDto {
     readonly userId: string
-    @IsNotEmpty()
+    @Transform(({value}) => {
+        if (Number(value)) {
+            return Number.parseInt(value);
+        }
+        return value;
+    })
     readonly itemId: number | string
 }

@@ -17,10 +17,12 @@ import {SetUserRoleDto} from "../../common/dtos/SetUserRole.dto";
 import {UserRoles} from "../../core/domain/User";
 import {Roles} from "../guards/roles.decorator";
 import {AuthGuard} from "../guards/auth.guards";
+import {TokenService} from "../../core/services/token/token.service";
 
-@Controller('')
+@Controller('/api/users')
 export class UserController {
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService,
+                private tokenService: TokenService) {
     }
 
     @Post('login')
@@ -55,7 +57,7 @@ export class UserController {
             response.cookie('refreshToken', ' ');
             response.cookie('authToken', ' ');
             const refreshToken = request.cookies['refreshToken'];
-            if (!refreshToken) return  new UnauthorizedException();
+            if (!refreshToken) throw 'No refresh token';
             return this.userService.logout(refreshToken);
         } catch (e) {
             console.log(e);
@@ -82,19 +84,19 @@ export class UserController {
         const refreshToken = request.cookies['refreshToken'];
         if(!refreshToken) throw new UnauthorizedException();
         try {
-            return this.userService.loginByToken(request.cookies['refreshToken']);
+            return await this.userService.loginByToken(request.cookies['refreshToken']);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
         }
     }
 
-    @Get('getUsers')
+    @Get('')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     async getAllUsers(@Query() dto: PaginationLimitDto) {
         try {
-            return this.userService.getAll(dto);
+            return await this.userService.getAll(dto);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -106,7 +108,7 @@ export class UserController {
     @UseGuards(AuthGuard)
     async makeAdmin(@Body() dto: SetUserRoleDto) {
         try {
-            return this.userService.makeAdmin(dto.userId);
+            return await this.userService.makeAdmin(dto.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
@@ -118,19 +120,29 @@ export class UserController {
     @UseGuards(AuthGuard)
     async revokeAdmin(@Body() dto: SetUserRoleDto) {
         try {
-            return this.userService.revokeAdmin(dto.userId);
+            return await this.userService.revokeAdmin(dto.userId);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
         }
     }
 
-    @Get('getUserById/:id')
+    @Get('/:id')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     async getUserById(@Param('id') id: string) {
         try {
-            return this.userService.getUserById(id);
+            return await this.userService.getUserById(id);
+        } catch (e) {
+            console.log(e);
+            throw new InternalServerErrorException();
+        }
+    }
+
+    @Get('session')
+    async getCurrentSessionUserInfo (@Req() req: Request) {
+        try {
+            return await this.tokenService.verifyAuthToken(req.cookies['authToken']);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

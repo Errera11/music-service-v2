@@ -3,10 +3,10 @@ import {Song} from "../../domain/Song";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {CreateAlbumDto} from "../../../common/dtos/infrastructureDto/albumDto/CreateAlbum.dto";
 import {UpdateAlbumDto} from "../../../common/dtos/infrastructureDto/albumDto/UpdateAlbum.dto";
-import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
+import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
 
 export interface IAlbumService {
-    getAlbums(dto: SearchUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>>
+    getAlbums(dto: GetUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>>
     createAlbum(dto: CreateAlbumDto): Promise<Album>
     updateAlbum(album: UpdateAlbumDto): Promise<Album>
     deleteAlbum({albumId}: { albumId: number }): Promise<Omit<Album, 'album_songs'>>

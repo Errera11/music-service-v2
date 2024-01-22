@@ -1,4 +1,4 @@
-import {Injectable} from "@nestjs/common";
+import {Injectable, UnauthorizedException} from "@nestjs/common";
 import {SignTokenDTO} from "../../../common/types/token";
 import {ITokenService} from "./ITokenService";
 import {TokenRepository} from "../../../infrastructure/db/repository/TokenRepository";
@@ -48,12 +48,14 @@ export class TokenService implements ITokenService {
 
     async verifyAuthToken(token: string): Promise<SignTokenDTO> {
         try {
+            console.log(token);
+
             const tokenCode = token.split(' ').pop();
-            jwt.verify(tokenCode, process.env.SECRET_ACCESS)
+            jwt.verify(tokenCode, process.env.SECRET_ACCESS);
             return jwt_decode(tokenCode);
         } catch (e) {
             console.log(e);
-            throw new Error('Invalid authorization token');
+            throw new UnauthorizedException('Invalid authorization token');
         }
     }
 
@@ -63,7 +65,8 @@ export class TokenService implements ITokenService {
             jwt.verify(tokenCode, process.env.SECRET_REFRESH)
             return jwt_decode(tokenCode);
         } catch (e) {
-            throw new Error('Invalid refresh token');
+            console.log(e);
+            throw new UnauthorizedException('Invalid refresh token');
         }
     }
 }

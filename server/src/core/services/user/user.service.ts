@@ -108,7 +108,6 @@ export class UserService implements IUserService {
     }
 
     async refreshSession(oldRefreshToken: string): Promise<AuthUserDto> {
-        try {
             const decodedUser = await this.tokenService.verifyRefreshToken(oldRefreshToken.split(' ').pop());
             const deletedRefreshToken = await this.tokenService.disableRefreshToken({
                 userId: decodedUser.id,
@@ -123,14 +122,9 @@ export class UserService implements IUserService {
                 authToken: authToken,
                 refreshToken: refreshToken
             }
-        } catch (e) {
-            console.log(e);
-            throw new Error('Session logged out');
-        }
     }
 
     async loginByToken(token: string): Promise<UserDto> {
-        try {
             const userDecoded = await this.tokenService.verifyRefreshToken(token.split(' ').pop());
             const {password, ...user} = await this.userRepository.getUserByEmail(userDecoded.email);
             if (!user) throw new Error(`User doesn't exists`);
@@ -138,11 +132,6 @@ export class UserService implements IUserService {
                 ...user,
                 avatar: (await this.cloud.getFileStreamableUrl(user.avatar)).result.link
             }
-        } catch (e) {
-            console.log(e);
-            throw new UnauthorizedException();
-        }
-
     }
 
     getUserById(userId: string): Promise<{

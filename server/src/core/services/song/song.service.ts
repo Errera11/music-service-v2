@@ -10,8 +10,8 @@ import {SongRepository} from "../../../infrastructure/db/repository/SongReposito
 import {Genre} from "../../domain/Genre";
 import {SearchItemsDto} from "../../../common/dtos/SearchItems.dto";
 import {GetUserItemDto} from "../../../common/dtos/GetUserItem.dto";
-import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
+import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
 
 @Injectable()
 export class SongService implements ISongService {
@@ -66,7 +66,7 @@ export class SongService implements ISongService {
         }
     }
 
-    async getUserFavSongs(dto: SearchUserItemsDto): Promise<GetItemsListDto<Song>> {
+    async getUserFavSongs(dto: GetUserItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.songRepository.getUserFavSongs(dto);
         if(!songs) return {
             items: [],
@@ -82,7 +82,7 @@ export class SongService implements ISongService {
         };
     }
 
-    async getAll(dto: SearchUserItemsDto): Promise<GetItemsListDto<Song>> {
+    async getAll(dto: GetUserItemsDto): Promise<GetItemsListDto<Song>> {
         const songs = await this.songRepository.getAll(dto)
         if(!songs.items.length) return {
             items: [] as Song[],

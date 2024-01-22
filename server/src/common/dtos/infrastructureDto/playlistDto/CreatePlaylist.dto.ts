@@ -3,4 +3,5 @@ export class CreatePlaylistDto {
     readonly title: string
     readonly description?: string
     readonly image?: Express.Multer.File
+    readonly songs?: number[]
 }

@@ -35,7 +35,6 @@ model TokenSession {
 
 model Song {
     id Int @id @default(autoincrement())
-    //TODO migrate
     title String @unique() // song name i.e. "Eye of the tiger"
     image String
     audio String

@@ -8,7 +8,7 @@ import {Inject} from "@nestjs/common";
 import {AlbumRepository} from "../../../infrastructure/db/repository/AlbumRepository";
 import {IAlbumService} from "./IAlbumService";
 import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
-import {SearchUserItemsDto} from "../../../common/dtos/SearchUserItems.dto";
+import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
 
 export class AlbumService implements IAlbumService {
 
@@ -69,7 +69,7 @@ export class AlbumService implements IAlbumService {
         }
     }
 
-    async getAlbums(dto: SearchUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>> {
+    async getAlbums(dto: GetUserItemsDto): Promise<GetItemsListDto<Omit<Album, 'album_songs'>>> {
         const albums = await this.albumRepository.getAlbums({
             ...dto
         })

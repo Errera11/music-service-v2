@@ -11,8 +11,7 @@ export class UpdateSongDto {
     @IsNotEmpty()
     readonly artist?: string
     @IsArray()
-    @IsNotEmpty({each: true})
-    @Transform(({value}) => JSON.parse(value).map(item => Number.parseInt(item.id)))
+    @Transform(({value}) => JSON.parse(value))
     readonly genre?: number[]
     readonly audio?: Express.Multer.File
     readonly image?: Express.Multer.File

@@ -38,7 +38,7 @@ const SongForm: React.FC<IProps> = ({onSubmit, song, btnAction}) => {
     const [createGenrePopup, setCreateGenrePopup] = useState(false);
     const [genre, setGenre] = useState('');
 
-    function songImageCreateHandler() {
+    function songImageAddHandler() {
         if (imageInputRef.current) (imageInputRef.current as HTMLInputElement).click();
     }
 
@@ -86,7 +86,7 @@ const SongForm: React.FC<IProps> = ({onSubmit, song, btnAction}) => {
                     <AdminPageBtn onClick={() => setCreateGenrePopup(true)} title={'Create new song genre'}/>
                 </div>
                 <form className={styles.form}>
-                    <div className={styles.imageSelectWrapper} onClick={songImageCreateHandler}>
+                    <div className={styles.imageSelectWrapper} onClick={songImageAddHandler}>
                         {image ? <img src={ typeof image === 'string' ? image : URL.createObjectURL(image)}/> :
                             <img src={song?.image}/>}
                         <div className={styles.imageSelectHover}>Select image</div>
@@ -119,6 +119,7 @@ const SongForm: React.FC<IProps> = ({onSubmit, song, btnAction}) => {
                                 onRemoveItem={(item) => setSelectedSongGenres(prev => prev.filter(selectedItem => selectedItem.id !== item.id))}
                                 selectedItems={selectedSongGenres?.map(item => ({id: item.id, title: item.title}))}
                                 title={'Genre'}
+                                emptyMessage={'No genrescreated'}
                                 items={songGenres?.map(item => ({id: item.id, title: item.genre}))}/>
                         </div>
                         <div className={styles.createBtnWrapper}>

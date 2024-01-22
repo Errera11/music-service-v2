@@ -26,17 +26,16 @@ import {Roles} from "../guards/roles.decorator";
 import {AuthGuard} from "../guards/auth.guards";
 import {UserRoles} from "../../core/domain/User";
 import {SearchItemsDto} from "../../common/dtos/SearchItems.dto";
-import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
 import {GetUserItemDto} from "../../common/dtos/GetUserItem.dto";
-import {GetUserItemsDto} from "../../common/dtos/GetParentItems.dto";
 import {AuthReq} from "../../common/types/authReq";
+import {GetUserItemsDto} from "../../common/dtos/GetUserItems.dto";
 
-@Controller('songs')
+@Controller('api/songs')
 export class SongController {
 
     constructor(private songService: SongService) {}
 
-    @Delete('delete/:id')
+    @Delete('/:id')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     async delete(@Param('id', ParseIntPipe) id: number) {
@@ -48,7 +47,7 @@ export class SongController {
         }
     }
 
-    @Post('create')
+    @Post('')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([
@@ -76,7 +75,7 @@ export class SongController {
         }
     }
 
-    @Put('update')
+    @Put('')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     @UseInterceptors(FileFieldsInterceptor([
@@ -107,19 +106,19 @@ export class SongController {
         }
     }
 
-    @Post('createGenre')
+    @Post('genres')
     @Roles(UserRoles.ADMIN)
     @UseGuards(AuthGuard)
     async createGenre(@Body() data: { genre: string }) {
         try {
-            return this.songService.createSongGenre(data.genre)
+            return await this.songService.createSongGenre(data.genre)
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();
         }
     }
 
-    @Post('favorite')
+    @Post('my')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     addToFavorite(@Body() dto: { userId: string, songId: number }) {
@@ -134,10 +133,10 @@ export class SongController {
         }
     }
 
-    @Get('mySongs')
+    @Get('my')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
-    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: GetUserItemsDto, @Req() req: AuthReq) {
+    getUserFavSongs(@Query(new ValidationPipe({transform: true})) dto: GetUserItemDto, @Req() req: AuthReq) {
         try {
             return this.songService.getUserFavSongs({
                 ...dto,
@@ -149,7 +148,7 @@ export class SongController {
         }
     }
 
-    @Delete('removeFromFavorite')
+    @Delete('my')
     @Roles(UserRoles.USER)
     @UseGuards(AuthGuard)
     removeFromFavorite(@Query() dto: GetUserItemDto) {
@@ -162,7 +161,7 @@ export class SongController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: GetUserItemsDto) {
         try {
             return this.songService.getAll(dto)
         } catch (e) {
@@ -172,9 +171,9 @@ export class SongController {
     }
 
     @Get('/:id')
-    getTrackById(@Param('id', ParseIntPipe) id: number) {
+    async getTrackById(@Param('id', ParseIntPipe) id: number) {
         try {
-            return this.songService.getSongById(id);
+            return await this.songService.getSongById(id);
         } catch (e) {
             console.log(e);
             throw new InternalServerErrorException();

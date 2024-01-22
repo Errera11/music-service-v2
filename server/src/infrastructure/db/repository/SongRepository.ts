@@ -39,6 +39,7 @@ export class SongRepository implements ISongRepository {
                 favorite: true
             }
         })
+        console.log(song);
         return this.songMapper.songEntityToDomain(song);
     }
 
@@ -183,6 +184,11 @@ export class SongRepository implements ISongRepository {
     }
 
     async updateSong(dto: UpdateSongDto): Promise<Song> {
+        const songGenresIds = (await this.prisma.musicGenres.findMany({
+            where: {
+                song_id: dto.id
+            }
+        })).map(genre => genre.genre_id);
         const song = await this.prisma.song.update({
             where: {
                 id: dto.id
@@ -193,10 +199,12 @@ export class SongRepository implements ISongRepository {
                 description: dto?.description || undefined,
                 genre: {
                     createMany: {
-                        data: dto.genre.map(item => ({genre_id: item}))
+                        data: dto.genre
+                            .filter(genre => !songGenresIds.includes(genre))
+                            .map(genre => ({genre_id: genre}))
                     },
                     deleteMany: {
-                        song_id: {
+                        genre_id: {
                             notIn: dto.genre
                         }
                     },

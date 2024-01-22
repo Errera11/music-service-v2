@@ -10,6 +10,8 @@ import {GetItemsListDto} from "../../../common/dtos/GetItemsList.dto";
 import {UpdatePlaylistDto} from "../../../common/dtos/infrastructureDto/playlistDto/UpdatePlaylist.dto";
 import {GetParentItemsDto} from "../../../common/dtos/GetParentItems.dto";
 import {GetUserItemsDto} from "../../../common/dtos/GetUserItems.dto";
+import {PaginationLimitDto} from "../../../common/dtos/PaginationLimit.dto";
+import {ParentItemDto} from "../../../common/dtos/ParentItem.dto";
 const uuid = require('uuid');
 
 @Injectable()
@@ -17,7 +19,7 @@ export class PlaylistService implements IPlaylistService {
     constructor(private playlistRepository: PlaylistRepository,
                 private cloud: DropboxService) {}
 
-    async addSongToPlaylist(dto: GetUserItemDto & {songId: number}): Promise<Song> {
+    async addSongToPlaylist(dto: ParentItemDto & {userId: string}): Promise<Song> {
         const song = await this.playlistRepository.addSongToPlaylist(dto);
         return {
             ...song,
@@ -27,11 +29,15 @@ export class PlaylistService implements IPlaylistService {
     }
 
     async createPlaylist(dto: CreatePlaylistDto): Promise<Playlist> {
-        const playlistImageName = uuid.v4() + dto.image.originalname.split('.').pop();
-        const savedPlaylistImage = await this.cloud.uploadFile(dto.image.buffer, 'image', playlistImageName)
+        let savedPlaylistImageId;
+        if(dto.image) {
+            const playlistImageName = uuid.v4() + dto.image.originalname.split('.').pop();
+            const savedPlaylistImageId = (await this.cloud.uploadFile(dto.image.buffer, 'image', playlistImageName)).result.id;
+        }
+
         return this.playlistRepository.createPlaylist({
             ...dto,
-            image: savedPlaylistImage.result.id
+            image: savedPlaylistImageId
         });
     }
 
@@ -41,8 +47,19 @@ export class PlaylistService implements IPlaylistService {
         return this.playlistRepository.deletePlaylist(dto)
     }
 
-    getPlaylistById(dto: GetUserItemDto): Promise<Playlist> {
-        return this.playlistRepository.getPlaylistById(dto);
+    async getPlaylistById(dto: GetUserItemDto & PaginationLimitDto): Promise<Playlist & { playlist_songs: GetItemsListDto<Song> }> {
+        const playlist = await this.playlistRepository.getPlaylistById(dto);
+        return {
+            ...playlist,
+            playlist_songs: {
+                ...playlist.playlist_songs,
+                items: await Promise.all(playlist.playlist_songs.items.map(async (song) => ({
+                    ...song,
+                    image: (await this.cloud.getFileStreamableUrl(song.image)).result.link,
+                    audio: (await this.cloud.getFileStreamableUrl(song.song)).result.link
+                })))
+            }
+        }
     }
 
     async getPlaylistSongs(dto: GetParentItemsDto): Promise<GetItemsListDto<Song>> {
@@ -68,7 +85,7 @@ export class PlaylistService implements IPlaylistService {
         }
     }
 
-    removeSongFromPlaylist(dto: GetUserItemDto & { songId: number }): Promise<Song> {
+    removeSongFromPlaylist(dto: ParentItemDto & { userId: string }): Promise<Song> {
         return this.playlistRepository.removeSongFromPlaylist(dto);
     }
 

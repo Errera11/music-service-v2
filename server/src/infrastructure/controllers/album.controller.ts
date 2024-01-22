@@ -12,14 +12,14 @@ import {AlbumService} from "../../core/services/album/album.service";
 import {CreateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/CreateAlbum.dto";
 import {FileFieldsInterceptor} from "@nestjs/platform-express";
 import {UpdateAlbumDto} from "../../common/dtos/infrastructureDto/albumDto/UpdateAlbum.dto";
-import {SearchUserItemsDto} from "../../common/dtos/SearchUserItems.dto";
 import {ParentItemDto} from "../../common/dtos/ParentItem.dto";
+import {GetUserItemsDto} from "../../common/dtos/GetUserItems.dto";
 
-@Controller('album')
+@Controller('api/albums')
 export class AlbumController {
     constructor(private albumService: AlbumService) {}
 
-    @Post('addSong')
+    @Post('songs')
     addSongToAlbum(@Query(ParseIntPipe) dto: ParentItemDto) {
         try {
             return this.albumService.addSongToAlbum({
@@ -33,7 +33,7 @@ export class AlbumController {
     }
 
     @Get('')
-    getAll(@Query(new ValidationPipe({transform: true})) dto: SearchUserItemsDto) {
+    getAll(@Query(new ValidationPipe({transform: true})) dto: GetUserItemsDto) {
         try {
             return this.albumService.getAlbums({
                 ...dto
@@ -44,7 +44,7 @@ export class AlbumController {
         }
     }
 
-    @Post('create')
+    @Post('')
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'image', maxCount: 1}
     ]))
@@ -60,7 +60,7 @@ export class AlbumController {
         }
     }
 
-    @Put('update')
+    @Put('')
     @UseInterceptors(FileFieldsInterceptor([
         {name: 'image', maxCount: 1}
     ]))
@@ -76,7 +76,7 @@ export class AlbumController {
         }
     }
 
-    @Delete('removeSong')
+    @Delete('songs')
     removeSong(@Query() dto: ParentItemDto) {
         try {
             return this.albumService.deleteSongFromAlbum({
@@ -89,7 +89,7 @@ export class AlbumController {
         }
     }
 
-    @Delete('delete/:id')
+    @Delete('/:id')
     deleteAlbum(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.albumService.deleteAlbum({
@@ -101,7 +101,7 @@ export class AlbumController {
         }
     }
 
-    @Get('getAlbumById/:id')
+    @Get('/:id')
     getAlbumById(@Param('id', ParseIntPipe) id: number) {
         try {
             return this.albumService.getAlbumById({
