@@ -1,29 +1,29 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import authSlice from "@/store/auth";
-import playerSlice from "@/store/player";
 
+export const popupErrorTypes  = {
+    401: 'You must authorize!',
+    unrecognized: 'Sorry, some error occurred!'
+}
 
-interface PopUpState {
-    message: string | ''
+export interface IPopUp {
+    message?: string
     isSuccess: boolean | undefined
+    type?: number // defines api status code
 }
 
-const popUpInitialState: PopUpState = {
-    message: '',
-    isSuccess: undefined
-}
+type PopUpState = IPopUp[]
+
+const popUpInitialState: PopUpState = []
 
 const popUpSlice = createSlice({
     name: 'popUp',
     initialState: popUpInitialState,
     reducers: {
-        setPopUp: (state, action: PayloadAction<PopUpState>) => {
-            state.message = action.payload.message
-            state.isSuccess = action.payload.isSuccess
+        pushPopUp: (state, action: PayloadAction<IPopUp>) => {
+            state.unshift(action.payload)
         },
-        resetPopUp: (state => {
-            state.message = ''
-            state.isSuccess = undefined
+        popPopUp: (state => {
+            state.splice(state.length - 1)
         })
     }
 })
